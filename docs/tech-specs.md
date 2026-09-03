@@ -48,8 +48,10 @@
 | 文件 | 职责 |
 | --- | --- |
 | `src/styles.css` | 全局设计 token、自定义工具类、组件类 |
-| `src/routes/index.tsx` | 首页外壳：导航、首屏、页脚、区块装配 |
-| `src/components/agentbench/BenchApp.tsx` | 排行榜 + 权重 + 雷达对比 + 数据接入（全部交互逻辑） |
+| `src/routes/index.tsx` | 首页：品牌导航 + 首屏 Hero，装配评测方法 / 评分器 / 审计区块与页脚 |
+| `src/routes/board.tsx` | 排行榜工作台页 `/board`：顶部导航 + `BenchApp` + 页脚 |
+| `src/components/agentbench/SiteShell.tsx` | 两页共用的顶部导航（参数化导航项 / 数据快照 chip / CTA）与页脚 |
+| `src/components/agentbench/BenchApp.tsx` | 排行榜 + 权重 + 雷达对比 + 数据接入（全部交互逻辑，整组挂载于 `/board`） |
 | `src/components/agentbench/StaticSections.tsx` | 评测方法 / 评分器 / 效度审计静态区块 |
 | `src/lib/agentbench-data.ts` | 数据模型、种子数据、评分函数（纯函数，可单测） |
 

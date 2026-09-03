@@ -292,44 +292,58 @@ export function Audit() {
             title="基准审计台账"
             desc="任何一个被用来做上线决策的评测集，都必须定期重新审计"
           />
-          <div className="ab-table-scroll mt-4">
-            <table className="ab-data-table min-w-[620px] text-[13px]">
-              <thead>
-                <tr>
-                  <th className={headCell}>基准</th>
-                  <th className={headCell}>类型</th>
-                  <th className={headCell}>版本 / 快照</th>
-                  <th className={headCell}>审计状态</th>
-                  <th className={headCell}>已知风险与处置</th>
-                </tr>
-              </thead>
-              <tbody>
-                {AUDIT.map((a) => (
-                  <tr key={a.bench}>
-                    <td className={`${cell} font-semibold whitespace-nowrap`}>{a.bench}</td>
-                    <td className={cell}>{a.type}</td>
-                    <td className={`${cell} whitespace-nowrap`}>{a.ver}</td>
-                    <td className={cell}>
-                      <span
-                        className={`inline-flex whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold ${
-                          a.st === "ok"
-                            ? "bg-ok-soft text-ok"
-                            : a.st === "risk"
-                              ? "bg-risk-soft text-risk"
-                              : "bg-chip text-text-3"
-                        }`}
-                      >
-                        {a.stText}
+          <div className="mt-2">
+            {AUDIT.map((a, i) => (
+              <div
+                key={a.bench}
+                className={`flex gap-3 py-3.5 ${i > 0 ? "border-t border-border/80" : ""}`}
+              >
+                {/* 状态色条：ok 绿 / risk 红 / 其余中性 */}
+                <span
+                  aria-hidden
+                  className={`mt-1.5 h-3.5 w-1 shrink-0 rounded-full ${
+                    a.st === "ok"
+                      ? "bg-ok"
+                      : a.st === "risk"
+                        ? "bg-risk"
+                        : "bg-border-strong"
+                  }`}
+                />
+                <div className="min-w-0 flex-1">
+                  {/* 首行：基准名 + 类型 + 版本 | 审计状态徽章 */}
+                  <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="text-[13.5px] font-semibold tracking-tight">
+                        {a.bench}
                       </span>
-                    </td>
-                    <td className={cell}>
-                      {a.note}
-                      <div className="mt-1 font-semibold text-brand">处置：{a.action}</div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <span className="rounded-md bg-chip px-1.5 py-[1px] text-[10.5px] font-semibold text-text-3">
+                        {a.type}
+                      </span>
+                      <span className="whitespace-normal text-[11.5px] leading-5 text-text-3">
+                        {a.ver}
+                      </span>
+                    </div>
+                    <span
+                      className={`inline-flex shrink-0 whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold ${
+                        a.st === "ok"
+                          ? "bg-ok-soft text-ok"
+                          : a.st === "risk"
+                            ? "bg-risk-soft text-risk"
+                            : "bg-chip text-text-3"
+                      }`}
+                    >
+                      {a.stText}
+                    </span>
+                  </div>
+                  {/* 已知风险说明 */}
+                  <p className="mt-1.5 text-[12.5px] leading-[1.65] text-text-2">{a.note}</p>
+                  {/* 处置建议（品牌色高亮） */}
+                  <p className="mt-1.5 text-[12px] font-semibold leading-5 text-brand">
+                    处置：{a.action}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
           <p className="mt-4 text-[12.5px] leading-6 text-text-2">
             审计结论不利时，要有勇气收回先前的推荐。本表随公开披露更新，新证据出现即改状态。

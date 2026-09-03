@@ -2,7 +2,7 @@
 
 ## 项目是什么
 
-AgentBench 智衡是一个 **AI Agent 多维评测与排行** 的单页应用：把「结果导向 × 过程追踪」的评测思想做成一个可操作的榜单界面，让访问者可以：
+AgentBench 智衡是一个 **AI Agent 多维评测与排行** 的网站，由「首页（产品介绍 + 评测方法论）」与「排行榜工作台页 `/board`（榜单 + 权重 + 雷达对比 + 数据接入）」两个页面构成，把「结果导向 × 过程追踪」的评测思想做成一个可操作的榜单界面，让访问者可以：
 
 - 查看不同 AI Agent 的六维得分与总分排名；
 
@@ -38,3 +38,4 @@ React 19 + TanStack Start（文件路由）+ Tailwind CSS v4 + Bun。详情见 `
 
 - `timeline.md` — 里程碑与变更记录
 
+- `wiki/agentbench-evaluation.md` — AI Agent 评估机制 Wiki（指标、权重、评分器、数据接入与审计口径）

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BenchApp } from "@/components/agentbench/BenchApp";
 import { Audit, Graders, Methodology } from "@/components/agentbench/StaticSections";
+import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
 const TITLE = "AgentBench 智衡 · AI Agent 多维评测与排行";
 const DESC =
@@ -20,9 +20,8 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+// 排行榜已独立为 /board 页面，首页导航只保留首页区块锚点
 const NAV = [
-  { href: "#board", label: "排行榜" },
-  { href: "#radar", label: "对比分析" },
   { href: "#method", label: "评测方法" },
   { href: "#graders", label: "评分器" },
   { href: "#audit", label: "效度审计" },
@@ -31,44 +30,8 @@ const NAV = [
 function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* ---------- 顶部导航 ---------- */}
-      <header className="sticky top-0 z-50 border-b border-border/80 bg-white/78 backdrop-blur-xl">
-        <div className="ab-container flex min-h-16 items-center gap-6 py-3">
-          <a href="#" className="flex items-center gap-3 font-semibold tracking-tight">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-[13px] font-extrabold text-primary-foreground shadow-[0_10px_24px_color-mix(in_oklab,var(--brand)_26%,transparent)]">
-              AB
-            </span>
-            <span className="flex flex-col leading-none">
-              <span className="text-[15px]">AgentBench 智衡</span>
-              <span className="mt-1 text-[11px] font-medium text-text-3">
-                AI Agent 评测工作台
-              </span>
-            </span>
-          </a>
-
-          <nav className="hidden items-center gap-6 text-[13px] font-medium text-text-2 lg:flex">
-            {NAV.map((n) => (
-              <a
-                key={n.href}
-                href={n.href}
-                className="rounded-md px-1 py-1 transition-colors hover:text-brand"
-              >
-                {n.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="ml-auto flex items-center gap-2.5">
-            <span className="ab-chip ab-chip-ghost">
-              <span className="ab-dot text-ok" />
-              数据快照 2026-04-23
-            </span>
-            <a href="#data" className="ab-button ab-button-primary">
-              接入数据
-            </a>
-          </div>
-        </div>
-      </header>
+      {/* ---------- 顶部导航：点击「查看排行榜」进入独立榜单页 ---------- */}
+      <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} />
 
       {/* ---------- 首屏：工作台概览 ---------- */}
       <section className="ab-container ab-section pt-8 sm:pt-10">
@@ -94,10 +57,10 @@ function Index() {
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
-                <a href="#board" className="ab-button ab-button-primary">
+                <a href="/board" className="ab-button ab-button-primary">
                   查看实时排行榜
                 </a>
-                <a href="#radar" className="ab-button ab-button-secondary">
+                <a href="/board#radar" className="ab-button ab-button-secondary">
                   多维对比雷达
                 </a>
                 <a href="#method" className="ab-button ab-button-ghost">
@@ -223,26 +186,15 @@ function Index() {
         </div>
       </section>
 
-      {/* ---------- 主体功能 ---------- */}
+      {/* ---------- 主体功能：介绍 + 评测方法 / 评分器 / 效度审计 ---------- */}
       <main>
-        <BenchApp />
         <Methodology />
         <Graders />
         <Audit />
       </main>
 
       {/* ---------- 页脚 ---------- */}
-      <footer className="mt-12 border-t border-border py-8 text-[12px] text-text-3">
-        <div className="ab-container flex flex-wrap gap-x-6 gap-y-2">
-          <span className="font-semibold text-text-2">AgentBench 智衡 · AI Agent 评测工作台</span>
-          <span>与清华大学 THUDM/AgentBench 基准项目无隶属关系</span>
-          <span className="max-w-[560px]">
-            评分与排序方法参考：Anthropic 评估体系 · 美团 Agent 评测漫谈 · AgentBoard · τ-bench ·
-            OSWorld
-          </span>
-          <span className="sm:ml-auto">数据快照 2026-04-23</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
