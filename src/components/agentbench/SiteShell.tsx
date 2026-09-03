@@ -93,12 +93,7 @@ export function SiteFooter() {
     <footer className="mt-12 border-t border-border py-8 text-[12px] text-text-3">
       <div className="ab-container flex flex-wrap gap-x-6 gap-y-2">
         <span className="font-semibold text-text-2">AgentBench 智衡 · AI Agent 评测工作台</span>
-        <span>与清华大学 THUDM/AgentBench 基准项目无隶属关系</span>
-        <span className="max-w-[560px]">
-          评分与排序方法参考：Anthropic 评估体系 · 美团 Agent 评测漫谈 · AgentBoard · τ-bench ·
-          OSWorld
-        </span>
-        <span className="sm:ml-auto">数据快照 2026-04-23</span>
+        <span className="sm:ml-auto">© 2026 AgentBench. All rights reserved.</span>
       </div>
     </footer>
   );

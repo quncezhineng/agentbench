@@ -9,6 +9,7 @@ description: "AI Agent 质量评估全指南：覆盖准确性、可靠性、安
 tags:
   - "clippings"
 ---
+
 摘要：本文系统介绍了 AI 智能体评估的理论与实践方法。阐述了 Agent 评估在技术、业务、伦理合规等方面的必要性，构建了包含任务完成率、决策准确率、效率和安全性的多维度指标体系。详细介绍了 AgentBench、AgentBoard、τ-bench 三大主流评估框架的特点与适用场景。通过零售、天气助手、考试生成三个实践案例，展示了不同评估方案的应用效果，为 Agent 的安全可靠部署提供了完整的评估指导。
 
 **目录**
@@ -63,7 +64,7 @@ Agent 评估指标非常多，可以分为业务类型指标、效率类型指�
 
 [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1.png)
 
-其中， *C* 为成功完成的任务数，N 为总任务数
+其中， _C_ 为成功完成的任务数，N 为总任务数
 
 **应用场景：**
 
@@ -94,7 +95,7 @@ Agent 评估指标非常多，可以分为业务类型指标、效率类型指�
 
 [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-4.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-4.png)
 
-其中， *tend* 为任务结束时间，tstart 为任务开始时间， *N* 为任务总数
+其中， _tend_ 为任务结束时间，tstart 为任务开始时间， _N_ 为任务总数
 
 **应用场景：**
 
@@ -115,6 +116,7 @@ Agent 评估指标非常多，可以分为业务类型指标、效率类型指�
 **偏见发生率（** **Bias rate** **）**
 
 [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-5-300x48.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-5.png)
+
 - **招聘场景** ：招聘筛选 Agent 对简历的评估是否存在性别 / 年龄偏见（如同等条件下优先排除女性候选人）。若 1000 份简历评估中，有 30 份因不合理偏见被错误筛选，则偏见率为 3%。
 - **打车平台场景** ：网约车调度 Agent 是否对不同区域用户（如郊区 vs 市区）存在派单延迟偏见。若 1000 次郊区订单中，50 次因偏见导致派单慢于合理时间，则偏见率为 5%。
 
@@ -124,13 +126,13 @@ Agent 评估指标非常多，可以分为业务类型指标、效率类型指�
 
 **表** **1** **– 常见的 Agent 评估框架**
 
-| **框架名称** | **主要聚焦** | **特点** | **商用** **/** **开源** |
-| --- | --- | --- | --- |
-| AgentBoard | 轨迹与事件回放 | 细粒度多轮交互评测、可视化回放 | 开源 |
-| AgentBench | LLM-as-Agent 综合基准 | 8 大模拟环境覆盖对话、游戏、文件操作等场景 | 开源 |
-| τ-bench (Tau-bench) | 用户-Agent 真实对话评测 | 三层评估（数据库、策略文档、用户模拟），聚焦零售客服、航旅场景 | 开源 |
-| GAIA | 测评 AI 助手在解决现实复杂、多模态、多步骤问题上的通用能力，强调多轮推理和综合应用 | – 多模态（文本、图像等）、多阶段真实问题任务   – 任务多样，通用性强，考察系统性 AI 能力 | 开源 |
-| WebArena | AI 智能体在仿真 Web 上的自动任务执行与复杂交互，通过虚拟 Web 页面评测 Agent 能力 | – 高仿真、可控、可复现的 Web 交互环境   – 覆盖电商、论坛、协作开发等多类网站   – 包含实用工具、知识资源，支持复杂任务链 | 开源 |
+| **框架名称**        | **主要聚焦**                                                                       | **特点**                                                                                                            | **商用** **/** **开源** |
+| ------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| AgentBoard          | 轨迹与事件回放                                                                     | 细粒度多轮交互评测、可视化回放                                                                                      | 开源                    |
+| AgentBench          | LLM-as-Agent 综合基准                                                              | 8 大模拟环境覆盖对话、游戏、文件操作等场景                                                                          | 开源                    |
+| τ-bench (Tau-bench) | 用户-Agent 真实对话评测                                                            | 三层评估（数据库、策略文档、用户模拟），聚焦零售客服、航旅场景                                                      | 开源                    |
+| GAIA                | 测评 AI 助手在解决现实复杂、多模态、多步骤问题上的通用能力，强调多轮推理和综合应用 | – 多模态（文本、图像等）、多阶段真实问题任务 – 任务多样，通用性强，考察系统性 AI 能力                               | 开源                    |
+| WebArena            | AI 智能体在仿真 Web 上的自动任务执行与复杂交互，通过虚拟 Web 页面评测 Agent 能力   | – 高仿真、可控、可复现的 Web 交互环境 – 覆盖电商、论坛、协作开发等多类网站 – 包含实用工具、知识资源，支持复杂任务链 | 开源                    |
 
 **1.4.1 AgentBoard**
 
@@ -142,19 +144,19 @@ Agent 评估指标非常多，可以分为业务类型指标、效率类型指�
 - **能力拆解指标** ：引入“进度率”、“探索效率”、“计划一致性”等指标，量化 Agent 在任务推进、探索策略和执行遵循上的表现。
 - **环境部分可观测** ：模拟真实环境中信息有限的场景，考察 Agent 在信息不足时的推理和探索能力。
 - **可视化分析** ：通过轨迹回放、热力图、能力对比图，帮助开发者直观理解 Agent 行为瓶颈。
-[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-1.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-1.png)
+  [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-1.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-1.png)
 
 图 1 – AgentBoard 可视化呈现
 
 **表** **2** **– AgentBoard 核心组件**
 
-| **组件** | **作用** | **关键技术** **/** **实现细节** |
-| --- | --- | --- |
-| **环境模拟器** | 构建部分可观测环境（如网页、游戏、仿真） | 使用虚拟环境、API 封装，限制信息访问 |
-| **Agent** **接口** | 连接待评测 Agent，支持多轮交互 | API 封装，支持多模型、多策略 |
-| **轨迹记录器** | 记录每轮交互的状态、动作、工具调用 | 日志存储、事件追踪（JSON/数据库） |
-| **能力拆解指标计算器** | 计算“进度率”、“探索效率”、“计划一致性”等指标 | 规则定义、自动统计 |
-| **可视化面板** | 轨迹回放、指标分析、热力图 | 前端交互、动态图表（D3.js、Mermaid） |
+| **组件**               | **作用**                                     | **关键技术** **/** **实现细节**      |
+| ---------------------- | -------------------------------------------- | ------------------------------------ |
+| **环境模拟器**         | 构建部分可观测环境（如网页、游戏、仿真）     | 使用虚拟环境、API 封装，限制信息访问 |
+| **Agent** **接口**     | 连接待评测 Agent，支持多轮交互               | API 封装，支持多模型、多策略         |
+| **轨迹记录器**         | 记录每轮交互的状态、动作、工具调用           | 日志存储、事件追踪（JSON/数据库）    |
+| **能力拆解指标计算器** | 计算“进度率”、“探索效率”、“计划一致性”等指标 | 规则定义、自动统计                   |
+| **可视化面板**         | 轨迹回放、指标分析、热力图                   | 前端交互、动态图表（D3.js、Mermaid） |
 
 **（2）评测指标**
 
@@ -164,7 +166,7 @@ Agent 评估指标非常多，可以分为业务类型指标、效率类型指�
 - Progress Rate（进度率）：衡量 Agent 在多步任务中已完成子目标的比例，反映累进式推进能力
 - Grounding Accuracy（落地准确率）：衡量 Agent 在每步操作（如点击、API 调用）中生成“合法、可执行”动作的比例，用于评估动作的有效性及环境交互质量
 - 维度能力评分  
-	AgentBoard 进一步将 Agent 能力拆解为以下六大维度，并分别打分：
+  AgentBoard 进一步将 Agent 能力拆解为以下六大维度，并分别打分：
 - Memory（记忆）：长程上下文信息的利用能力
 - Planning（规划）：将整体目标分解为可执行子目标的能力
 - World Modeling（建模）：推断并维护环境隐状态的能力
@@ -191,25 +193,25 @@ AgentBench 由清华大学等团队提出，旨在填补以往评测场景单一
 
 **表** **3** **– AgentBench 在 8 个环境中使用的评测指标**
 
-| **环境** | **评测指标** | **含义** |
-| --- | --- | --- |
-| Operating System (OS) | Success Rate (SR) | Agent 在限定交互步数内，成功完成所有子任务（如文件操作、命令执行）的比例. |
-| Database (DB) | Success Rate (SR) | Agent 正确生成并执行 SQL 查询，对应预期结果的比例. |
-| Knowledge Graph (KG) | F1 Score | 基于问答任务，Agent 输出与标准答案在精确率与召回率上的调和平均. |
-| Digital Card Game (DCG) | Reward | Agent 在对战中获得的平均回合得分（胜负与收益），衡量策略优劣. |
-| Lateral Thinking Puzzles (LTP) | Game Progress | Agent 猜出剧情要点（sub-goals）数占总要点数比例，反映横向推理深度. |
-| House-Holding (HH) | Success Rate (SR) | Agent 在模拟家居环境中完成指定任务（如摆放物品）的比例. |
-| Web Shopping (WS) | Reward | Agent 在模拟电商网站上检索并下单的综合得分，考虑价格最优与流程效率. |
-| Web Browsing (WB) | Step SR | Agent 在网页浏览任务中，每一步动作（点击、输入）成功执行的比例. |
+| **环境**                       | **评测指标**      | **含义**                                                                  |
+| ------------------------------ | ----------------- | ------------------------------------------------------------------------- |
+| Operating System (OS)          | Success Rate (SR) | Agent 在限定交互步数内，成功完成所有子任务（如文件操作、命令执行）的比例. |
+| Database (DB)                  | Success Rate (SR) | Agent 正确生成并执行 SQL 查询，对应预期结果的比例.                        |
+| Knowledge Graph (KG)           | F1 Score          | 基于问答任务，Agent 输出与标准答案在精确率与召回率上的调和平均.           |
+| Digital Card Game (DCG)        | Reward            | Agent 在对战中获得的平均回合得分（胜负与收益），衡量策略优劣.             |
+| Lateral Thinking Puzzles (LTP) | Game Progress     | Agent 猜出剧情要点（sub-goals）数占总要点数比例，反映横向推理深度.        |
+| House-Holding (HH)             | Success Rate (SR) | Agent 在模拟家居环境中完成指定任务（如摆放物品）的比例.                   |
+| Web Shopping (WS)              | Reward            | Agent 在模拟电商网站上检索并下单的综合得分，考虑价格最优与流程效率.       |
+| Web Browsing (WB)              | Step SR           | Agent 在网页浏览任务中，每一步动作（点击、输入）成功执行的比例.           |
 
 **数据集与划分**
 
 - AgentBench 为了支持模型开发与公平对比，将数据分为两个子集：
-	- Dev 集：包含 4,000 多条多轮交互样本，主要用于内部 [调试](https://aws.amazon.com/cn/what-is/debugging/) 和方法迭代。在这一部分，你可以多次试验、调整模型参数。
-		- Test 集：包含 13,000 多条多轮交互样本，用于公开 leaderboard 排名和最终性能评估。这个集合不公开标签，保证各团队在同一标准下公平竞争。
+  - Dev 集：包含 4,000 多条多轮交互样本，主要用于内部 [调试](https://aws.amazon.com/cn/what-is/debugging/) 和方法迭代。在这一部分，你可以多次试验、调整模型参数。
+    - Test 集：包含 13,000 多条多轮交互样本，用于公开 leaderboard 排名和最终性能评估。这个集合不公开标签，保证各团队在同一标准下公平竞争。
 - 27 款开源与 API-based 模型在 Test 划分上对比，揭示商用模型与 OSS 模型间显著差距。在 Test 集上，AgentBench 对比了 27 种不同类型的模型，包括：
-	- 开源模型（OSS）：如 [GPT](https://aws.amazon.com/cn/what-is/gpt/) -J、LLaMA 系列等需要自行部署的模型
-		- API-based 商用模型：如 OpenAI GPT-4、Anthropic Claude 等通过云 API 调用的模型
+  - 开源模型（OSS）：如 [GPT](https://aws.amazon.com/cn/what-is/gpt/) -J、LLaMA 系列等需要自行部署的模型
+    - API-based 商用模型：如 OpenAI GPT-4、Anthropic Claude 等通过云 API 调用的模型
 
 **1.4.3 τ-bench (Tau-bench)**
 
@@ -244,7 +246,7 @@ AgentBench 由清华大学等团队提出，旨在填补以往评测场景单一
 **(1) Tool** **调用准确率** ：Tool 调用的准确率是 Agent 应用最基础的保障，决定了最终任务的失败，因此该指标作为 Agent 基础能力的体现，是必须要进行的一项评估，但是评估的方式可以实际选择：
 
 - 细粒度检测：逐个工具调用的对比，以及调用工具对应参数提取正取率的对比，如下图所示：
-[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-2.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-2.png)
+  [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-2.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-2.png)
 
 图 2 – Tool 调用分析图
 
@@ -296,7 +298,7 @@ AgentBench 由清华大学等团队提出，旨在填补以往评测场景单一
 - 环境：完成所有交互，执行工具调用并传递消息
 - 用户模拟：基于每个任务的 instruction 模拟生成真实的用户响应
 - 工具：Retail Agent 可以调用的特定领域功能来完成任务
-[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-3.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-3.png)
+  [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-3.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-1-3.png)
 
 图 3 – Retail Agent 评估时序图
 
@@ -477,7 +479,7 @@ Plain Text
 - **weather\_toolkits** ：工具集实现，提供上述六大类天气查询功能，处理 API 调用的参数验证和错误处理，格式化 API 返回的结果
 - **EvalTool** ：评估控制模块，负责初始化环境和智能体，跟踪任务进度和奖励变化，计算评估指标（成功率、进度率、接地精度等）
 - **TaskLogger/SummaryLogger** ：日志记录模块，记录智能体的动作、环境的观察、奖励变化等，生成详细的 [日志文件](https://aws.amazon.com/cn/what-is/log-files/) ，汇总评估结果
-[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-8.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-8.png)
+  [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-8.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-8.png)
 
 图 8 – Weather Assistant Agent 评估时序图
 
@@ -497,10 +499,10 @@ Success\_rate\_easy（简单任务的成功率）为：100%，表明智能体执
 **（** **2** **）** Tool query Summary（以测试用例前 5 条为例）：
 
 ```yaml
-[EXP] 0: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.7142857142857143, [score_state]: [(6, 1.0)] 
-[EXP] 1: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.9, [score_state]: [(9, 1.0)] 
-[EXP] 2: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 1.0, [score_state]: [(2, 1.0)] 
-[EXP] 3: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.875, [score_state]: [(7, 1.0)] 
+[EXP] 0: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.7142857142857143, [score_state]: [(6, 1.0)]
+[EXP] 1: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.9, [score_state]: [(9, 1.0)]
+[EXP] 2: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 1.0, [score_state]: [(2, 1.0)]
+[EXP] 3: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.875, [score_state]: [(7, 1.0)]
 [EXP] 4: [success_rate]: True, [progress_rate]: 1.0, [grounding_acc]: 0.7142857142857143, [score_state]: [(6, 1.0)]
 ```
 
@@ -577,7 +579,7 @@ AI 考题生成 Agent 可满足各类考题生成需求：
 - 多题型支持涵盖单选题（每题一个正确答案）、多选题（每题多个正确答案）、填空题（需填写特定内容）；难度级别调整分为简单（适合入门学习和基础知识检测）、中等（适合常规考核和能力评估）、困难（适合高阶思维和深度理解测试）。
 - 在参考资料处理上，既支持 URL 作为参考（自动获取网页内容生成相关题目），也支持文本作为参考（用户直接提供文本材料作为出题依据）。
 - 生成的考试内容会渲染为交互式 HTML 页面，支持选择、填空等交互操作，界面美观易用；还支持中英文双语界面，可生成不同语言的考题。
-[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-9.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-9.png)
+  [![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-9.png)](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/09/18/agent-9.png)
 
 图 9 – 前端界面示例
 
@@ -735,5 +737,5 @@ A: 使用召回率、精确率和 NDCG 等指标衡量检索文档的相关性�
 
 ---
 
-| ## AWS 架构师中心：云端创新的引领者  探索 AWS 架构师中心，获取经实战验证的最佳实践与架构指南，助您高效构建安全、可靠的云上应用  **[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/11/13/sa-button.png)](https://aws.amazon.com/cn/solutions/architect-center/)** | ![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/11/13/sa.png) |
-| --- | --- |
+| ## AWS 架构师中心：云端创新的引领者 探索 AWS 架构师中心，获取经实战验证的最佳实践与架构指南，助您高效构建安全、可靠的云上应用 **[![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/11/13/sa-button.png)](https://aws.amazon.com/cn/solutions/architect-center/)** | ![](https://d2908q01vomqb2.cloudfront.net/472b07b9fcf2c2451e8781e944bf5f77cd8457c8/2025/11/13/sa.png) |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |

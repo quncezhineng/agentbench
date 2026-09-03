@@ -8,6 +8,7 @@ description:
 tags:
   - "clippings"
 ---
+
 指南指南手册 (Cookbook) [Agent 评估 - 如何评估 LLM Agent](https://langfuse.com.cn/guides/cookbook/example_pydantic_ai_mcp_agent_evaluation)
 
 ## Agent 评估：如何评估 LLM Agent
@@ -132,7 +133,7 @@ async def run_agent(item, system_prompt="You are an expert on Langfuse. ", model
     ) -> ToolResult:
         tool_call_history.append({"tool_name": tool_name, "args": args})
         return await call_tool(tool_name, args)
-    
+
     langfuse_docs_server = MCPServerStreamableHTTP(
         url=LANGFUSE_MCP_URL,
         process_tool_call=process_tool_call,
@@ -146,7 +147,7 @@ async def run_agent(item, system_prompt="You are an expert on Langfuse. ", model
 
     async with agent:
         result = await agent.run(item.input["question"])
-        
+
         langfuse.update_current_observation(
             output=result.output,
             metadata={"tool_call_history": tool_call_history},

@@ -1,14 +1,6 @@
 import { AUDIT, DEFECTS, DIMS, SCENARIOS } from "@/lib/agentbench-data";
 
-function SectionHead({
-  eyebrow,
-  title,
-  desc,
-}: {
-  eyebrow: string;
-  title: string;
-  desc: string;
-}) {
+function SectionHead({ eyebrow, title, desc }: { eyebrow: string; title: string; desc: string }) {
   return (
     <div className="ab-section-head">
       <div className="max-w-[820px]">
@@ -45,10 +37,7 @@ export function Methodology() {
       <div className="grid gap-4 lg:grid-cols-2">
         {/* 一级维度定义 */}
         <div className="ab-panel bg-white p-5 sm:p-6">
-          <SubTitle
-            title="一级维度定义"
-            desc="每个维度独立打分（0–100），再按场景加权合成总分"
-          />
+          <SubTitle title="一级维度定义" desc="每个维度独立打分（0–100），再按场景加权合成总分" />
           <div className="ab-table-scroll mt-4">
             <table className="ab-data-table min-w-[560px] text-[13px]">
               <thead>
@@ -88,8 +77,8 @@ export function Methodology() {
           </div>
           <div className="mt-4 rounded-xl border border-border bg-surface-2 px-4 py-3 font-mono text-[12px] leading-6 text-text-2">
             <b className="text-brand">总分</b> = Σ (维度得分 × 场景权重) ·{" "}
-            <b className="text-brand">passᵏ</b> = pᵏ (k=3) ·{" "}
-            <b className="text-brand">pass@k</b> = 1 − (1 − p)ᵏ
+            <b className="text-brand">passᵏ</b> = pᵏ (k=3) · <b className="text-brand">pass@k</b> =
+            1 − (1 − p)ᵏ
           </div>
         </div>
 
@@ -135,8 +124,9 @@ export function Methodology() {
           </div>
           <p className="mt-4 text-[12.5px] leading-6 text-text-2">
             <b className="text-foreground">为什么这么配：</b>
-            编码场景最看重“能不能一次跑通”，成功率 + 工具准确率占 60%；对话场景面向真实用户，
-            稳定性 passᵏ 权重最高（30%）；研究与操作场景任务链长，进度率提到 20%，用来区分“差一点”和“完全没动”。
+            编码场景最看重“能不能一次跑通”，成功率 + 工具准确率占 60%；对话场景面向真实用户， 稳定性
+            passᵏ 权重最高（30%）；研究与操作场景任务链长，进度率提到
+            20%，用来区分“差一点”和“完全没动”。
           </p>
         </div>
       </div>
@@ -212,8 +202,8 @@ export function Graders() {
             </table>
           </div>
           <div className="mt-4 rounded-xl border border-border bg-surface-2 px-4 py-3 font-mono text-[12px] leading-6 text-text-2">
-            <b className="text-brand">组合策略</b>：Code 评客观指标 → Model 按 Rubric
-            评语义质量 → Human 抽样 10–20% 计算一致率；一致率跌破阈值（如 85%）即判定自动评分器漂移，需重新校准。
+            <b className="text-brand">组合策略</b>：Code 评客观指标 → Model 按 Rubric 评语义质量 →
+            Human 抽样 10–20% 计算一致率；一致率跌破阈值（如 85%）即判定自动评分器漂移，需重新校准。
           </div>
         </div>
 
@@ -250,9 +240,7 @@ export function Graders() {
                   <td className={cell}>多轮意图提取、passᵏ 稳定性、规则合规率、交互轮数</td>
                 </tr>
                 <tr>
-                  <td className={`${cell} font-semibold whitespace-nowrap`}>
-                    研究与操作智能体
-                  </td>
+                  <td className={`${cell} font-semibold whitespace-nowrap`}>研究与操作智能体</td>
                   <td className={cell}>
                     GAIA / WebArena
                     <br />
@@ -302,20 +290,14 @@ export function Audit() {
                 <span
                   aria-hidden
                   className={`mt-1.5 h-3.5 w-1 shrink-0 rounded-full ${
-                    a.st === "ok"
-                      ? "bg-ok"
-                      : a.st === "risk"
-                        ? "bg-risk"
-                        : "bg-border-strong"
+                    a.st === "ok" ? "bg-ok" : a.st === "risk" ? "bg-risk" : "bg-border-strong"
                   }`}
                 />
                 <div className="min-w-0 flex-1">
                   {/* 首行：基准名 + 类型 + 版本 | 审计状态徽章 */}
                   <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="text-[13.5px] font-semibold tracking-tight">
-                        {a.bench}
-                      </span>
+                      <span className="text-[13.5px] font-semibold tracking-tight">{a.bench}</span>
                       <span className="rounded-md bg-chip px-1.5 py-[1px] text-[10.5px] font-semibold text-text-3">
                         {a.type}
                       </span>
@@ -373,9 +355,7 @@ export function Audit() {
                     <td className={cell}>
                       <span
                         className={`inline-flex whitespace-nowrap rounded-lg px-2 py-0.5 text-[11px] font-bold ${
-                          d.tone === "risk"
-                            ? "bg-risk-soft text-risk"
-                            : "bg-warn-soft text-warn"
+                          d.tone === "risk" ? "bg-risk-soft text-risk" : "bg-warn-soft text-warn"
                         }`}
                       >
                         {d.e}能力

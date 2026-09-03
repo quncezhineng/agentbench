@@ -9,6 +9,7 @@ description: "题记：本文编译自 Anthropic 工程博客《Demystifying eva
 tags:
   - "clippings"
 ---
+
 134 人赞同了该文章
 
 > 题记：本文编译自 [Anthropic](https://zhida.zhihu.com/search?content_id=268936833&content_type=Article&match_order=1&q=Anthropic&zhida_source=entity) 工程博客《Demystifying evals for AI agents》，发表于 2026 年 1 月 9 日。原文由 Mikaela Grace、Jeremy Hadfield、Rodrigo Olivares 和 Jiri De Jonghe 撰写。本文在翻译基础上做了整理和补充，希望能帮中文读者厘清 AI Agent 评估这件事到底该怎么做。
@@ -31,7 +32,7 @@ tags:
 
 评估结构示意图
 
-*简单评估是"提示→响应→评分"。Agent 评估要复杂得多：Agent 拿到工具和任务后，会执行多轮"工具调用+推理"循环，最后通过单元测试等方式验证结果。*
+_简单评估是"提示→响应→评分"。Agent 评估要复杂得多：Agent 拿到工具和任务后，会执行多轮"工具调用+推理"循环，最后通过单元测试等方式验证结果。_
 
 这里有个有趣的例子：Opus 4.5 在做 τ2-bench 的航班预订任务时，发现了政策里的一个漏洞，给用户找到了更好的解决方案。按评估的字面标准它“失败”了，但实际上它比标准答案更聪明。这说明 Agent 评估不能太死板，前沿模型的创造性可能超出你的预期。
 
@@ -173,7 +174,7 @@ Agent 行为在不同运行中都会有所不同，这让评估结果比看起�
 
 pass@k 和 pass^k 示意图
 
-*k=1 时两个指标相同。到 k=10，pass@k 接近 100%，pass^k 降到 0%。选哪个取决于产品需求。*
+_k=1 时两个指标相同。到 k=10，pass@k 接近 100%，pass^k 降到 0%。选哪个取决于产品需求。_
 
 ## 从 0 到 1 的实操路线图
 
@@ -241,7 +242,7 @@ A/B 测试——有足够流量后验证重大改动
 
 瑞士奶酪模型
 
-*这就像安全工程的瑞士奶酪模型——没有单一方法能捕捉所有问题，多层组合才能互相补位。*
+_这就像安全工程的瑞士奶酪模型——没有单一方法能捕捉所有问题，多层组合才能互相补位。_
 
 ## 写在最后
 

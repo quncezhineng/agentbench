@@ -38,7 +38,7 @@ AI Agent 的评分与评估（Evaluation）是一个将“结果导向”与“�
 
 <br />
 
-***
+---
 
 This project was built with [Lovable](https://lovable.dev).
 
@@ -62,4 +62,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-

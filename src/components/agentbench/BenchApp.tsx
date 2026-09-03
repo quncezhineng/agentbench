@@ -18,8 +18,7 @@ const thBase =
   "border-b border-border px-3 py-3 text-right whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.08em] text-text-3 select-none";
 const tdBase = "border-b border-border/80 px-3 py-3 align-middle whitespace-nowrap";
 
-const sortMark = (active: boolean, asc: boolean) =>
-  active ? (asc ? " ↑" : " ↓") : " ↕";
+const sortMark = (active: boolean, asc: boolean) => (active ? (asc ? " ↑" : " ↓") : " ↕");
 
 export function BenchApp() {
   const [agents, setAgents] = useState<Agent[]>(SEED_AGENTS);
@@ -136,7 +135,8 @@ export function BenchApp() {
             <div className="ab-chip ab-chip-brand mb-3">Leaderboard</div>
             <h2 className="ab-section-title">排行榜</h2>
             <p className="ab-section-desc mt-2">
-              切换场景即切换权重，总分与排序实时重算；点击任意表头可排序，勾选右侧复选框加入雷达对比（最多 3 个）。
+              切换场景即切换权重，总分与排序实时重算；点击任意表头可排序，勾选右侧复选框加入雷达对比（最多
+              3 个）。
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -372,7 +372,8 @@ export function BenchApp() {
             <div className="ab-chip ab-chip-brand mb-3">Radar Compare</div>
             <h2 className="ab-section-title">多维对比</h2>
             <p className="ab-section-desc mt-2">
-              勾选最多 3 个 Agent 进行雷达图对比。形状越“圆”越均衡，某个方向凹进去就是该 Agent 的能力瓶颈。
+              勾选最多 3 个 Agent 进行雷达图对比。形状越“圆”越均衡，某个方向凹进去就是该 Agent
+              的能力瓶颈。
             </p>
           </div>
         </div>
@@ -418,7 +419,8 @@ export function BenchApp() {
                 </div>
                 <p className="mt-auto rounded-xl border border-border bg-surface-2/70 px-4 py-3 text-[12px] leading-6 text-text-3">
                   <b className="text-foreground">pass³ 说明：</b>
-                  稳定性由成功率按 p³ 推算。成功率 82.7% → pass³ 仅 56.6%，这就是“能跑通一次”与“每次都可靠”之间的差距。
+                  稳定性由成功率按 p³ 推算。成功率 82.7% → pass³ 仅
+                  56.6%，这就是“能跑通一次”与“每次都可靠”之间的差距。
                 </p>
               </>
             )}
@@ -457,7 +459,10 @@ export function BenchApp() {
                 e.target.value = "";
               }}
             />
-            <button onClick={() => fileRef.current?.click()} className="ab-button ab-button-primary">
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="ab-button ab-button-primary"
+            >
               导入 JSON 替换
             </button>
             {ioStatus && (
@@ -478,7 +483,7 @@ export function BenchApp() {
             </div>
             <div className="overflow-x-auto bg-surface-2/40 px-4 py-3 font-mono text-[12px] leading-6">
               <pre className="whitespace-pre">
-{`{
+                {`{
   "name":   "Agent 名称（必填）",
   "vendor": "厂商",
   "demo":   true | false,          // true = 占位示例，标注「构造值」

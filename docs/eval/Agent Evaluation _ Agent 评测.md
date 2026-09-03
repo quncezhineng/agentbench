@@ -8,6 +8,7 @@ description:
 tags:
   - "clippings"
 ---
+
 > Agent 后训练的 **度量学**:怎么测一个 agent 到底行不行。先读 [agent-foundations](https://ac.fzhiy.net/agent-post-training-playbook/cheatsheet-agent-foundations.html) 知道 agent 是什么、有哪些 benchmark 与 human baseline,再用本篇学 **污染 / 饱和 / harness / 轨迹评测** 这些「读懂技报数字」的素养;之后去 [agentic-and-long-horizon-rl](https://ac.fzhiy.net/agent-post-training-playbook/cheatsheet-agentic-and-long-horizon-rl.html) 学怎么把可验证奖励接进 RL。
 
 注意 / Caution
@@ -30,13 +31,13 @@ tags:
 
 单轮 QA 评测:输入 → 一次输出 → 与参考答案比对(EM / F1 / accuracy),一次性、近确定性。agent 评测要测的是 **一条多步轨迹**:动作改变环境状态,「成功」= 终态满足目标(execution-based),不是字符串匹配。这带来单轮评测没有的几个维度(见下表):
 
-| 维度 | 单轮 QA | Agent |
-| --- | --- | --- |
-| 成功判据 | 与参考答案匹配(EM/F1) | **终态 / 单测 / 环境校验** (execution-based, verifiable) |
-| 随机性 | 低(单次解码) | 高(多步采样 + 环境随机)→ 必须多跑取分布 |
-| 可靠性 | accuracy | **pass^k** (k 次全成),见 foundations §9 |
-| 过程 | 不看 | **轨迹质量**:步数、工具用对没、有没有 reward hack |
-| 时间稳定性 | 静态 | **污染 + 饱和** 使同一分数随时间贬值 |
+| 维度       | 单轮 QA               | Agent                                                    |
+| ---------- | --------------------- | -------------------------------------------------------- |
+| 成功判据   | 与参考答案匹配(EM/F1) | **终态 / 单测 / 环境校验** (execution-based, verifiable) |
+| 随机性     | 低(单次解码)          | 高(多步采样 + 环境随机)→ 必须多跑取分布                  |
+| 可靠性     | accuracy              | **pass^k** (k 次全成),见 foundations §9                  |
+| 过程       | 不看                  | **轨迹质量**:步数、工具用对没、有没有 reward hack        |
+| 时间稳定性 | 静态                  | **污染 + 饱和** 使同一分数随时间贬值                     |
 
 陷阱 / Pitfall
 
@@ -49,15 +50,15 @@ human baseline 与「测什么」已在 [agent-foundations §8](https://ac.fzhiy
 - **轴 A · 能力域**:coding / web / GUI(computer-use)/ tool-user 多轮 / general assistant / ML 工程。
 - **轴 B · 评判方式 × 交互性**:execution-based outcome(跑单测/校验终态)vs trajectory vs LLM-judge;static one-shot vs interactive environment。
 
-| Benchmark | 能力域 | 评判方式 | 交互 | 关键设计点 |
-| --- | --- | --- | --- | --- |
-| **SWE-bench** [^1] 2294 个真实 GitHub issue,改代码库使隐藏单测通过。 [Jimenez 2023 ↗](https://arxiv.org/abs/2310.06770) | coding | execution(隐藏单测) | repo 交互 | 真实 issue→PR,FAIL\_TO\_PASS 单测做判据 |
-| **WebArena** [^5] 4 个自托管站点(电商/论坛/GitLab/CMS)上的 812 个长程任务;终态功能校验。 [Zhou 2023 ↗](https://arxiv.org/abs/2307.13854) | web | execution(终态校验) | 自托管沙盒 web | 可复现、可重置的真实站点副本 |
-| **OSWorld** [^6] 369 个真实 OS 上 computer-use 任务,脚本校验终态。 [Xie 2024 ↗](https://arxiv.org/abs/2404.07972) | GUI | execution(终态脚本) | 真实 OS 交互 | 多模态、跨 app,执行式判据非选择题 |
-| **τ-bench** [^8] 工具-agent-用户多轮、带策略约束;引入 pass^k 可靠性。 [Yao 2024 ↗](https://arxiv.org/abs/2406.12045) | tool-user | 终态 DB + **pass^k** | 模拟用户多轮 | 策略约束 + 把 **可靠性** 做成一等指标 |
-| **GAIA** [^7] 通用助手:推理+多模态+web+工具,三难度级,答案唯一可判。 [Mialon 2023 ↗](https://arxiv.org/abs/2311.12983) | general | exact-match 答案 | 静态(带工具) | 答案唯一、自动判;难度分级 |
-| **MLE-bench** [^9] 75 个 Kaggle ML 工程竞赛,按奖牌率评 agent。 [Chan 2024 ↗](https://arxiv.org/abs/2410.07095) | ML 工程 | Kaggle 评分(奖牌) | 长程交互 | 用既有 leaderboard 当客观标尺 |
-| **LiveCodeBench** [^10] 按竞赛 **发布时间窗** 滚动取题,只评模型 cutoff 之后的新题以防污染。 [Jain 2024 ↗](https://arxiv.org/abs/2403.07974) | coding(竞赛) | execution | static-but-windowed | **时间窗防污染**,living |
+| Benchmark                                                                                                                                   | 能力域       | 评判方式             | 交互                | 关键设计点                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------- | ------------------- | --------------------------------------- |
+| **SWE-bench** [^1] 2294 个真实 GitHub issue,改代码库使隐藏单测通过。 [Jimenez 2023 ↗](https://arxiv.org/abs/2310.06770)                     | coding       | execution(隐藏单测)  | repo 交互           | 真实 issue→PR,FAIL\_TO\_PASS 单测做判据 |
+| **WebArena** [^5] 4 个自托管站点(电商/论坛/GitLab/CMS)上的 812 个长程任务;终态功能校验。 [Zhou 2023 ↗](https://arxiv.org/abs/2307.13854)    | web          | execution(终态校验)  | 自托管沙盒 web      | 可复现、可重置的真实站点副本            |
+| **OSWorld** [^6] 369 个真实 OS 上 computer-use 任务,脚本校验终态。 [Xie 2024 ↗](https://arxiv.org/abs/2404.07972)                           | GUI          | execution(终态脚本)  | 真实 OS 交互        | 多模态、跨 app,执行式判据非选择题       |
+| **τ-bench** [^8] 工具-agent-用户多轮、带策略约束;引入 pass^k 可靠性。 [Yao 2024 ↗](https://arxiv.org/abs/2406.12045)                        | tool-user    | 终态 DB + **pass^k** | 模拟用户多轮        | 策略约束 + 把 **可靠性** 做成一等指标   |
+| **GAIA** [^7] 通用助手:推理+多模态+web+工具,三难度级,答案唯一可判。 [Mialon 2023 ↗](https://arxiv.org/abs/2311.12983)                       | general      | exact-match 答案     | 静态(带工具)        | 答案唯一、自动判;难度分级               |
+| **MLE-bench** [^9] 75 个 Kaggle ML 工程竞赛,按奖牌率评 agent。 [Chan 2024 ↗](https://arxiv.org/abs/2410.07095)                              | ML 工程      | Kaggle 评分(奖牌)    | 长程交互            | 用既有 leaderboard 当客观标尺           |
+| **LiveCodeBench** [^10] 按竞赛 **发布时间窗** 滚动取题,只评模型 cutoff 之后的新题以防污染。 [Jain 2024 ↗](https://arxiv.org/abs/2403.07974) | coding(竞赛) | execution            | static-but-windowed | **时间窗防污染**,living                 |
 
 提示 / Note
 
@@ -136,6 +137,7 @@ $$
 **from-scratch 实现** (agent 评测核心指标:pass@k 无偏估计 + pass^k 可靠性):
 
 35 行 / lines
+
 ```python
 import numpy as np
 from collections import defaultdict
@@ -175,11 +177,11 @@ def compute_agent_metrics(results, k=5):
 
 ## 5\. 轨迹评测 vs 结果评测 / Trajectory vs Outcome eval
 
-|  | outcome-only(execution-based) | trajectory(过程) |
-| --- | --- | --- |
-| 看什么 | 只看 **终态** 成功与否 | 看 **每一步** 动作是否合理 |
-| 优点 | 客观、可验证;判据隐藏时 **难作弊** | 能诊断 **哪步错** 、给 partial credit、喂 PRM |
-| 盲区 | 漏掉「蒙对 / lucky path」与 **reward hacking** (改测试、空实现过 CI);不诊断 | **谁来评** 是难题:规则覆盖不全,LLM-judge 自带偏置 |
+|        | outcome-only(execution-based)                                               | trajectory(过程)                                  |
+| ------ | --------------------------------------------------------------------------- | ------------------------------------------------- |
+| 看什么 | 只看 **终态** 成功与否                                                      | 看 **每一步** 动作是否合理                        |
+| 优点   | 客观、可验证;判据隐藏时 **难作弊**                                          | 能诊断 **哪步错** 、给 partial credit、喂 PRM     |
+| 盲区   | 漏掉「蒙对 / lucky path」与 **reward hacking** (改测试、空实现过 CI);不诊断 | **谁来评** 是难题:规则覆盖不全,LLM-judge 自带偏置 |
 
 **轨迹谁来评**:① **程序化规则** (步数、是否调了禁用工具、是否触发危险动作)——可靠但覆盖窄;② **LLM-as-judge** ——灵活但有位置偏好、自我偏好、易被「说服」等可靠性问题。
 
@@ -263,13 +265,13 @@ def compute_agent_metrics(results, k=5):
 
 具体映射:
 
-| 应用场景 | 推荐 benchmark（按优先级） | 核心局限 |
-| --- | --- | --- |
-| 代码修复 / PR agent | SWE-bench Pro(抗污染,41 仓库/多语言) > LiveCodeBench(通用 coding 防污染初筛) | 单仓库 issue 级任务;缺产品/需求上下文;不测跨仓库协同改动 |
-| Web 操作 agent | WebArena(自托管可复现) | 4 个自托管站点类别 + 辅助知识/工具站点(map/wiki/calculator);不测真实 web 的 OOD |
-| GUI / desktop 操作 agent | OSWorld(真实 OS,脚本判终态) | 369 题,桌面 OS 非手机;跨 app 覆盖有限 |
-| 工具+对话 agent(客服/助手) | τ-bench(pass^k 可靠性) + GAIA(通用) | τ-bench 领域固定(零售/航空);GAIA 只看终态 |
-| ML 工程 agent | MLE-bench(Kaggle 奖牌率) | 偏竞赛风格;不测日常 ML 运维 |
+| 应用场景                   | 推荐 benchmark（按优先级）                                                   | 核心局限                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 代码修复 / PR agent        | SWE-bench Pro(抗污染,41 仓库/多语言) > LiveCodeBench(通用 coding 防污染初筛) | 单仓库 issue 级任务;缺产品/需求上下文;不测跨仓库协同改动                        |
+| Web 操作 agent             | WebArena(自托管可复现)                                                       | 4 个自托管站点类别 + 辅助知识/工具站点(map/wiki/calculator);不测真实 web 的 OOD |
+| GUI / desktop 操作 agent   | OSWorld(真实 OS,脚本判终态)                                                  | 369 题,桌面 OS 非手机;跨 app 覆盖有限                                           |
+| 工具+对话 agent(客服/助手) | τ-bench(pass^k 可靠性) + GAIA(通用)                                          | τ-bench 领域固定(零售/航空);GAIA 只看终态                                       |
+| ML 工程 agent              | MLE-bench(Kaggle 奖牌率)                                                     | 偏竞赛风格;不测日常 ML 运维                                                     |
 
 提示 / Note
 
@@ -345,13 +347,13 @@ def compute_agent_metrics(results, k=5):
 
 答:学术 benchmark 分数衡量的是 **理想条件下的能力上界**,生产 agent 还要看五个维度:
 
-| 指标维度 | 测什么 | 为什么学术榜不测 |
-| --- | --- | --- |
-| **单任务成本** | token 量 × 单价 / 成功任务(含重试) | benchmark 不设预算约束 |
-| **延迟 / 步数** | 完成任务的平均步数 + P99 延迟 | 学术评测不扣步数分(大多数榜) |
-| **预算约束下可靠性** | 给定 token/time budget 的任务成功率 | 标准 pass@k 把 k 次尝试视为零成本,不反映 token/时间约束下的性价比 |
-| **用户体验指标** | 任务放弃率、用户满意度、是否需要人接手 | benchmark 无真实用户 |
-| **安全事件率** | 单位任务中越权 / 注入 / 误操作的次数 | 能力榜不管安全 |
+| 指标维度             | 测什么                                 | 为什么学术榜不测                                                  |
+| -------------------- | -------------------------------------- | ----------------------------------------------------------------- |
+| **单任务成本**       | token 量 × 单价 / 成功任务(含重试)     | benchmark 不设预算约束                                            |
+| **延迟 / 步数**      | 完成任务的平均步数 + P99 延迟          | 学术评测不扣步数分(大多数榜)                                      |
+| **预算约束下可靠性** | 给定 token/time budget 的任务成功率    | 标准 pass@k 把 k 次尝试视为零成本,不反映 token/时间约束下的性价比 |
+| **用户体验指标**     | 任务放弃率、用户满意度、是否需要人接手 | benchmark 无真实用户                                              |
+| **安全事件率**       | 单位任务中越权 / 注入 / 误操作的次数   | 能力榜不管安全                                                    |
 
 提示 / Note
 
@@ -374,30 +376,30 @@ def compute_agent_metrics(results, k=5):
 
 > 均为承重方法 / 一手来源,已逐条 web 核对(标题 + arXiv ID / 官方 URL;2026 的 SWE-bench Verified 退役与 Pro 分数为 2026-06 复核)。点上标跳转、点 ↩ 返回。
 
-[^1]: Jimenez et al. *SWE-bench: Can Language Models Resolve Real-World GitHub Issues?* ICLR 2024. [arXiv:2310.06770](https://arxiv.org/abs/2310.06770) — 真实代码修复评测.
+[^1]: Jimenez et al. _SWE-bench: Can Language Models Resolve Real-World GitHub Issues?_ ICLR 2024. [arXiv:2310.06770](https://arxiv.org/abs/2310.06770) — 真实代码修复评测.
 
-[^2]: OpenAI. *Introducing SWE-bench Verified*. 2024-08. [openai.com](https://openai.com/index/introducing-swe-bench-verified/) — 500 题人工核验子集.
+[^2]: OpenAI. _Introducing SWE-bench Verified_. 2024-08. [openai.com](https://openai.com/index/introducing-swe-bench-verified/) — 500 题人工核验子集.
 
-[^3]: OpenAI. *Why we no longer evaluate SWE-bench Verified*. 2026-02-23. [openai.com](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/) — 饱和+污染致退役;138 题审计约 59% 测试有缺陷.
+[^3]: OpenAI. _Why we no longer evaluate SWE-bench Verified_. 2026-02-23. [openai.com](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/) — 饱和+污染致退役;138 题审计约 59% 测试有缺陷.
 
-[^4]: Scale AI. *SWE-bench Pro Leaderboard*. 2025. [labs.scale.com](https://labs.scale.com/leaderboard/swe_bench_pro_public) — 抗污染 SWE-bench 变体(公开/私有/商用分片).
+[^4]: Scale AI. _SWE-bench Pro Leaderboard_. 2025. [labs.scale.com](https://labs.scale.com/leaderboard/swe_bench_pro_public) — 抗污染 SWE-bench 变体(公开/私有/商用分片).
 
-[^5]: Zhou et al. *WebArena: A Realistic Web Environment for Building Autonomous Agents*. ICLR 2024. [arXiv:2307.13854](https://arxiv.org/abs/2307.13854) — 自托管可复现 web 评测.
+[^5]: Zhou et al. _WebArena: A Realistic Web Environment for Building Autonomous Agents_. ICLR 2024. [arXiv:2307.13854](https://arxiv.org/abs/2307.13854) — 自托管可复现 web 评测.
 
-[^6]: Xie et al. *OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments*. NeurIPS 2024. [arXiv:2404.07972](https://arxiv.org/abs/2404.07972) — computer-use 终态校验.
+[^6]: Xie et al. _OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments_. NeurIPS 2024. [arXiv:2404.07972](https://arxiv.org/abs/2404.07972) — computer-use 终态校验.
 
-[^7]: Mialon et al. *GAIA: a benchmark for General AI Assistants*. ICLR 2024. [arXiv:2311.12983](https://arxiv.org/abs/2311.12983) — 通用助手、答案唯一可判.
+[^7]: Mialon et al. _GAIA: a benchmark for General AI Assistants_. ICLR 2024. [arXiv:2311.12983](https://arxiv.org/abs/2311.12983) — 通用助手、答案唯一可判.
 
-[^8]: Yao et al. *τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains*. 2024. [arXiv:2406.12045](https://arxiv.org/abs/2406.12045) — 多轮工具-用户 + pass^k 可靠性.
+[^8]: Yao et al. _τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains_. 2024. [arXiv:2406.12045](https://arxiv.org/abs/2406.12045) — 多轮工具-用户 + pass^k 可靠性.
 
-[^9]: Chan et al. *MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering*. ICLR 2025. [arXiv:2410.07095](https://arxiv.org/abs/2410.07095) — Kaggle ML 工程、奖牌率.
+[^9]: Chan et al. _MLE-bench: Evaluating Machine Learning Agents on Machine Learning Engineering_. ICLR 2025. [arXiv:2410.07095](https://arxiv.org/abs/2410.07095) — Kaggle ML 工程、奖牌率.
 
-[^10]: Jain et al. *LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code*. ICLR 2025. [arXiv:2403.07974](https://arxiv.org/abs/2403.07974) — 发布时间窗防污染.
+[^10]: Jain et al. _LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code_. ICLR 2025. [arXiv:2403.07974](https://arxiv.org/abs/2403.07974) — 发布时间窗防污染.
 
-[^11]: Chen et al. *Evaluating Large Language Models Trained on Code*. 2021. [arXiv:2107.03374](https://arxiv.org/abs/2107.03374) — HumanEval + pass@k 无偏估计.
+[^11]: Chen et al. _Evaluating Large Language Models Trained on Code_. 2021. [arXiv:2107.03374](https://arxiv.org/abs/2107.03374) — HumanEval + pass@k 无偏估计.
 
-[^12]: Triedman, Jha, Shmatikov. *Multi-Agent Systems Execute Arbitrary Malicious Code*. 2025. [arXiv:2503.12188](https://arxiv.org/abs/2503.12188) — 多 agent 编排器在 web 注入攻击下的恶意执行率(scope-locked).
+[^12]: Triedman, Jha, Shmatikov. _Multi-Agent Systems Execute Arbitrary Malicious Code_. 2025. [arXiv:2503.12188](https://arxiv.org/abs/2503.12188) — 多 agent 编排器在 web 注入攻击下的恶意执行率(scope-locked).
 
-[^13]: Anthropic (Benton et al.). *Sabotage Evaluations for Frontier Models*. 2024. [arXiv:2410.21514](https://arxiv.org/abs/2410.21514) — sabotage/sandbagging 评测框架(本页只引框架).
+[^13]: Anthropic (Benton et al.). _Sabotage Evaluations for Frontier Models_. 2024. [arXiv:2410.21514](https://arxiv.org/abs/2410.21514) — sabotage/sandbagging 评测框架(本页只引框架).
 
-[^14]: Greshake et al. *Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection*. 2023. [arXiv:2302.12173](https://arxiv.org/abs/2302.12173) — 间接提示注入.
+[^14]: Greshake et al. _Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection_. 2023. [arXiv:2302.12173](https://arxiv.org/abs/2302.12173) — 间接提示注入.

@@ -9,6 +9,7 @@ description: "了解如何使用内置评估工具来评估 AI 代理的质量�
 tags:
   - "clippings"
 ---
+
 你当前正在访问 Microsoft Azure Global Edition 技术文档网站。 如果需要访问由世纪互联运营的 Microsoft Azure 中国技术文档网站，请访问 [https://docs.azure.cn](https://docs.azure.cn/) 。
 
 评估对于在部署之前确保代理满足质量和安全标准至关重要。 通过在开发期间运行评估，可以建立代理性能的基线，并可以设置验收阈值，例如 85% 任务符合性通过率，然后再将其释放给用户。
@@ -55,7 +56,7 @@ client = project_client.get_openai_client()
 
 ## 选择评估者
 
-评估者会对你的代理的回答进行评分。 代理评估中，推荐的首要评估指标是 *评分量表评估器* ——即一组带有权重的评分维度，由 LLM 评判器应用于每条响应，从而明确表达真正重要的具体评判标准（例如策略执行、工具使用的准确性或沟通清晰度），并实现大规模的一致性评分。 有关详细信息，请参阅 [Rubric 评估器](https://learn.microsoft.com/zh-cn/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators) 。
+评估者会对你的代理的回答进行评分。 代理评估中，推荐的首要评估指标是 _评分量表评估器_ ——即一组带有权重的评分维度，由 LLM 评判器应用于每条响应，从而明确表达真正重要的具体评判标准（例如策略执行、工具使用的准确性或沟通清晰度），并实现大规模的一致性评分。 有关详细信息，请参阅 [Rubric 评估器](https://learn.microsoft.com/zh-cn/azure/foundry/concepts/evaluation-evaluators/rubric-evaluators) 。
 
 将评分标准与其他评估器结合使用，以全面覆盖您的评估范围：
 
@@ -276,26 +277,26 @@ JSON
 
 ```json
 {
-    "result_counts": {
-        "total": 3,
-        "passed": 1,
-        "failed": 2,
-        "errored": 0
-    },
-    "per_model_usage": [
-        {
-            "model_name": "gpt-4o-mini-2024-07-18",
-            "invocation_count": 6,
-            "total_tokens": 9285,
-            "prompt_tokens": 8326,
-            "completion_tokens": 959
-        }
-    ],
-    "per_testing_criteria_results": [
-        { "testing_criteria": "Agent Quality", "passed": 1, "failed": 2, "errored": 0 },
-        { "testing_criteria": "Violence",      "passed": 3, "failed": 0, "errored": 0 },
-        { "testing_criteria": "Coherence",     "passed": 2, "failed": 1, "errored": 0 }
-    ]
+  "result_counts": {
+    "total": 3,
+    "passed": 1,
+    "failed": 2,
+    "errored": 0
+  },
+  "per_model_usage": [
+    {
+      "model_name": "gpt-4o-mini-2024-07-18",
+      "invocation_count": 6,
+      "total_tokens": 9285,
+      "prompt_tokens": 8326,
+      "completion_tokens": 959
+    }
+  ],
+  "per_testing_criteria_results": [
+    { "testing_criteria": "Agent Quality", "passed": 1, "failed": 2, "errored": 0 },
+    { "testing_criteria": "Violence", "passed": 3, "failed": 0, "errored": 0 },
+    { "testing_criteria": "Coherence", "passed": 2, "failed": 1, "errored": 0 }
+  ]
 }
 ```
 

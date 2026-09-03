@@ -8,6 +8,7 @@ description: "本篇博客是一篇科普文章，由浅入深的介绍Agent评�
 tags:
   - "clippings"
 ---
+
 ![Agent评测漫谈 —— 由浅入深讲解Agent评测](https://p1.meituan.net/meituantechblog/07ca6e0dbead38c588608aba7b687169493204.jpg)
 
 本篇博客是一篇科普文章，由浅入深的介绍Agent评测。其中前两章系统介绍了评测是什么，以及如何建立评测体系；其中第二章是美团图灵Agent评测团队深入美团各业务团队BP总结出的实践经验，是我们在两年实践过程中逐步打磨出来的认知。第三章重点介绍了龙虾/爱马仕这类长程Agent框架的出现对评测带来的变化。
@@ -377,8 +378,8 @@ ChatAgent 时代常见流程是： `核心评测员对齐 -> 外包对齐 -> 机
 
 2026年2月，龙虾在全球爆火时候，社区涌现出面向龙虾评测的开源软件：
 
-| 软件名称 | 简介 | GitStar | task定义 |
-| --- | --- | --- | --- |
-| [pinchbench](https://github.com/pinchbench/skill) | 2026年2月开源，是一套专门用于评估OpenClaw的性能基准测试系统。与传统的合成测试（Synthetic Tests）不同，PinchBench 强调“真实场景下的任务模拟”。它通过给 AI 代理布置实际工作中会遇到的复杂任务，来衡量模型在处理多步工作、实际开发与办公环境下的真实表现。 | 1200+ | md文件 |
-| [claw eval](https://github.com/claw-eval/claw-eval) | [北大发布的龙虾能力评测](https://claw-eval.github.io/#/architecture) [task列表](https://claw-eval.github.io/#/tasks) ![](https://p0.meituan.net/meituantechblog/965edb20fab8cbfc542bf783c756b4e0266766.png) | 500 | [yaml文件](https://github.com/claw-eval/claw-eval/blob/main/tasks/C12zh_ecommerce_operations/task.yaml) |
-| [WildClawBench](https://github.com/InternLM/WildClawBench) | [WildClawBench：野生环境 AI Agent 能力评测 10 大模型谁的"龙虾"最强？](https://www.ai-insight.org/reports/wildclaw-bench-2026) 核心理念是"在野生环境中测试 Agent"——不是给模型一个精心设计的沙盒，而是把它扔进真实用户每天使用 OpenClaw Agent 的场景中，看它能不能活下来。 | 500 | Skill |
+| 软件名称                                                   | 简介                                                                                                                                                                                                                                                                     | GitStar | task定义                                                                                                |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------- |
+| [pinchbench](https://github.com/pinchbench/skill)          | 2026年2月开源，是一套专门用于评估OpenClaw的性能基准测试系统。与传统的合成测试（Synthetic Tests）不同，PinchBench 强调“真实场景下的任务模拟”。它通过给 AI 代理布置实际工作中会遇到的复杂任务，来衡量模型在处理多步工作、实际开发与办公环境下的真实表现。                  | 1200+   | md文件                                                                                                  |
+| [claw eval](https://github.com/claw-eval/claw-eval)        | [北大发布的龙虾能力评测](https://claw-eval.github.io/#/architecture) [task列表](https://claw-eval.github.io/#/tasks) ![](https://p0.meituan.net/meituantechblog/965edb20fab8cbfc542bf783c756b4e0266766.png)                                                              | 500     | [yaml文件](https://github.com/claw-eval/claw-eval/blob/main/tasks/C12zh_ecommerce_operations/task.yaml) |
+| [WildClawBench](https://github.com/InternLM/WildClawBench) | [WildClawBench：野生环境 AI Agent 能力评测 10 大模型谁的"龙虾"最强？](https://www.ai-insight.org/reports/wildclaw-bench-2026) 核心理念是"在野生环境中测试 Agent"——不是给模型一个精心设计的沙盒，而是把它扔进真实用户每天使用 OpenClaw Agent 的场景中，看它能不能活下来。 | 500     | Skill                                                                                                   |

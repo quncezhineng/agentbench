@@ -8,13 +8,14 @@ description:
 tags:
   - "clippings"
 ---
+
 EvalScope 提供 **Agent 评测** ，允许模型或成品 Agent CLI 在受控的多轮工具调用循环中完成评测任务，并把完整交互过程录制下来，供 Web 界面回放与复盘。
 
 ## 两种模式
 
-| 模式 | 适用场景 | 文档 |
-| --- | --- | --- |
-| **内置 AgentLoop** | 给常规 benchmark(GSM8K、AIME、SWE-bench 等)套上多轮工具调用循环，评测 **模型自身** 的工具使用能力 | [内置 AgentLoop 模式](https://evalscope.readthedocs.io/zh-cn/latest/user_guides/agent/native.html) |
+| 模式                  | 适用场景                                                                                                                           | 文档                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **内置 AgentLoop**    | 给常规 benchmark(GSM8K、AIME、SWE-bench 等)套上多轮工具调用循环，评测 **模型自身** 的工具使用能力                                  | [内置 AgentLoop 模式](https://evalscope.readthedocs.io/zh-cn/latest/user_guides/agent/native.html)    |
 | **外部 Agent Bridge** | 直接评测 **Claude Code / Codex / OpenCode / Gemini CLI / Hermes** 等成品 Agent CLI，EvalScope 把 CLI 的 LLM 请求转发到你的评测模型 | [外部 Agent Bridge 模式](https://evalscope.readthedocs.io/zh-cn/latest/user_guides/agent/bridge.html) |
 
 两种模式都通过 `TaskConfig.agent_config` 配置，一次评测只能选一种。

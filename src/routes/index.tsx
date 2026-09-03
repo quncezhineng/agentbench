@@ -52,7 +52,9 @@ function Index() {
 
               <p className="mt-4 max-w-[640px] text-[15px] leading-7 text-text-2 sm:text-[16px]">
                 6 个维度独立打分，按编码、对话、研究操作三类场景差异化加权。
-                <b className="text-foreground">成功率、稳定性 passᵏ、工具准确率、进度率、效率、可信与安全</b>
+                <b className="text-foreground">
+                  成功率、稳定性 passᵏ、工具准确率、进度率、效率、可信与安全
+                </b>
                 ——全维度可排序、可对比、可审计。
               </p>
 
@@ -104,9 +106,7 @@ function Index() {
                 <div className="mt-5 flex items-end gap-2">
                   <div className="flex-1">
                     <div className="flex items-end justify-between">
-                      <span className="text-[13px] font-semibold">
-                        编码智能体 · 当前场景
-                      </span>
+                      <span className="text-[13px] font-semibold">编码智能体 · 当前场景</span>
                     </div>
                     <div className="metric mt-1 text-[13px] font-bold text-brand">
                       成功率 35% · 工具 25% · pass³ 20%
@@ -180,8 +180,8 @@ function Index() {
             <b>数据口径声明</b>：已标注来源的分数来自公开发布快照，仅代表发布方口径与当时复现环境；
             不同基准、不同日期和不同 harness 结果不能直接横向混用；稳定性
             <code className="mx-1 rounded bg-white/70 px-1 font-semibold">passᵏ</code>
-            为由成功率推算的解释性指标，不等于独立实测。本站为第三方评测榜单，与清华大学 THUDM/AgentBench
-            基准项目无隶属关系。
+            为由成功率推算的解释性指标，不等于独立实测。本站为第三方评测榜单，与清华大学
+            THUDM/AgentBench 基准项目无隶属关系。
           </div>
         </div>
       </section>
