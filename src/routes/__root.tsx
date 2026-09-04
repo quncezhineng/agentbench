@@ -78,6 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "author", content: "AgentBench 智衡" },
+      {
+        name: "google-site-verification",
+        content: "EkCJb59CqlqaJp5YzZm_2fG1vlc_hitXvBtrVUqV2yE",
+      },
       { property: "og:site_name", content: "AgentBench 智衡" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
