@@ -227,36 +227,6 @@ export const AGENTS: Agent[] = [
       os: { success: 64.0, tool: 79, progress: 71, efficiency: 84, trust: 79, src: null },
     },
   },
-  {
-    name: "开源模型 A（占位示例）",
-    vendor: "—",
-    demo: true,
-    s: {
-      coding: { success: 58.0, tool: 76, progress: 66, efficiency: 68, trust: 74, src: null },
-      conv: { success: 60.0, tool: 74, progress: 65, efficiency: 70, trust: 73, src: null },
-      os: { success: 55.0, tool: 73, progress: 63, efficiency: 67, trust: 72, src: null },
-    },
-  },
-  {
-    name: "自建客服 Agent（占位示例）",
-    vendor: "—",
-    demo: true,
-    s: {
-      coding: { success: 42.0, tool: 66, progress: 54, efficiency: 80, trust: 78, src: null },
-      conv: { success: 72.0, tool: 78, progress: 74, efficiency: 88, trust: 81, src: null },
-      os: { success: 48.0, tool: 67, progress: 56, efficiency: 79, trust: 77, src: null },
-    },
-  },
-  {
-    name: "自建研究 Agent（占位示例）",
-    vendor: "—",
-    demo: true,
-    s: {
-      coding: { success: 45.0, tool: 68, progress: 58, efficiency: 64, trust: 75, src: null },
-      conv: { success: 52.0, tool: 70, progress: 60, efficiency: 72, trust: 76, src: null },
-      os: { success: 61.0, tool: 74, progress: 70, efficiency: 66, trust: 76, src: null },
-    },
-  },
 ];
 
 export const K = 3;
