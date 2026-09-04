@@ -48,7 +48,7 @@ export function SiteHeader({ navs, chip, cta }: SiteHeaderProps) {
               AgentBench 智衡
             </span>
             {/* <span className="mt-1 text-[10px] font-medium tracking-[0.12em] text-text-3">
-              AI Agent 评测工作台
+              AI Agent 多维评测与排行
             </span> */}
           </span>
         </a>
@@ -92,7 +92,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-12 border-t border-border py-8 text-[12px] text-text-3">
       <div className="ab-container flex flex-wrap gap-x-6 gap-y-2">
-        <span className="font-semibold text-text-2">AgentBench 智衡 · AI Agent 评测工作台</span>
+        <span className="font-semibold text-text-2">AgentBench 智衡 · AI Agent 多维评测与排行</span>
         <span className="sm:ml-auto">© 2026 AgentBench. All rights reserved.</span>
       </div>
     </footer>

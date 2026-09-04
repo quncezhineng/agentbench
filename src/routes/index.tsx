@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Audit, Graders, Methodology } from "@/components/agentbench/StaticSections";
+import {
+  AgentTypes,
+  Audit,
+  EvalPipeline,
+  Graders,
+  Methodology,
+  Roadmap,
+} from "@/components/agentbench/StaticSections";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
 const TITLE = "AgentBench 智衡 · AI Agent 多维评测与排行";
@@ -57,11 +64,14 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// 排行榜已独立为 /board 页面，首页导航只保留首页区块锚点
+// 排行榜已独立为 /board 页面，首页导航保留首页各内容区块锚点
 const NAV = [
   { href: "#method", label: "评测方法" },
+  { href: "#pipeline", label: "评测链路" },
   { href: "#graders", label: "评分器" },
   { href: "#audit", label: "效度审计" },
+  { href: "#agents", label: "Agent 类型" },
+  { href: "#roadmap", label: "落地路线" },
 ];
 
 function Index() {
@@ -77,7 +87,7 @@ function Index() {
             {/* 左：定位说明 */}
             <div>
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="ab-chip ab-chip-brand">AI Agent 评测工作台</span>
+                <span className="ab-chip ab-chip-brand">AI Agent 多维评测与排行</span>
                 <span className="ab-chip">结果导向 × 过程追踪</span>
               </div>
 
@@ -223,11 +233,14 @@ function Index() {
         </div>
       </section>
 
-      {/* ---------- 主体功能：介绍 + 评测方法 / 评分器 / 效度审计 ---------- */}
+      {/* ---------- 主体功能：方法 / 链路 / 评分器 / 审计 / 类型 / 路线 ---------- */}
       <main>
         <Methodology />
+        <EvalPipeline />
         <Graders />
         <Audit />
+        <AgentTypes />
+        <Roadmap />
       </main>
 
       {/* ---------- 页脚 ---------- */}

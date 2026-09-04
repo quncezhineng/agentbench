@@ -119,3 +119,34 @@
 
 - **移动端导航入口缺失**：两页导航在窄屏被隐藏，用户无法跳转区块。建议后续迭代用「抽屉 / 折叠面板」补齐，与本次的 `.ab-nav-link` 视觉共用。
 - **激活态刷新体验**：带锚点直达（如 `/board#radar`）时激活态在客户端挂载后补上，属预期行为，无需 SSR 同步。
+
+## M1.3 变更记录（2026-09-04）
+
+### 背景与目标
+
+依据 Wiki 文档《AI Agent 评估机制》（`agentbench-evaluation.md`）与《Agent 评估完全指南》（`agent-evaluation-complete-guide.md`）的口径，将两篇文档的机制、链路、反例与落地路线落到首页静态区块，让「怎么评」被讲透。本次只改首页介绍内容与导航，不触碰 `/board` 数据工作台与数据模型。
+
+### 主要改动
+
+1. **首页区块扩充（`StaticSections.tsx`，380 → 1100+ 行）**
+   - `#method 评测方法`：维度表新增「测量来源」列（Outcome / Transcript / 推算）；新增 pass@k vs passᵏ 对照、非确定性（来源 / 差异量级 / 对策）面板，含 p=75% 展开与 82.7% pass³ 示例。
+   - `#pipeline 评测链路`（新增区块）：执行层 vs 聚合层两层架构、六道工序 chip 流（Task→Trial×n→Transcript·Outcome→Grader→pass@k/passᵏ→六维加权）、Task/Trial/Transcript/Outcome/Grader/Harness 术语速查、两条「最容易翻车」推论（评估的是系统不只是模型；Transcript 会撒谎、Outcome 才是真相）。
+   - `#audit 效度审计`：追加「能力评估 vs 回归评估」与「瑞士奶酪多信号补位」两面板。
+   - `#agents Agent 类型`（新增区块）：编码 / 对话 / 研究 / 计算机操作四类差异评估表 + 「别掉进这些坑」。
+   - `#roadmap 落地路线`（新增区块）：0→6 起步步骤（每步给结论与反例）、现成框架清单（Harbor / Promptfoo / Braintrust / LangSmith-Langfuse / Arize Phoenix）。
+   - 文中明确标注：落地路线为 M2 规划参考，非当前已实现功能。
+
+2. **首页外壳（`index.tsx`）**：顶部导航扩为六锚点（方法 / 链路 / 评分器 / 审计 / Agent 类型 / 路线），`<main>` 按新顺序装配六个区块。
+
+3. **文档同步**：`requirements.md` 信息架构表、`tech-specs.md` / `user-structure.md` 文件职责、`wiki/agentbench-evaluation.md` §10 实现位置均更新。
+
+### 验证结果
+
+- `npm run build`：通过（`✓ built in 115ms`，nitro preview 正常）。
+- TypeScript diagnostics：改动文件均无错误。
+- Puppeteer（dev :8081，1440px）：六个区块全部渲染（标题 / 面板 / 文本齐全）；NAV 六锚点 + `/board` 可达，#roadmap 点击后平滑滚动到位；页面无横向溢出（overflow=0），各区块高度正常。
+
+### 反思与改进空间
+
+- **口径边界**：首页现以「方法讲透」为主，若未来接入真实评测管线（M2），可在 `#roadmap` 前把「演示数据 → 真实数据」的状态切换做成可视化，避免方法论与演示数据混淆。
+- **内容维护**：六区块大量中文文案集中在 `StaticSections.tsx`，后续若需 i18n 或内容中台，应先抽出为文案模块再改造。
