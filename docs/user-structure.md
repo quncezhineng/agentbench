@@ -35,7 +35,7 @@ agentbench/
 │   ├── components/agentbench/
 │   │   ├── SiteShell.tsx          # 两页共用顶部导航与页脚
 │   │   ├── BenchApp.tsx           # 核心交互：榜 / 权重 / 雷达 / 数据接入
-│   │   └── StaticSections.tsx     # 静态区块：方法 / 评分器 / 审计
+│   │   └── StaticSections.tsx     # 静态区块：方法 / 链路 / 评分器 / 审计 / Agent 类型 / 路线
 │   ├── lib/agentbench-data.ts     # 数据模型与纯函数
 │   ├── styles.css                 # 设计 token 与组件类
 │   └── ...（TanStack 工程骨架）

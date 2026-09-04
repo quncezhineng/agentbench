@@ -25,7 +25,7 @@ tags:
 | [MiniWoB++](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=MiniWoB%2B%2B&zhida_source=entity) | [github.com/google-resea](https://github.com/google-research/miniwob-plusplus) | HTML UI 操作 benchmark，聚焦 agent 的 [grounding](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=grounding&zhida_source=entity) 与鼠标、键盘精细控制能力。                                  |
 | [OSWorld](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=OSWorld&zhida_source=entity)         | [github.com/os-world/osw](https://github.com/os-world/osworld)                 | 桌面自动化 agent benchmark，在真实 Linux / Windows 桌面中完成系统任务。                                                                                                                                                               |
 | OSBench                                                                                                                                 | [github.com/ComputerAgen](https://github.com/ComputerAgent/OSBench)            | 跨平台桌面任务评测，测试软件管理、配置和多步系统操作。                                                                                                                                                                                |
-| SWE-Bench                                                                                                                               | [swebench.com/](https://www.swebench.com/)                                     | 真实 GitHub issue 自动修复 benchmark，通过 CI 验证 patch 正确性，是 coding agent 权威标准。                                                                                                                                           |
+| SWE-bench                                                                                                                               | [swebench.com/](https://www.swebench.com/)                                     | 真实 GitHub issue 自动修复 benchmark，通过 CI 验证 patch 正确性，是 coding agent 权威标准。                                                                                                                                           |
 | [DevEval](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=DevEval&zhida_source=entity)         | [arxiv.org/abs/2401.0640](https://arxiv.org/abs/2401.06401)                    | 多文件真实工程项目评测，关注依赖管理与复杂工程级修复。                                                                                                                                                                                |
 | EvoCodeBench                                                                                                                            | [arxiv.org/abs/2404.0059](https://arxiv.org/abs/2404.00599)                    | 演化代码库场景评测，探究 [legacy code](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=legacy+code&zhida_source=entity) 与依赖复杂环境下的持续维护能力。                                     |
 | [VERINA](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=VERINA&zhida_source=entity)           | [arxiv.org/abs/2505.2313](https://arxiv.org/abs/2505.23135)                    | [形式化验证](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81&zhida_source=entity) agent benchmark，评测 Spec → Code → Proof 生成与可机检证明。 |
@@ -41,7 +41,7 @@ tags:
 | Benchmark                                                                                                                                         | 链接                                                                  | 简介                                                                          |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | Terminal Bench 2.0                                                                                                                                | [github.com/microsoft/te](https://github.com/microsoft/terminalbench) | 在真实终端环境下操作系统、运行脚本和完成 coding 工作流的评测。                |
-| [SWE-Verified](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=SWE-Verified&zhida_source=entity)         | [openai.com/research/swe](https://openai.com/research/swe-bench)      | OpenAI 发布的经过人工核验的软件工程基准，属于 SWE-Bench 的高质量子集。        |
+| [SWE-Verified](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=SWE-Verified&zhida_source=entity)         | [openai.com/research/swe](https://openai.com/research/swe-bench)      | OpenAI 发布的经过人工核验的软件工程基准，属于 SWE-bench 的高质量子集。        |
 | [SWE-Multilingual](https://zhida.zhihu.com/search?content_id=267176638&content_type=Article&match_order=1&q=SWE-Multilingual&zhida_source=entity) | [github.com/multilingual](https://github.com/multilingual-swe-bench)  | 多语言版本的软件工程修复 benchmark，涵盖 Python 以外语言（如 Java、C++ 等）。 |
 
 ### 2\. 搜索智能体（Search Agent）
@@ -67,7 +67,7 @@ tags:
 | 多步规划 / 长程推理     | PaperBench, AgentBench, Crafter, τ²-bench          |
 | 真实 Web 交互           | WebArena, BrowseComp, BrowseCompZh                 |
 | 桌面自动化              | OSWorld, OSBench, TerminalBench                    |
-| 软件工程修复            | SWE-Bench, SWE-Verified, DevEval, SWE-Multilingual |
+| 软件工程修复            | SWE-bench, SWE-Verified, DevEval, SWE-Multilingual |
 | 科研自治                | PaperBench                                         |
 | 真实职业任务 / 经济价值 | GDPval                                             |
 | 通用工具调用            | GAIA, Tool-Decathlon, MCP-Universe, MCP-Mark       |
@@ -84,7 +84,7 @@ tags:
 
 ### Step 2 — 工程 & 真实环境
 
-- SWE-Bench + SWE-Verified
+- SWE-bench + SWE-Verified
 - OSWorld + TerminalBench
 - DevEval / SWE-Multilingual
 
