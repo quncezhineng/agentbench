@@ -14,9 +14,46 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://getagentbench.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://getagentbench.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Dataset",
+          name: "AgentBench 智衡 · AI Agent 多维评测数据集",
+          description: DESC,
+          url: "https://getagentbench.lovable.app/board",
+          license: "https://getagentbench.lovable.app/",
+          creator: { "@type": "Organization", name: "AgentBench 智衡" },
+          variableMeasured: [
+            "任务成功率",
+            "稳定性 passᵏ",
+            "工具调用准确率",
+            "进度率",
+            "效率",
+            "可信与安全",
+          ],
+          distribution: [
+            {
+              "@type": "DataDownload",
+              encodingFormat: "application/json",
+              contentUrl: "https://getagentbench.lovable.app/board#data",
+            },
+            {
+              "@type": "DataDownload",
+              encodingFormat: "text/csv",
+              contentUrl: "https://getagentbench.lovable.app/board#data",
+            },
+          ],
+        }),
+      },
+    ],
   }),
+
   component: Index,
 });
 
