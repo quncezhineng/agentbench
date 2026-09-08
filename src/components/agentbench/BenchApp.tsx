@@ -380,7 +380,7 @@ export function BenchApp() {
                       <td
                         className={`${tdBase} metric text-right text-[17px] font-bold text-brand`}
                       >
-                        {overallOf(a, scenario).toFixed(1)}
+                        {overallOf(a, scenario, weights).toFixed(1)}
                       </td>
                       {CLI_DIMS.map((d) => (
                         <td
