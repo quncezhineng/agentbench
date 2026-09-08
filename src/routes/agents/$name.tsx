@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AgentDetail } from "@/components/agentbench/AgentDetail";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
+import { runsQuery } from "@/lib/eval-queries";
 
 export const Route = createFileRoute("/agents/$name")({
   head: ({ params }) => {
