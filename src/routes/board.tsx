@@ -11,6 +11,7 @@ const BASE_URL = "https://getagentbench.lovable.app";
 const NAV = [
   { href: "#board", label: "主榜" },
   { href: "#references", label: "参考策略" },
+  { href: "#cli", label: "CLI 实测榜" },
   { href: "#pending", label: "待评测" },
 ];
 
