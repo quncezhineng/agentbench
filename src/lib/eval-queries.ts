@@ -122,6 +122,7 @@ export function deriveAgents(rows: EvalRunRow[]): LoopAgent[] {
   return [...map.values()];
 }
 
+/** 主榜条目（被评测 Controller 模型） */
 export const controllersOf = (a: LoopAgent[]) => a.filter((x) => x.kind === "controller");
 export const referencesOf = (a: LoopAgent[]) => a.filter((x) => x.kind === "reference");
 export const cliAgentsOf = (a: LoopAgent[]) => a.filter((x) => x.cli);
