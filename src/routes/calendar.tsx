@@ -62,15 +62,29 @@ function CalendarPage() {
         </p>
 
         <div className="ab-panel mt-4 bg-white p-4">
-          <div className="text-[13px] font-bold">脚本自动回填</div>
+          <div className="text-[13px] font-bold">定时自动跑测（一次配置，后续全自动）</div>
           <p className="mt-1 text-[12.5px] text-text-2">
-            本地跑完 CLI 实测后，脚本可以把结果直接推送到{" "}
-            <code className="metric rounded bg-surface-2 px-1">/api/public/eval-ingest</code>
-            （POST，请求头带 <code className="metric">x-eval-token</code> 私密口令，内容为{" "}
-            <code className="metric">{"{ runs: [...] }"}</code>）。推送成功后结果立即上榜，
-            对应排期会自动标记完成并顺延到下个周期，全程不用手填。
+            CLI 模型只能在你自己的机器上运行，所以定时任务装在你这边，结果由网站自动接收。
+            在项目目录执行下面一行，就会每周一凌晨 3 点自动评测一次，跑完把成绩、
+            每步耗时和工具调用日志直接写入排行榜、雷达图、维度表与结果库，对应排期自动标记完成并顺延。
+          </p>
+          <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-2 p-3 text-[12px] leading-5 text-text-2">
+{`AB_INGEST_TOKEN=<你的口令> ./scripts/install-cron.sh "Claude Code" "claude -p" Anthropic`}
+          </pre>
+          <p className="mt-2 text-[12.5px] text-text-2">
+            想先看一次结果而不上传，可以跑{" "}
+            <code className="metric rounded bg-surface-2 px-1">
+              node scripts/run-cli-eval.mjs --agent "Claude Code" --cmd "claude -p" --dry
+            </code>
+            。任务集在 <code className="metric rounded bg-surface-2 px-1">scripts/eval-tasks.json</code>，
+            可自行增删题目。手动结果仍可用{" "}
+            <a className="text-brand hover:underline" href="/board#submit">
+              提交表单
+            </a>{" "}
+            登记。
           </p>
         </div>
+
 
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
