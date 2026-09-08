@@ -98,6 +98,9 @@ function Index() {
                 <a href="/eval" className="ab-button ab-button-secondary">
                   LoopArena 机制
                 </a>
+                <a href="/compare/swe-bench" className="ab-button ab-button-secondary">
+                  对比 SWE-bench
+                </a>
                 <a href="#mechanism" className="ab-button ab-button-ghost">
                   评测方法论
                 </a>
