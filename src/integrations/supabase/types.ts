@@ -14,7 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      eval_runs: {
+        Row: {
+          agent_name: string
+          created_at: string
+          id: string
+          judge: string
+          kind: string
+          method: string
+          metrics: Json
+          note: string
+          params: Json
+          rationale: string
+          run_date: string
+          sample_size: number
+          source_by: string
+          source_label: string
+          source_url: string | null
+          status: string
+          submitted_by: string
+          suite: string
+          task_type: string
+          tool_log: string
+          updated_at: string
+          vendor: string
+        }
+        Insert: {
+          agent_name: string
+          created_at?: string
+          id?: string
+          judge?: string
+          kind?: string
+          method?: string
+          metrics?: Json
+          note?: string
+          params?: Json
+          rationale?: string
+          run_date?: string
+          sample_size?: number
+          source_by?: string
+          source_label?: string
+          source_url?: string | null
+          status?: string
+          submitted_by?: string
+          suite: string
+          task_type: string
+          tool_log?: string
+          updated_at?: string
+          vendor?: string
+        }
+        Update: {
+          agent_name?: string
+          created_at?: string
+          id?: string
+          judge?: string
+          kind?: string
+          method?: string
+          metrics?: Json
+          note?: string
+          params?: Json
+          rationale?: string
+          run_date?: string
+          sample_size?: number
+          source_by?: string
+          source_label?: string
+          source_url?: string | null
+          status?: string
+          submitted_by?: string
+          suite?: string
+          task_type?: string
+          tool_log?: string
+          updated_at?: string
+          vendor?: string
+        }
+        Relationships: []
+      }
+      eval_schedule: {
+        Row: {
+          agent_name: string
+          cadence: string
+          created_at: string
+          id: string
+          note: string
+          planned_date: string
+          status: string
+          suite: string
+          updated_at: string
+        }
+        Insert: {
+          agent_name: string
+          cadence?: string
+          created_at?: string
+          id?: string
+          note?: string
+          planned_date: string
+          status?: string
+          suite?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_name?: string
+          cadence?: string
+          created_at?: string
+          id?: string
+          note?: string
+          planned_date?: string
+          status?: string
+          suite?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
