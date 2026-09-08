@@ -6,7 +6,11 @@
  */
 
 import { useMemo } from "react";
+import { RadarChart, RadarLegend, RADAR_COLORS } from "./RadarChart";
 import {
+  CLI_DIMS,
+  cliOverall,
+  cliScenarioScore,
   fmtCost,
   fmtPct,
   kindLabel,
@@ -127,13 +131,15 @@ export function AgentDetail({ name }: { name: string }) {
             </div>
             {agent.note && <p className="mt-3 text-[12.5px] text-text-3">{agent.note}</p>}
 
-            {agent.r.src && (
+            {(agent.r.src ?? agent.cli?.src) && (
               <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px]">
                 <span className="rounded-md bg-info-soft px-1.5 py-0.5 text-[11px] font-bold text-info">
                   数据来源
                 </span>
-                <b className="text-info">{agent.r.src.label}</b>
-                <span className="text-text-3">{agent.r.src.val} · {agent.r.src.by}</span>
+                <b className="text-info">{(agent.r.src ?? agent.cli!.src).label}</b>
+                <span className="text-text-3">
+                  {(agent.r.src ?? agent.cli!.src).val} · {(agent.r.src ?? agent.cli!.src).by}
+                </span>
               </div>
             )}
           </div>
@@ -153,7 +159,86 @@ export function AgentDetail({ name }: { name: string }) {
           </div>
         </div>
 
-        {isProduct ? (
+        {agent.cli ? (
+          <div className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+            <div className="ab-panel bg-white p-4">
+              <div className="mb-1 text-[13px] font-bold tracking-tight">五维能力雷达图</div>
+              <div className="mb-2 text-[11.5px] text-text-3">两类场景对比（0–100）</div>
+              <RadarChart
+                axes={CLI_DIMS.map((d) => d.label)}
+                series={[
+                  {
+                    name: "多轮对话",
+                    values: CLI_DIMS.map((d) => agent.cli!.conv[d.key]),
+                    color: RADAR_COLORS[0]!,
+                  },
+                  {
+                    name: "研究与操作",
+                    values: CLI_DIMS.map((d) => agent.cli!.os[d.key]),
+                    color: RADAR_COLORS[2]!,
+                  },
+                ]}
+              />
+              <RadarLegend
+                series={[
+                  { name: "多轮对话", values: [], color: RADAR_COLORS[0]! },
+                  { name: "研究与操作", values: [], color: RADAR_COLORS[2]! },
+                ]}
+              />
+            </div>
+
+            <div className="ab-panel overflow-hidden bg-white">
+              <div className="ab-table-scroll">
+                <table className="ab-data-table min-w-[420px] text-[13px]">
+                  <thead>
+                    <tr>
+                      <th className="border-b border-border px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-text-3">
+                        维度
+                      </th>
+                      <th className="border-b border-border px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-text-3">
+                        多轮对话
+                      </th>
+                      <th className="border-b border-border px-3 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-text-3">
+                        研究与操作
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {CLI_DIMS.map((d) => (
+                      <tr key={d.key} className="hover:bg-surface-2/70">
+                        <td className="border-b border-border/80 px-3 py-3">
+                          {d.label}
+                          <span className="ml-2 text-[11px] text-text-3">
+                            权重 {Math.round(d.weight * 100)}%
+                          </span>
+                        </td>
+                        <td className="metric border-b border-border/80 px-3 py-3 text-right font-bold">
+                          {agent.cli!.conv[d.key].toFixed(1)}
+                        </td>
+                        <td className="metric border-b border-border/80 px-3 py-3 text-right font-bold">
+                          {agent.cli!.os[d.key].toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className="bg-surface-2/50">
+                      <td className="px-3 py-3 font-bold">加权综合分</td>
+                      <td className="metric px-3 py-3 text-right font-bold text-brand">
+                        {cliScenarioScore(agent.cli.conv).toFixed(1)}
+                      </td>
+                      <td className="metric px-3 py-3 text-right font-bold text-brand">
+                        {cliScenarioScore(agent.cli.os).toFixed(1)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="border-t border-border px-4 py-3 text-[12px] text-text-3">
+                总体综合分 <b className="metric text-brand">{cliOverall(agent).toFixed(1)}</b> ·{" "}
+                {agent.cli.src.by}
+              </div>
+            </div>
+          </div>
+        ) : isProduct ? (
           <div className="ab-panel bg-white p-8 text-center">
             <div className="text-[15px] font-semibold text-text-2">
               该编程智能体尚未接入 LoopArena 评测
