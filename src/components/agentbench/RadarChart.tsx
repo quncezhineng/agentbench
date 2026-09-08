@@ -147,18 +147,46 @@ export function RadarChart({
         );
       })}
 
+      {series.map((s) => (
+        <polygon
+          key={s.name}
+          points={s.values.map((v, i) => point(i, v).join(",")).join(" ")}
+          fill={s.color}
+          fillOpacity={0.12}
+          stroke={s.color}
+          strokeWidth={2}
+          strokeLinejoin="round"
+          pointerEvents="none"
+        />
+      ))}
+
+      {series.map((s) =>
+        s.values.map((v, i) => {
+          const [x, y] = point(i, v);
+          return (
+            <circle
+              key={`${s.name}-${i}`}
+              cx={x}
+              cy={y}
+              r={2.5}
+              fill={s.color}
+              pointerEvents="none"
+            />
+          );
+        }),
+      )}
+
       {editable ? (
         <>
           <polygon
-            points={axes
-              .map((_, i) => weightPoint(i, weights![i] ?? 0).join(","))
-              .join(" ")}
+            points={axes.map((_, i) => weightPoint(i, weights![i] ?? 0).join(",")).join(" ")}
             fill="none"
             stroke="currentColor"
             className="text-brand"
             strokeWidth={1.5}
             strokeDasharray="4 4"
             opacity={0.7}
+            pointerEvents="none"
           />
           {axes.map((label, i) => {
             const [hx, hy] = weightPoint(i, weights![i] ?? 0);
@@ -186,25 +214,6 @@ export function RadarChart({
         </>
       ) : null}
 
-
-      {series.map((s) => (
-        <polygon
-          key={s.name}
-          points={s.values.map((v, i) => point(i, v).join(",")).join(" ")}
-          fill={s.color}
-          fillOpacity={0.12}
-          stroke={s.color}
-          strokeWidth={2}
-          strokeLinejoin="round"
-        />
-      ))}
-
-      {series.map((s) =>
-        s.values.map((v, i) => {
-          const [x, y] = point(i, v);
-          return <circle key={`${s.name}-${i}`} cx={x} cy={y} r={2.5} fill={s.color} />;
-        }),
-      )}
     </svg>
   );
 }
