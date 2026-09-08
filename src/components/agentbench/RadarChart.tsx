@@ -1,7 +1,10 @@
 /**
  * 轻量 SVG 雷达图：展示 CLI 实测的五个维度（0–100）。
  * 不引入图表依赖，纯 SVG 绘制，SSR 安全。
+ * 可选：在每条轴上拖拽调整该维度的权重（weights + onWeightsChange）。
  */
+
+import { useRef } from "react";
 
 export interface RadarSeries {
   name: string;
@@ -11,19 +14,30 @@ export interface RadarSeries {
 
 export const RADAR_COLORS = ["#2563eb", "#0ea5e9", "#7c3aed", "#f59e0b", "#10b981"];
 
+/** 单个维度权重的可拖拽上限（归一化前） */
+export const MAX_AXIS_WEIGHT = 0.6;
+const MIN_AXIS_WEIGHT = 0.02;
+
 export function RadarChart({
   axes,
   series,
   size = 320,
+  weights,
+  onWeightsChange,
 }: {
   axes: string[];
   series: RadarSeries[];
   size?: number;
+  /** 归一化权重（合计 1），传入后显示可拖拽权重环 */
+  weights?: number[];
+  onWeightsChange?: (next: number[]) => void;
 }) {
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const cx = size / 2;
   const cy = size / 2;
   const radius = size / 2 - 46;
   const n = axes.length;
+  const editable = !!weights && !!onWeightsChange && weights.length === n;
 
   const point = (i: number, value: number) => {
     const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
@@ -31,7 +45,53 @@ export function RadarChart({
     return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)] as const;
   };
 
+  /** 权重 → 轴上位置（以 MAX_AXIS_WEIGHT 为满格） */
+  const weightPoint = (i: number, w: number) =>
+    point(i, Math.min(1, w / MAX_AXIS_WEIGHT) * 100);
+
+  const setWeightFromEvent = (i: number, clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    if (!svg || !weights || !onWeightsChange) return;
+    const rect = svg.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const px = ((clientX - rect.left) / rect.width) * size;
+    const py = ((clientY - rect.top) / rect.height) * size;
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const t = ((px - cx) * Math.cos(angle) + (py - cy) * Math.sin(angle)) / radius;
+    const raw = Math.max(MIN_AXIS_WEIGHT, Math.min(1, t) * MAX_AXIS_WEIGHT);
+    const next = weights.slice();
+    next[i] = raw;
+    onWeightsChange(next);
+  };
+
+  const onHandleDown = (i: number) => (e: React.PointerEvent<SVGCircleElement>) => {
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setWeightFromEvent(i, e.clientX, e.clientY);
+  };
+  const onHandleMove = (i: number) => (e: React.PointerEvent<SVGCircleElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      setWeightFromEvent(i, e.clientX, e.clientY);
+    }
+  };
+  const onHandleKey = (i: number) => (e: React.KeyboardEvent<SVGCircleElement>) => {
+    if (!weights || !onWeightsChange) return;
+    const delta =
+      e.key === "ArrowRight" || e.key === "ArrowUp"
+        ? 0.02
+        : e.key === "ArrowLeft" || e.key === "ArrowDown"
+          ? -0.02
+          : 0;
+    if (!delta) return;
+    e.preventDefault();
+    const next = weights.slice();
+    next[i] = Math.max(MIN_AXIS_WEIGHT, Math.min(MAX_AXIS_WEIGHT, (weights[i] ?? 0) + delta));
+    onWeightsChange(next);
+  };
+
   const rings = [25, 50, 75, 100];
+
+
 
   return (
     <svg
