@@ -1,28 +1,27 @@
 /**
- * AgentBench 智衡 · 榜单数据共享（LoopArena 口径）
+ * AgentBench 智衡 · 榜单数据共享
  *
- * 职责：为 /board 排行榜与 /agents/$name 详情页提供同一份「编程智能体」榜单快照。
- * 本次重构后榜单改为「论文 Table 2 真实结果 + 额外补充的待评测产品」的策展数据，
- * 不再有本地跑分入库 / JSON 导入，因此这里不再读写 localStorage，直接返回种子快照。
+ * 数据源已迁移到数据库（eval_runs 表）：/board 与 /agents/$name 都读同一份
+ * 「已审核」的评测记录，页面无需再改数据文件。
  */
 
-import { rankedAgents, type LoopAgent } from "./agentbench-data";
-
-/** 榜单快照日期（/board 右上角 chip 展示用） */
-export const SNAPSHOT_DATE = "2026-08";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { deriveAgents, runsQuery } from "./eval-queries";
+import type { LoopAgent } from "./agentbench-data";
+import { PRODUCTS } from "./agentbench-data";
 
 export interface LeaderboardSnapshot {
-  /** 快照日期（仅用于展示） */
+  /** 最近一次评测日期 */
   updatedAt: string;
   agents: LoopAgent[];
 }
 
-const SNAPSHOT: LeaderboardSnapshot = {
-  updatedAt: SNAPSHOT_DATE,
-  agents: rankedAgents(),
-};
-
-/** React Hook：读取当前榜单快照（策展数据，直接返回常量即可，SSR 安全） */
+/** React Hook：读取当前榜单快照（来自数据库，实时刷新） */
 export function useLeaderboardSnapshot(): LeaderboardSnapshot {
-  return SNAPSHOT;
+  const { data: rows } = useSuspenseQuery(runsQuery);
+  const agents = deriveAgents(rows);
+  const known = new Set(agents.map((a) => a.name));
+  const pending = PRODUCTS.filter((p) => !known.has(p.name));
+  const updatedAt = rows[0]?.run_date ?? "—";
+  return { updatedAt, agents: agents.concat(pending) };
 }
