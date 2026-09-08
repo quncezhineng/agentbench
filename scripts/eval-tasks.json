@@ -1,0 +1,36 @@
+{
+  "conv": [
+    {
+      "id": "conv-1",
+      "prompt": "用一句话解释什么是 RLS（行级安全），然后给出一个 Postgres 策略示例，最后一行只输出 DONE。",
+      "expect": ["(?i)policy", "DONE"]
+    },
+    {
+      "id": "conv-2",
+      "prompt": "我有一个 JS 数组 [3,1,2]，请给出升序排序代码，并在最后一行只输出 DONE。",
+      "expect": ["sort", "DONE"]
+    },
+    {
+      "id": "conv-3",
+      "prompt": "请用中文总结 REST 与 GraphQL 的两点差异，最后一行只输出 DONE。",
+      "expect": ["(?i)graphql", "DONE"]
+    }
+  ],
+  "os": [
+    {
+      "id": "os-1",
+      "prompt": "在当前目录创建文件 ab-check.txt，内容为 hello-agentbench，然后读回它并在最后一行只输出 DONE。",
+      "expect": ["hello-agentbench", "DONE"]
+    },
+    {
+      "id": "os-2",
+      "prompt": "统计当前目录下 .json 文件的数量，输出数字，然后在最后一行只输出 DONE。",
+      "expect": ["\\d", "DONE"]
+    },
+    {
+      "id": "os-3",
+      "prompt": "列出当前目录内容，并说明其中哪个是目录，最后一行只输出 DONE。",
+      "expect": ["DONE"]
+    }
+  ]
+}
