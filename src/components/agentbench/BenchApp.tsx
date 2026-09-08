@@ -273,6 +273,96 @@ export function BenchApp() {
         </div>
       </section>
 
+      {/* ================= CLI 实测榜 ================= */}
+      <section id="cli" className="ab-container ab-section">
+        <div className="ab-section-head">
+          <div>
+            <div className="ab-chip ab-chip-brand mb-3">CLI 实测 · 2026-09-04</div>
+            <h2 className="ab-section-title">编程智能体 CLI 实测榜</h2>
+            <p className="ab-section-desc mt-2">
+              用内置评测套件 v0 在本机真实跑分：每个智能体以非交互模式执行「多轮对话」与
+              「研究与操作」两类任务，按任务成功率、工具调用准确率、进度率、效率、可信与安全
+              五个维度打分，综合分为两类场景的加权平均。
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="ab-panel overflow-hidden bg-white">
+            <div className="ab-table-scroll">
+              <table className="ab-data-table min-w-[760px] text-[13px]">
+                <thead>
+                  <tr>
+                    <th className={`${thBase} w-12 text-left`}>排名</th>
+                    <th className={`${thBase} text-left`}>编程智能体</th>
+                    <th className={thBase}>综合分</th>
+                    {CLI_DIMS.map((d) => (
+                      <th key={d.key} className={thBase}>
+                        <span className="flex flex-col items-end">
+                          <span>{d.label}</span>
+                          <span className="text-[10px] font-medium normal-case tracking-normal text-text-3 opacity-90">
+                            权重 {Math.round(d.weight * 100)}%
+                          </span>
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {cliRows.map((a, i) => (
+                    <tr key={a.name} className="transition-colors hover:bg-surface-2/70">
+                      <td className={tdBase}>
+                        <span
+                          className={`metric inline-flex h-6 w-7 items-center justify-center rounded-lg text-[12.5px] font-bold ${
+                            i === 0 ? "bg-brand-soft text-brand" : "text-text-3"
+                          }`}
+                        >
+                          {i + 1}
+                        </span>
+                      </td>
+                      <td className={tdBase}>
+                        <div className="font-semibold">
+                          <a
+                            href={`/agents/${encodeURIComponent(a.name)}`}
+                            className="text-brand hover:underline"
+                          >
+                            {a.name}
+                          </a>
+                        </div>
+                        <div className="mt-0.5 text-[11.5px] text-text-3">{a.vendor}</div>
+                      </td>
+                      <td className={`${tdBase} metric text-right text-[17px] font-bold text-brand`}>
+                        {cliOverall(a).toFixed(1)}
+                      </td>
+                      {CLI_DIMS.map((d) => (
+                        <td
+                          key={d.key}
+                          className={`${tdBase} metric text-right text-[13px] text-text-2`}
+                        >
+                          {cliDimAvg(a, d.key).toFixed(1)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="ab-panel bg-white p-4">
+            <div className="mb-1 text-[13px] font-bold tracking-tight">五维能力雷达图</div>
+            <div className="mb-2 text-[11.5px] text-text-3">两类场景平均分（0–100）</div>
+            <RadarChart axes={CLI_DIMS.map((d) => d.label)} series={radarSeries} />
+            <RadarLegend series={radarSeries} />
+          </div>
+        </div>
+
+        <p className="mt-3 text-[12px] leading-5 text-text-3">
+          口径：{CLI_AGENTS[0]?.cli?.src.by ?? ""}。样本量较小（每场景 3 个任务、单次运行），
+          维度分由同一裁判模型评定，效率为相对耗时归一化后的分数，结果仅供横向参考。
+        </p>
+      </section>
+
       {/* ================= 待评测产品 ================= */}
       <section id="pending" className="ab-container ab-section">
         <div className="ab-section-head">
@@ -280,8 +370,7 @@ export function BenchApp() {
             <div className="ab-chip ab-chip-brand mb-3">Pending · 待评测</div>
             <h2 className="ab-section-title">其他主流编程智能体（待接入）</h2>
             <p className="ab-section-desc mt-2">
-              以下是目前主流的编程智能体产品。它们尚未在 LoopArena 统一口径下跑分，暂以占位展示；
-              待跑通 Type II / Type III 后即可并入主榜。
+              以下产品尚未跑分，待跑通实测套件或 LoopArena Type II / Type III 后并入榜单。
             </p>
           </div>
         </div>
