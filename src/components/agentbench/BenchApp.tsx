@@ -53,13 +53,18 @@ const dimVal = (a: LoopAgent, key: keyof CliDims, sc: Scenario): number => {
   return (a.cli.conv[key] + a.cli.os[key]) / 2;
 };
 
-/** 按场景取综合分 */
-const overallOf = (a: LoopAgent, sc: Scenario): number => {
+/** 按场景取综合分（可传入自定义归一化权重） */
+const overallOf = (a: LoopAgent, sc: Scenario, weights?: number[]): number => {
   if (!a.cli) return -1;
-  if (sc === "conv") return cliScenarioScore(a.cli.conv);
-  if (sc === "os") return cliScenarioScore(a.cli.os);
-  return (cliScenarioScore(a.cli.conv) + cliScenarioScore(a.cli.os)) / 2;
+  const score = (d: CliDims) =>
+    weights
+      ? CLI_DIMS.reduce((sum, dim, i) => sum + d[dim.key] * (weights[i] ?? 0), 0)
+      : cliScenarioScore(d);
+  if (sc === "conv") return score(a.cli.conv);
+  if (sc === "os") return score(a.cli.os);
+  return (score(a.cli.conv) + score(a.cli.os)) / 2;
 };
+
 
 const SCENARIOS: { key: Scenario; label: string }[] = [
   { key: "avg", label: "两类场景平均" },
@@ -80,6 +85,18 @@ export function BenchApp() {
   const [sortAsc, setSortAsc] = useState(false);
   const [scenario, setScenario] = useState<Scenario>("avg");
   const [cliSort, setCliSort] = useState<CliSort>("overall");
+  const [rawWeights, setRawWeights] = useState<number[]>(() => CLI_DIMS.map((d) => d.weight));
+
+  /** 归一化权重：合计恒为 1，供排序与综合分使用 */
+  const weights = useMemo(() => {
+    const total = rawWeights.reduce((s, w) => s + Math.max(0, w), 0) || 1;
+    return rawWeights.map((w) => Math.max(0, w) / total);
+  }, [rawWeights]);
+
+  const weightsTouched = useMemo(
+    () => weights.some((w, i) => Math.abs(w - (CLI_DIMS[i]?.weight ?? 0)) > 0.005),
+    [weights],
+  );
 
   const rows = useMemo(() => {
     const list = controllers.slice();
@@ -97,11 +114,12 @@ export function BenchApp() {
     const list = cliAgents.slice();
     list.sort((a, b) =>
       cliSort === "overall"
-        ? overallOf(b, scenario) - overallOf(a, scenario)
+        ? overallOf(b, scenario, weights) - overallOf(a, scenario, weights)
         : dimVal(b, cliSort, scenario) - dimVal(a, cliSort, scenario),
     );
     return list;
-  }, [cliAgents, cliSort, scenario]);
+  }, [cliAgents, cliSort, scenario, weights]);
+
 
   const radarSeries: RadarSeries[] = useMemo(
     () =>
@@ -320,7 +338,7 @@ export function BenchApp() {
                     >
                       综合分
                     </th>
-                    {CLI_DIMS.map((d) => (
+                    {CLI_DIMS.map((d, di) => (
                       <th
                         key={d.key}
                         className={`${thBase} cursor-pointer hover:text-brand ${cliSort === d.key ? "text-brand" : ""}`}
@@ -329,7 +347,7 @@ export function BenchApp() {
                         <span className="flex flex-col items-end">
                           <span>{d.label}</span>
                           <span className="text-[10px] font-medium normal-case tracking-normal text-text-3 opacity-90">
-                            权重 {Math.round(d.weight * 100)}%
+                            权重 {Math.round((weights[di] ?? 0) * 100)}%
                           </span>
                         </span>
                       </th>
@@ -362,7 +380,7 @@ export function BenchApp() {
                       <td
                         className={`${tdBase} metric text-right text-[17px] font-bold text-brand`}
                       >
-                        {overallOf(a, scenario).toFixed(1)}
+                        {overallOf(a, scenario, weights).toFixed(1)}
                       </td>
                       {CLI_DIMS.map((d) => (
                         <td
@@ -384,11 +402,27 @@ export function BenchApp() {
           <div className="ab-panel bg-white p-4">
             <div className="mb-1 text-[13px] font-bold tracking-tight">五维能力雷达图</div>
             <div className="mb-2 text-[11.5px] text-text-3">
-              {SCENARIOS.find((s) => s.key === scenario)?.label}（0–100）
+              {SCENARIOS.find((s) => s.key === scenario)?.label}（0–100）· 拖动轴上的蓝色圆点即可调整该维度权重
             </div>
-            <RadarChart axes={CLI_DIMS.map((d) => d.label)} series={radarSeries} />
+            <RadarChart
+              axes={CLI_DIMS.map((d) => d.label)}
+              series={radarSeries}
+              weights={weights}
+              onWeightsChange={setRawWeights}
+            />
             <RadarLegend series={radarSeries} />
+            <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 text-[11.5px] text-text-3">
+              <span>{weightsTouched ? "已使用自定义权重，综合分与排名已同步刷新" : "当前为默认权重"}</span>
+              <button
+                type="button"
+                onClick={() => setRawWeights(CLI_DIMS.map((d) => d.weight))}
+                className="rounded-full border border-border px-3 py-1 text-[11.5px] font-semibold text-text-2 hover:border-brand hover:text-brand"
+              >
+                恢复默认
+              </button>
+            </div>
           </div>
+
         </div>
 
         <p className="mt-3 text-[12px] leading-5 text-text-3">
