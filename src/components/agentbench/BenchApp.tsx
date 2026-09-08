@@ -239,60 +239,6 @@ export function BenchApp() {
         </p>
       </section>
 
-      {/* ================= 参考策略 ================= */}
-      <section id="references" className="ab-container ab-section">
-        <div className="ab-section-head">
-          <div>
-            <div className="ab-chip ab-chip-brand mb-3">Reference Policies</div>
-            <h2 className="ab-section-title">参考策略（不参与排名）</h2>
-            <p className="ab-section-desc mt-2">
-              两条基线用同一个 Worker 与执行环境，用来回答一个问题：「到底还需不需要
-              Controller？」它们不读 Evidence Packet、不出 Loop Contract。
-            </p>
-          </div>
-        </div>
-
-        <div className="ab-panel overflow-hidden bg-white">
-          <div className="ab-table-scroll">
-            <table className="ab-data-table min-w-[720px] text-[13px]">
-              <thead>
-                <tr>
-                  <th className={`${thBase} text-left`}>策略</th>
-                  <th className={`${thBase} text-left`}>行为</th>
-                  <th className={thBase}>Type II · SSR</th>
-                  <th className={thBase}>Type II · 成本</th>
-                  <th className={thBase}>Type III · SSR</th>
-                  <th className={thBase}>Type III · 成本</th>
-                </tr>
-              </thead>
-              <tbody>
-                {REFERENCES.map((a) => (
-                  <tr key={a.name} className="hover:bg-surface-2/70">
-                    <td className={`${tdBase} font-semibold`}>
-                      <a
-                        href={`/agents/${encodeURIComponent(a.name)}`}
-                        className="text-text-2 hover:text-brand hover:underline"
-                      >
-                        {a.name}
-                      </a>
-                    </td>
-                    <td className={`${tdBase} text-[12px] text-text-3`}>{a.note}</td>
-                    <td className={`${tdBase} metric text-right`}>{fmtPct(a.r.type2Ssr)}</td>
-                    <td className={`${tdBase} metric text-right text-text-2`}>
-                      {fmtCost(a.r.type2Cost)}
-                    </td>
-                    <td className={`${tdBase} metric text-right`}>{fmtPct(a.r.type3Ssr)}</td>
-                    <td className={`${tdBase} metric text-right text-text-2`}>
-                      {fmtCost(a.r.type3Cost)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
       {/* ================= CLI 实测榜 ================= */}
       <section id="cli" className="ab-container ab-section">
         <div className="ab-section-head">
@@ -381,6 +327,60 @@ export function BenchApp() {
           口径：{CLI_AGENTS[0]?.cli?.src.by ?? ""}。样本量较小（每场景 3 个任务、单次运行），
           维度分由同一裁判模型评定，效率为相对耗时归一化后的分数，结果仅供横向参考。
         </p>
+      </section>
+
+      {/* ================= 参考策略 ================= */}
+      <section id="references" className="ab-container ab-section">
+        <div className="ab-section-head">
+          <div>
+            <div className="ab-chip ab-chip-brand mb-3">Reference Policies</div>
+            <h2 className="ab-section-title">参考策略（不参与排名）</h2>
+            <p className="ab-section-desc mt-2">
+              两条基线用同一个 Worker 与执行环境，用来回答一个问题：「到底还需不需要
+              Controller？」它们不读 Evidence Packet、不出 Loop Contract。
+            </p>
+          </div>
+        </div>
+
+        <div className="ab-panel overflow-hidden bg-white">
+          <div className="ab-table-scroll">
+            <table className="ab-data-table min-w-[720px] text-[13px]">
+              <thead>
+                <tr>
+                  <th className={`${thBase} text-left`}>策略</th>
+                  <th className={`${thBase} text-left`}>行为</th>
+                  <th className={thBase}>Type II · SSR</th>
+                  <th className={thBase}>Type II · 成本</th>
+                  <th className={thBase}>Type III · SSR</th>
+                  <th className={thBase}>Type III · 成本</th>
+                </tr>
+              </thead>
+              <tbody>
+                {REFERENCES.map((a) => (
+                  <tr key={a.name} className="hover:bg-surface-2/70">
+                    <td className={`${tdBase} font-semibold`}>
+                      <a
+                        href={`/agents/${encodeURIComponent(a.name)}`}
+                        className="text-text-2 hover:text-brand hover:underline"
+                      >
+                        {a.name}
+                      </a>
+                    </td>
+                    <td className={`${tdBase} text-[12px] text-text-3`}>{a.note}</td>
+                    <td className={`${tdBase} metric text-right`}>{fmtPct(a.r.type2Ssr)}</td>
+                    <td className={`${tdBase} metric text-right text-text-2`}>
+                      {fmtCost(a.r.type2Cost)}
+                    </td>
+                    <td className={`${tdBase} metric text-right`}>{fmtPct(a.r.type3Ssr)}</td>
+                    <td className={`${tdBase} metric text-right text-text-2`}>
+                      {fmtCost(a.r.type3Cost)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       {/* ================= 待评测产品 ================= */}
