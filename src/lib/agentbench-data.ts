@@ -49,6 +49,8 @@ export interface LoopAgent {
   /** 补充说明（可选，展示在详情或榜单行内） */
   note?: string;
   r: LoopResult;
+  /** CLI 实测结果（内置评测套件 v0），仅已跑分的产品有 */
+  cli?: CliResult;
 }
 
 /** 论文数据快照日期（榜单右上角 chip 展示用） */
@@ -268,7 +270,7 @@ export const CLI_AGENTS: LoopAgent[] = [
     "opencode",
     "开源 CLI 编码代理（opencode run --pure 纯运行模式）",
     "opencode",
-    { success: 66.7, tool: 35, progress: 66.7, efficiency: 0, trust: 83.3 },
+    { success: 66.7, tool: 20, progress: 66.7, efficiency: 0, trust: 83.3 },
     { success: 100, tool: 75, progress: 93.3, efficiency: 33.3, trust: 86.7 },
   ),
 ];
@@ -321,7 +323,7 @@ export const REFERENCES: LoopAgent[] = AGENTS.filter((a) => a.kind === "referenc
 export function rankedAgents(): LoopAgent[] {
   const byType3 = (a: LoopAgent, b: LoopAgent) =>
     (b.r.type3Ssr ?? -1) - (a.r.type3Ssr ?? -1);
-  return [...CONTROLLERS].sort(byType3).concat(REFERENCES, PRODUCTS);
+  return [...CONTROLLERS].sort(byType3).concat(REFERENCES, CLI_AGENTS, PRODUCTS);
 }
 
 export const kindLabel: Record<LoopAgentKind, string> = {
