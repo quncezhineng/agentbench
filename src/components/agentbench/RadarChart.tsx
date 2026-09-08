@@ -95,9 +95,11 @@ export function RadarChart({
 
   return (
     <svg
+      ref={svgRef}
       viewBox={`0 0 ${size} ${size}`}
       width="100%"
       height={size}
+      style={{ touchAction: "none" }}
       role="img"
       aria-label={`雷达图：${series.map((s) => s.name).join("、")} 在 ${axes.join("、")} 上的得分`}
     >
@@ -115,22 +117,75 @@ export function RadarChart({
       {axes.map((label, i) => {
         const [x, y] = point(i, 100);
         const [lx, ly] = point(i, 122);
+        const anchor = Math.abs(lx - cx) < 4 ? "middle" : lx > cx ? "start" : "end";
         return (
           <g key={label}>
             <line x1={cx} y1={cy} x2={x} y2={y} stroke="currentColor" className="text-border" />
             <text
               x={lx}
-              y={ly}
-              textAnchor={Math.abs(lx - cx) < 4 ? "middle" : lx > cx ? "start" : "end"}
+              y={editable ? ly - 6 : ly}
+              textAnchor={anchor}
               dominantBaseline="middle"
               className="fill-current text-text-3"
               style={{ fontSize: 11 }}
             >
               {label}
             </text>
+            {editable ? (
+              <text
+                x={lx}
+                y={ly + 7}
+                textAnchor={anchor}
+                dominantBaseline="middle"
+                className="fill-current text-brand"
+                style={{ fontSize: 10, fontWeight: 700 }}
+              >
+                {Math.round((weights![i] ?? 0) * 100)}%
+              </text>
+            ) : null}
           </g>
         );
       })}
+
+      {editable ? (
+        <>
+          <polygon
+            points={axes
+              .map((_, i) => weightPoint(i, weights![i] ?? 0).join(","))
+              .join(" ")}
+            fill="none"
+            stroke="currentColor"
+            className="text-brand"
+            strokeWidth={1.5}
+            strokeDasharray="4 4"
+            opacity={0.7}
+          />
+          {axes.map((label, i) => {
+            const [hx, hy] = weightPoint(i, weights![i] ?? 0);
+            return (
+              <circle
+                key={`w-${label}`}
+                cx={hx}
+                cy={hy}
+                r={7}
+                className="fill-white stroke-brand"
+                strokeWidth={2.5}
+                style={{ cursor: "grab" }}
+                tabIndex={0}
+                role="slider"
+                aria-label={`${label} 权重`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round((weights![i] ?? 0) * 100)}
+                onPointerDown={onHandleDown(i)}
+                onPointerMove={onHandleMove(i)}
+                onKeyDown={onHandleKey(i)}
+              />
+            );
+          })}
+        </>
+      ) : null}
+
 
       {series.map((s) => (
         <polygon
