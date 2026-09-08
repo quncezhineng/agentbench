@@ -14,6 +14,7 @@ import { Route as BoardRouteImport } from './routes/board'
 import { Route as EvalRouteImport } from './routes/eval'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AgentsNameRouteImport } from './routes/agents/$name'
+import { Route as CompareSweBenchRouteImport } from './routes/compare/swe-bench'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const AgentsNameRoute = AgentsNameRouteImport.update({
   path: '/agents/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompareSweBenchRoute = CompareSweBenchRouteImport.update({
+  id: '/compare/swe-bench',
+  path: '/compare/swe-bench',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/eval': typeof EvalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/agents/$name': typeof AgentsNameRoute
+  '/compare/swe-bench': typeof CompareSweBenchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/eval': typeof EvalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/agents/$name': typeof AgentsNameRoute
+  '/compare/swe-bench': typeof CompareSweBenchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,33 @@ export interface FileRoutesById {
   '/eval': typeof EvalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/agents/$name': typeof AgentsNameRoute
+  '/compare/swe-bench': typeof CompareSweBenchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/board' | '/eval' | '/sitemap.xml' | '/agents/$name'
+  fullPaths:
+    | '/'
+    | '/board'
+    | '/eval'
+    | '/sitemap.xml'
+    | '/agents/$name'
+    | '/compare/swe-bench'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/board' | '/eval' | '/sitemap.xml' | '/agents/$name'
-  id: '__root__' | '/' | '/board' | '/eval' | '/sitemap.xml' | '/agents/$name'
+  to:
+    | '/'
+    | '/board'
+    | '/eval'
+    | '/sitemap.xml'
+    | '/agents/$name'
+    | '/compare/swe-bench'
+  id:
+    | '__root__'
+    | '/'
+    | '/board'
+    | '/eval'
+    | '/sitemap.xml'
+    | '/agents/$name'
+    | '/compare/swe-bench'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +105,7 @@ export interface RootRouteChildren {
   EvalRoute: typeof EvalRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AgentsNameRoute: typeof AgentsNameRoute
+  CompareSweBenchRoute: typeof CompareSweBenchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentsNameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compare/swe-bench': {
+      id: '/compare/swe-bench'
+      path: '/compare/swe-bench'
+      fullPath: '/compare/swe-bench'
+      preLoaderRoute: typeof CompareSweBenchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   EvalRoute: EvalRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AgentsNameRoute: AgentsNameRoute,
+  CompareSweBenchRoute: CompareSweBenchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
