@@ -77,12 +77,19 @@ function RunPage() {
               ))}
             </div>
 
+            {run.tool_log && (
+              <div className="mb-3">
+                <RunTimeline log={run.tool_log} />
+              </div>
+            )}
+
             <div className="grid gap-3 lg:grid-cols-2">
               <Block title="方法论 / 口径" body={run.method} />
               <Block title="运行参数" body={JSON.stringify(run.params ?? {}, null, 2)} />
-              <Block title="工具调用日志" body={run.tool_log} />
+              <Block title="原始工具调用日志" body={run.tool_log} />
               <Block title="评分依据" body={run.rationale} />
             </div>
+
 
             <div className="ab-panel mt-3 bg-white p-4 text-[12.5px] text-text-2">
               <div className="mb-1 font-bold text-foreground">数据来源</div>
