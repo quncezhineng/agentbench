@@ -85,6 +85,18 @@ export function BenchApp() {
   const [sortAsc, setSortAsc] = useState(false);
   const [scenario, setScenario] = useState<Scenario>("avg");
   const [cliSort, setCliSort] = useState<CliSort>("overall");
+  const [rawWeights, setRawWeights] = useState<number[]>(() => CLI_DIMS.map((d) => d.weight));
+
+  /** 归一化权重：合计恒为 1，供排序与综合分使用 */
+  const weights = useMemo(() => {
+    const total = rawWeights.reduce((s, w) => s + Math.max(0, w), 0) || 1;
+    return rawWeights.map((w) => Math.max(0, w) / total);
+  }, [rawWeights]);
+
+  const weightsTouched = useMemo(
+    () => weights.some((w, i) => Math.abs(w - (CLI_DIMS[i]?.weight ?? 0)) > 0.005),
+    [weights],
+  );
 
   const rows = useMemo(() => {
     const list = controllers.slice();
@@ -102,11 +114,12 @@ export function BenchApp() {
     const list = cliAgents.slice();
     list.sort((a, b) =>
       cliSort === "overall"
-        ? overallOf(b, scenario) - overallOf(a, scenario)
+        ? overallOf(b, scenario, weights) - overallOf(a, scenario, weights)
         : dimVal(b, cliSort, scenario) - dimVal(a, cliSort, scenario),
     );
     return list;
-  }, [cliAgents, cliSort, scenario]);
+  }, [cliAgents, cliSort, scenario, weights]);
+
 
   const radarSeries: RadarSeries[] = useMemo(
     () =>
