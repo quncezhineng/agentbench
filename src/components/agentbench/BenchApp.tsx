@@ -338,7 +338,7 @@ export function BenchApp() {
                     >
                       综合分
                     </th>
-                    {CLI_DIMS.map((d) => (
+                    {CLI_DIMS.map((d, di) => (
                       <th
                         key={d.key}
                         className={`${thBase} cursor-pointer hover:text-brand ${cliSort === d.key ? "text-brand" : ""}`}
@@ -347,7 +347,7 @@ export function BenchApp() {
                         <span className="flex flex-col items-end">
                           <span>{d.label}</span>
                           <span className="text-[10px] font-medium normal-case tracking-normal text-text-3 opacity-90">
-                            权重 {Math.round(d.weight * 100)}%
+                            权重 {Math.round((weights[di] ?? 0) * 100)}%
                           </span>
                         </span>
                       </th>
