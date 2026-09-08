@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BenchApp } from "@/components/agentbench/BenchApp";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
-import { useLeaderboardSnapshot } from "@/lib/leaderboard-store";
 
 const TITLE = "AgentBench 智衡 · 编程智能体排行榜";
 const DESC =
@@ -33,14 +32,11 @@ export const Route = createFileRoute("/board")({
 });
 
 function Board() {
-  // 右上角「数据快照」chip 展示当前生效数据的快照日期
-  const { updatedAt } = useLeaderboardSnapshot();
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航：区块锚点均在当前榜单页内 ---------- */}
       <SiteHeader
         navs={NAV}
-        chip={`数据快照 ${updatedAt}`}
         cta={{ href: "/eval", label: "LoopArena 机制" }}
       />
 
