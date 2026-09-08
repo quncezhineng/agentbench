@@ -4,6 +4,8 @@ import { queryOptions } from "@tanstack/react-query";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 import { getEvalRun } from "@/lib/eval-runs.functions";
 import { SUITE_LABEL, TASK_LABEL, type EvalRunRow } from "@/lib/eval-queries";
+import { RunTimeline } from "@/components/agentbench/RunTimeline";
+
 
 const runQuery = (id: string) =>
   queryOptions({
