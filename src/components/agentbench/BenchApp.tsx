@@ -8,7 +8,12 @@
  */
 
 import { useMemo, useState } from "react";
+import { RadarChart, RadarLegend, RADAR_COLORS, type RadarSeries } from "./RadarChart";
 import {
+  CLI_AGENTS,
+  CLI_DIMS,
+  cliDimAvg,
+  cliOverall,
   CONTROLLERS,
   PRODUCTS,
   REFERENCES,
@@ -45,6 +50,21 @@ export function BenchApp() {
     });
     return list;
   }, [sortKey, sortAsc]);
+
+  const cliRows = useMemo(
+    () => CLI_AGENTS.slice().sort((a, b) => cliOverall(b) - cliOverall(a)),
+    [],
+  );
+
+  const radarSeries: RadarSeries[] = useMemo(
+    () =>
+      cliRows.map((a, i) => ({
+        name: a.name,
+        values: CLI_DIMS.map((d) => cliDimAvg(a, d.key)),
+        color: RADAR_COLORS[i % RADAR_COLORS.length]!,
+      })),
+    [cliRows],
+  );
 
   const sortBy = (key: SortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc);
