@@ -18,6 +18,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as AgentsNameRouteImport } from './routes/agents/$name'
 import { Route as CompareSweBenchRouteImport } from './routes/compare/swe-bench'
+import { Route as RunsIndexRouteImport } from './routes/runs.index'
 import { Route as RunsIdRouteImport } from './routes/runs.$id'
 import { Route as ApiPublicEvalIngestRouteImport } from './routes/api/public/eval-ingest'
 
@@ -66,6 +67,11 @@ const CompareSweBenchRoute = CompareSweBenchRouteImport.update({
   path: '/compare/swe-bench',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RunsIndexRoute = RunsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RunsRoute,
+} as any)
 const RunsIdRoute = RunsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
+  '/runs/': typeof RunsIndexRoute
   '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRoutesByTo {
@@ -95,12 +102,12 @@ export interface FileRoutesByTo {
   '/board': typeof BoardRoute
   '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
-  '/runs': typeof RunsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sources': typeof SourcesRoute
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
+  '/runs': typeof RunsIndexRoute
   '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRoutesById {
@@ -115,6 +122,7 @@ export interface FileRoutesById {
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
+  '/runs/': typeof RunsIndexRoute
   '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +138,7 @@ export interface FileRouteTypes {
     | '/agents/$name'
     | '/compare/swe-bench'
     | '/runs/$id'
+    | '/runs/'
     | '/api/public/eval-ingest'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -137,12 +146,12 @@ export interface FileRouteTypes {
     | '/board'
     | '/calendar'
     | '/eval'
-    | '/runs'
     | '/sitemap.xml'
     | '/sources'
     | '/agents/$name'
     | '/compare/swe-bench'
     | '/runs/$id'
+    | '/runs'
     | '/api/public/eval-ingest'
   id:
     | '__root__'
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/agents/$name'
     | '/compare/swe-bench'
     | '/runs/$id'
+    | '/runs/'
     | '/api/public/eval-ingest'
   fileRoutesById: FileRoutesById
 }
@@ -237,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompareSweBenchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/runs/': {
+      id: '/runs/'
+      path: '/'
+      fullPath: '/runs/'
+      preLoaderRoute: typeof RunsIndexRouteImport
+      parentRoute: typeof RunsRoute
+    }
     '/runs/$id': {
       id: '/runs/$id'
       path: '/$id'
@@ -256,10 +273,12 @@ declare module '@tanstack/react-router' {
 
 interface RunsRouteChildren {
   RunsIdRoute: typeof RunsIdRoute
+  RunsIndexRoute: typeof RunsIndexRoute
 }
 
 const RunsRouteChildren: RunsRouteChildren = {
   RunsIdRoute: RunsIdRoute,
+  RunsIndexRoute: RunsIndexRoute,
 }
 
 const RunsRouteWithChildren = RunsRoute._addFileChildren(RunsRouteChildren)
