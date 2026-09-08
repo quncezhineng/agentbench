@@ -11,10 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BoardRouteImport } from './routes/board'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as EvalRouteImport } from './routes/eval'
+import { Route as RunsRouteImport } from './routes/runs'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as AgentsNameRouteImport } from './routes/agents/$name'
 import { Route as CompareSweBenchRouteImport } from './routes/compare/swe-bench'
+import { Route as RunsIdRouteImport } from './routes/runs.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,14 +30,29 @@ const BoardRoute = BoardRouteImport.update({
   path: '/board',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EvalRoute = EvalRouteImport.update({
   id: '/eval',
   path: '/eval',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RunsRoute = RunsRouteImport.update({
+  id: '/runs',
+  path: '/runs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsNameRoute = AgentsNameRouteImport.update({
@@ -46,64 +65,96 @@ const CompareSweBenchRoute = CompareSweBenchRouteImport.update({
   path: '/compare/swe-bench',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RunsIdRoute = RunsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => RunsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
+  '/runs': typeof RunsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sources': typeof SourcesRoute
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
+  '/runs/$id': typeof RunsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
+  '/runs': typeof RunsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sources': typeof SourcesRoute
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
+  '/runs/$id': typeof RunsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
+  '/runs': typeof RunsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sources': typeof SourcesRoute
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
+  '/runs/$id': typeof RunsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/board'
+    | '/calendar'
     | '/eval'
+    | '/runs'
     | '/sitemap.xml'
+    | '/sources'
     | '/agents/$name'
     | '/compare/swe-bench'
+    | '/runs/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/board'
+    | '/calendar'
     | '/eval'
+    | '/runs'
     | '/sitemap.xml'
+    | '/sources'
     | '/agents/$name'
     | '/compare/swe-bench'
+    | '/runs/$id'
   id:
     | '__root__'
     | '/'
     | '/board'
+    | '/calendar'
     | '/eval'
+    | '/runs'
     | '/sitemap.xml'
+    | '/sources'
     | '/agents/$name'
     | '/compare/swe-bench'
+    | '/runs/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BoardRoute: typeof BoardRoute
+  CalendarRoute: typeof CalendarRoute
   EvalRoute: typeof EvalRoute
+  RunsRoute: typeof RunsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SourcesRoute: typeof SourcesRoute
   AgentsNameRoute: typeof AgentsNameRoute
   CompareSweBenchRoute: typeof CompareSweBenchRoute
 }
@@ -124,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BoardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/eval': {
       id: '/eval'
       path: '/eval'
@@ -131,11 +189,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EvalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/runs': {
+      id: '/runs'
+      path: '/runs'
+      fullPath: '/runs'
+      preLoaderRoute: typeof RunsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/$name': {
@@ -152,14 +224,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompareSweBenchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/runs/$id': {
+      id: '/runs/$id'
+      path: '/$id'
+      fullPath: '/runs/$id'
+      preLoaderRoute: typeof RunsIdRouteImport
+      parentRoute: typeof RunsRoute
+    }
   }
 }
+
+interface RunsRouteChildren {
+  RunsIdRoute: typeof RunsIdRoute
+}
+
+const RunsRouteChildren: RunsRouteChildren = {
+  RunsIdRoute: RunsIdRoute,
+}
+
+const RunsRouteWithChildren = RunsRoute._addFileChildren(RunsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoardRoute: BoardRoute,
+  CalendarRoute: CalendarRoute,
   EvalRoute: EvalRoute,
+  RunsRoute: RunsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SourcesRoute: SourcesRoute,
   AgentsNameRoute: AgentsNameRoute,
   CompareSweBenchRoute: CompareSweBenchRoute,
 }
