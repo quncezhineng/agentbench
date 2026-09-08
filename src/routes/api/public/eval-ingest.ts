@@ -9,6 +9,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import type { Json } from "@/integrations/supabase/types";
 
 const metric = z.number().min(0).max(100);
 
@@ -81,7 +82,7 @@ export const Route = createFileRoute("/api/public/eval-ingest")({
           run_date: r.run_date,
           sample_size: r.sample_size,
           judge: r.judge,
-          params: r.params,
+          params: r.params as Json,
           tool_log: r.tool_log,
           rationale: r.rationale,
           note: r.note,
