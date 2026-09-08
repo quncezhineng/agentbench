@@ -61,6 +61,18 @@ function CalendarPage() {
           登记结果，审核通过后排行榜、雷达图与维度表自动刷新，不需要改数据文件。
         </p>
 
+        <div className="ab-panel mt-4 bg-white p-4">
+          <div className="text-[13px] font-bold">脚本自动回填</div>
+          <p className="mt-1 text-[12.5px] text-text-2">
+            本地跑完 CLI 实测后，脚本可以把结果直接推送到{" "}
+            <code className="metric rounded bg-surface-2 px-1">/api/public/eval-ingest</code>
+            （POST，请求头带 <code className="metric">x-eval-token</code> 私密口令，内容为{" "}
+            <code className="metric">{"{ runs: [...] }"}</code>）。推送成功后结果立即上榜，
+            对应排期会自动标记完成并顺延到下个周期，全程不用手填。
+          </p>
+        </div>
+
+
         <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {schedule.map((s) => {
             const due = s.planned_date <= today && s.status === "planned";

@@ -19,6 +19,7 @@ import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as AgentsNameRouteImport } from './routes/agents/$name'
 import { Route as CompareSweBenchRouteImport } from './routes/compare/swe-bench'
 import { Route as RunsIdRouteImport } from './routes/runs.$id'
+import { Route as ApiPublicEvalIngestRouteImport } from './routes/api/public/eval-ingest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +71,11 @@ const RunsIdRoute = RunsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => RunsRoute,
 } as any)
+const ApiPublicEvalIngestRoute = ApiPublicEvalIngestRouteImport.update({
+  id: '/api/public/eval-ingest',
+  path: '/api/public/eval-ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
+  '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
+  '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/agents/$name': typeof AgentsNameRoute
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
+  '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/agents/$name'
     | '/compare/swe-bench'
     | '/runs/$id'
+    | '/api/public/eval-ingest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/agents/$name'
     | '/compare/swe-bench'
     | '/runs/$id'
+    | '/api/public/eval-ingest'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/agents/$name'
     | '/compare/swe-bench'
     | '/runs/$id'
+    | '/api/public/eval-ingest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   SourcesRoute: typeof SourcesRoute
   AgentsNameRoute: typeof AgentsNameRoute
   CompareSweBenchRoute: typeof CompareSweBenchRoute
+  ApiPublicEvalIngestRoute: typeof ApiPublicEvalIngestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RunsIdRouteImport
       parentRoute: typeof RunsRoute
     }
+    '/api/public/eval-ingest': {
+      id: '/api/public/eval-ingest'
+      path: '/api/public/eval-ingest'
+      fullPath: '/api/public/eval-ingest'
+      preLoaderRoute: typeof ApiPublicEvalIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -254,6 +274,7 @@ const rootRouteChildren: RootRouteChildren = {
   SourcesRoute: SourcesRoute,
   AgentsNameRoute: AgentsNameRoute,
   CompareSweBenchRoute: CompareSweBenchRoute,
+  ApiPublicEvalIngestRoute: ApiPublicEvalIngestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
