@@ -53,13 +53,18 @@ const dimVal = (a: LoopAgent, key: keyof CliDims, sc: Scenario): number => {
   return (a.cli.conv[key] + a.cli.os[key]) / 2;
 };
 
-/** 按场景取综合分 */
-const overallOf = (a: LoopAgent, sc: Scenario): number => {
+/** 按场景取综合分（可传入自定义归一化权重） */
+const overallOf = (a: LoopAgent, sc: Scenario, weights?: number[]): number => {
   if (!a.cli) return -1;
-  if (sc === "conv") return cliScenarioScore(a.cli.conv);
-  if (sc === "os") return cliScenarioScore(a.cli.os);
-  return (cliScenarioScore(a.cli.conv) + cliScenarioScore(a.cli.os)) / 2;
+  const score = (d: CliDims) =>
+    weights
+      ? CLI_DIMS.reduce((sum, dim, i) => sum + d[dim.key] * (weights[i] ?? 0), 0)
+      : cliScenarioScore(d);
+  if (sc === "conv") return score(a.cli.conv);
+  if (sc === "os") return score(a.cli.os);
+  return (score(a.cli.conv) + score(a.cli.os)) / 2;
 };
+
 
 const SCENARIOS: { key: Scenario; label: string }[] = [
   { key: "avg", label: "两类场景平均" },
