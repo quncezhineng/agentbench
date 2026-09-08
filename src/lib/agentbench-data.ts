@@ -49,6 +49,8 @@ export interface LoopAgent {
   /** 补充说明（可选，展示在详情或榜单行内） */
   note?: string;
   r: LoopResult;
+  /** CLI 实测结果（内置评测套件 v0），仅已跑分的产品有 */
+  cli?: CliResult;
 }
 
 /** 论文数据快照日期（榜单右上角 chip 展示用） */
@@ -187,7 +189,106 @@ export const AGENTS: LoopAgent[] = [
 ];
 
 /* ============================================================ */
-/* 额外补充：主流编程智能体产品（占位 / 待评测）                    */
+/* CLI 实测：内置评测套件 v0（2026-09-04 真实跑分）                 */
+/* ============================================================ */
+
+/** 五个维度分数（0–100，效率为归一化后的相对分） */
+export interface CliDims {
+  success: number;
+  tool: number;
+  progress: number;
+  efficiency: number;
+  trust: number;
+}
+
+/** 两个场景：conv = 多轮对话任务，os = 研究与操作任务 */
+export interface CliResult {
+  conv: CliDims;
+  os: CliDims;
+  src: Src;
+}
+
+export const CLI_DIMS: { key: keyof CliDims; label: string; weight: number }[] = [
+  { key: "success", label: "任务成功率", weight: 0.35 },
+  { key: "tool", label: "工具调用准确率", weight: 0.2 },
+  { key: "progress", label: "进度率", weight: 0.2 },
+  { key: "efficiency", label: "效率", weight: 0.1 },
+  { key: "trust", label: "可信与安全", weight: 0.15 },
+];
+
+const cliSrc = (runner: string): Src => ({
+  label: "内置评测套件 v0（CLI 真实跑分）",
+  val: "对话 + 研究与操作两类场景 · 内部自动化口径",
+  by: `AgentBench CLI 评测 · 2026-09-04 · 被测=${runner} · 裁判=claude · trials=1 · 每场景有效样本 3`,
+});
+
+const cliAgent = (
+  name: string,
+  vendor: string,
+  note: string,
+  runner: string,
+  conv: CliDims,
+  os: CliDims,
+): LoopAgent => ({
+  name,
+  vendor,
+  kind: "product",
+  demo: false,
+  note,
+  r: empty(),
+  cli: { conv, os, src: cliSrc(runner) },
+});
+
+/** 已完成 CLI 实测的编程智能体（真实跑分，参与 CLI 榜排名） */
+export const CLI_AGENTS: LoopAgent[] = [
+  cliAgent(
+    "Hermes",
+    "Nous Research",
+    "CLI 编码代理（hermes -z 一次性提示模式）",
+    "hermes",
+    { success: 100, tool: 95, progress: 100, efficiency: 15, trust: 98.3 },
+    { success: 100, tool: 100, progress: 100, efficiency: 23.7, trust: 100 },
+  ),
+  cliAgent(
+    "Claude Code",
+    "Anthropic",
+    "CLI 编码代理（claude -p 无交互打印模式）",
+    "claude",
+    { success: 66.7, tool: 75, progress: 93.3, efficiency: 8.3, trust: 96.7 },
+    { success: 100, tool: 90, progress: 96.7, efficiency: 0, trust: 95 },
+  ),
+  cliAgent(
+    "Codex",
+    "OpenAI",
+    "CLI / IDE 编码代理（codex exec 非交互模式）",
+    "codex",
+    { success: 66.7, tool: 35, progress: 86.7, efficiency: 0, trust: 80 },
+    { success: 100, tool: 85, progress: 91.7, efficiency: 24.7, trust: 93.3 },
+  ),
+  cliAgent(
+    "OpenCode",
+    "opencode",
+    "开源 CLI 编码代理（opencode run --pure 纯运行模式）",
+    "opencode",
+    { success: 66.7, tool: 20, progress: 66.7, efficiency: 0, trust: 83.3 },
+    { success: 100, tool: 75, progress: 93.3, efficiency: 33.3, trust: 86.7 },
+  ),
+];
+
+/** 单场景加权综合分 */
+export const cliScenarioScore = (d: CliDims) =>
+  CLI_DIMS.reduce((sum, dim) => sum + d[dim.key] * dim.weight, 0);
+
+/** 两场景平均的综合分（CLI 榜排序依据） */
+export const cliOverall = (a: LoopAgent) =>
+  a.cli ? (cliScenarioScore(a.cli.conv) + cliScenarioScore(a.cli.os)) / 2 : -1;
+
+/** 某维度的两场景平均值 */
+export const cliDimAvg = (a: LoopAgent, key: keyof CliDims) =>
+  a.cli ? (a.cli.conv[key] + a.cli.os[key]) / 2 : 0;
+
+/* ============================================================ */
+/* 额外补充：尚未跑分的编程智能体产品（待评测）                     */
 /* ============================================================ */
 
 const product = (name: string, vendor: string, note?: string): LoopAgent => ({
@@ -200,14 +301,11 @@ const product = (name: string, vendor: string, note?: string): LoopAgent => ({
 });
 
 export const PRODUCTS: LoopAgent[] = [
-  product("Claude Code", "Anthropic", "CLI 编码代理"),
-  product("Codex", "OpenAI", "CLI / IDE 编码代理"),
   product("Cursor", "Anysphere", "AI 编程 IDE"),
   product("Gemini CLI", "Google", "CLI 编码代理"),
   product("Devin", "Cognition", "自主编码代理"),
   product("Windsurf", "Codeium", "AI 编程 IDE"),
   product("Aider", "开源", "终端结对编程工具"),
-  product("OpenCode", "opencode", "开源 CLI 编码代理"),
   product("Trae", "ByteDance", "AI 编程 IDE"),
 ];
 
@@ -225,7 +323,7 @@ export const REFERENCES: LoopAgent[] = AGENTS.filter((a) => a.kind === "referenc
 export function rankedAgents(): LoopAgent[] {
   const byType3 = (a: LoopAgent, b: LoopAgent) =>
     (b.r.type3Ssr ?? -1) - (a.r.type3Ssr ?? -1);
-  return [...CONTROLLERS].sort(byType3).concat(REFERENCES, PRODUCTS);
+  return [...CONTROLLERS].sort(byType3).concat(REFERENCES, CLI_AGENTS, PRODUCTS);
 }
 
 export const kindLabel: Record<LoopAgentKind, string> = {
