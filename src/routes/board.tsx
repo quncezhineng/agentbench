@@ -13,9 +13,18 @@ const NAV = [
   { href: "#references", label: "参考策略" },
   { href: "#cli", label: "CLI 实测榜" },
   { href: "#pending", label: "待评测" },
+  { href: "#submit", label: "提交结果" },
+  { href: "/sources", label: "数据来源" },
+  { href: "/runs", label: "评测结果库" },
+  { href: "/calendar", label: "评测日历" },
 ];
 
 export const Route = createFileRoute("/board")({
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(runsQuery),
+      context.queryClient.ensureQueryData(scheduleQuery),
+    ]),
   head: () => ({
     meta: [
       { title: TITLE },
