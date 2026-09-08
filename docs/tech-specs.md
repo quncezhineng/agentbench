@@ -5,7 +5,7 @@
 - **框架**：React 19 + TypeScript，TanStack Start（文件路由，路由文件 `src/routes/*.tsx`）
 - **样式**：Tailwind CSS v4（`@theme inline` + CSS 变量），自定义 `@utility` 与 `@layer components`
 - **包管理 / 运行**：Bun（`bun install` / `bun run dev` / `bun run build`）
-- **图表**：雷达图为手写 SVG（`BenchApp.tsx` 内 `Radar` 组件），无重依赖
+- **图表**：无重依赖；进度条与排名徽标为手写内联 SVG/HTML
 
 ## 设计体系约束（依据 TraeWork 设计系统）
 
@@ -19,7 +19,7 @@
 | `--background`                    | 页面底色（接近纯白 + 顶部品牌泛光）                       |
 | `--surface` / `--surface-2`       | 卡片白 / 次级灰底                                         |
 | `--text-2` / `--text-3`           | 次级 / 弱化文字                                           |
-| `--ok` `--warn` `--info` `--risk` | 状态色，用于来源、构造值、审计标签等语义场景              |
+| `--ok` `--warn` `--info` `--risk` | 状态色，用于来源、待评测、审计标签等语义场景              |
 
 设计原则：**表面保持中性白，语义色只用于内联状态与关键数值**，品牌色不做大面积铺底。
 
@@ -45,46 +45,33 @@
 
 ## 代码组织
 
-| 文件                                           | 职责                                                                     |
-| ---------------------------------------------- | ------------------------------------------------------------------------ |
-| `src/styles.css`                               | 全局设计 token、自定义工具类、组件类                                     |
-| `src/routes/index.tsx`                         | 首页：品牌导航 + 首屏 Hero，装配评测方法 / 链路 / 评分器 / 审计 / Agent 类型 / 落地路线区块与页脚 |
-| `src/routes/board.tsx`                         | 排行榜工作台页 `/board`：顶部导航（区块锚点 `#board/#radar`，右上角展示数据快照日期）+ `BenchApp` + 页脚 |
-| `src/routes/eval.tsx`                          | 自动化评测页 `/eval`：SEO head + `SiteHeader`（区块锚点 `#config/#report/#data`）+ `EvalApp` + 页脚 |
-| `src/components/agentbench/SiteShell.tsx`      | 三页共用的站点外壳：全局站点导航（排行榜 / 自动化评测）+ 页面区块锚点导航（按 pathname / hash 分别高亮）+ 页脚 |
-| `src/components/agentbench/BenchApp.tsx`       | 排行榜 + 权重自定义 + 雷达对比（数据统一来自共享榜单存储，见下方说明）   |
-| `src/components/agentbench/EvalApp.tsx`        | 评测工作台：配置面板 / 运行进度 / 分场景报告 /「并入榜单数据」/ JSON 下载·复制 / 底部渲染 `DataPipeline` |
-| `src/components/agentbench/DataPipeline.tsx`   | 数据接入区块（渲染在 `/eval` 底部 `#data`）：榜单状态总览、导入 JSON 整体替换、导出 JSON/CSV、schema 说明 |
-| `src/components/agentbench/StaticSections.tsx` | 首页静态区块：评测方法（含测量来源）/ 链路术语 / 评分器 / 审计扩充 / 四类 Agent / 落地路线 |
-| `src/lib/agentbench-data.ts`                   | 榜单数据模型、种子数据、评分函数（纯函数，可单测）                       |
-| `src/lib/leaderboard-store.ts`                 | 共享榜单存储：`localStorage`（`ab:leaderboard:v1`）读写 + 内存缓存 + 变更订阅 + `useLeaderboardSnapshot` Hook + `mergeAgents` / `saveAgents`（/eval 并入与 /board 展示共用） |
-| `src/lib/agent-eval.ts`                        | 评测纯函数层：厂商预设、`EvalTask`/`EvalSuite` 模型与 6 个内置任务（conv 3 + os 3）、样本聚合、Agent JSON 构建（浏览器与服务端共用） |
-| `src/lib/eval-server.ts`                       | 评测服务端层（TanStack Start server functions）：`getEvalServerInfo`（哪些通道已配 Key）、`runEvalSample`（真实 LLM 调用 + LLM-as-Judge 评分） |
+| 文件                                             | 职责                                                                     |
+| ------------------------------------------------ | ------------------------------------------------------------------------ |
+| `src/styles.css`                                 | 全局设计 token、自定义工具类、组件类                                     |
+| `src/routes/index.tsx`                           | 首页：品牌导航 + LoopArena 首屏 Hero，装配机制 / 三级评测 / 链路 / 指标 / 范围区块与页脚 |
+| `src/routes/board.tsx`                           | 排行榜页 `/board`：顶部导航（区块锚点 `#board/#references/#pending`，右上角展示数据快照日期）+ `BenchApp` + 页脚 |
+| `src/routes/eval.tsx`                            | LoopArena 机制说明页 `/eval`：SEO head + `SiteHeader`（区块锚点 `#roles/#tiers/#references/#reproduce`）+ `LoopArenaExplainer` + 页脚 |
+| `src/routes/agents/$name.tsx`                    | 智能体详情页 `/agents/:name`：SEO head + `AgentDetail` + 页脚            |
+| `src/components/agentbench/SiteShell.tsx`        | 三页共用的站点外壳：全局站点导航（排行榜 / LoopArena 机制）+ 页面区块锚点导航（按 pathname / hash 分别高亮）+ 页脚 |
+| `src/components/agentbench/BenchApp.tsx`         | 排行榜：主榜（Type I/II/III 可排序评分表）+ 参考策略表 + 待评测产品卡片  |
+| `src/components/agentbench/AgentDetail.tsx`      | 单智能体详情：概览 + Type I / II / III 三级结果 + 数据来源               |
+| `src/components/agentbench/StaticSections.tsx`   | 首页静态区块：机制（Controller/Worker/Reporter）/ 三级评测 / 链路 / 指标 / 范围 |
+| `src/components/agentbench/LoopArenaExplainer.tsx` | `/eval` 说明页主体：角色 / 对象 / 三级评测表 / 参考策略 / 复现入口      |
+| `src/lib/agentbench-data.ts`                     | LoopArena 数据模型、论文种子数据、参考策略、排序与格式化纯函数           |
+| `src/lib/leaderboard-store.ts`                   | 榜单快照：直接返回策展常量 `SNAPSHOT`（SSR 安全，不再读写 localStorage） |
 
-### 自动化评测：服务端函数与环境变量
+### 数据层说明（LoopArena 口径）
 
-- `runEvalSample` 为 `createServerFn({ method: "POST" })`，**只跑在服务端**（`process.env` 只在这里读取），客户端仅传配置数据。
-- API Key 优先级：本次运行临时 Key > 服务端环境变量。环境变量映射：
-
-| 通道       | 环境变量            |
-| ---------- | ------------------- |
-| OpenAI     | `OPENAI_API_KEY`    |
-| Anthropic  | `ANTHROPIC_API_KEY` |
-| Google Gemini | `GOOGLE_API_KEY`    |
-| OpenRouter | `OPEN_ROUTER_API_KEY` |
-
-- 各厂商 HTTP 适配：OpenAI 兼容 / Anthropic Messages / Gemini `generateContent`，统一返回 `{ text, promptTokens, completionTokens }`；单请求 150s 超时（AbortController）。
-- 评分流程（每样本两段调用）：① 被测 Agent 依据任务 policy/资料作答（`subject`）→ ② Judge 按结构化 Rubric 输出严格 JSON `{"success","progress","tool","trust","note"}`；`efficiency` 由代码按 `budgetTokens` 计算；解析失败或网络异常均折叠为带 `error` 的作废样本返回（不触发整页 500 的应用错误中间件）。
-- 共享榜单存储（跨页数据源，替代原“收件箱 + 跳转 /board#data 一键导入”流转）：
-  - 数据统一放 `localStorage[ab:leaderboard:v1]`，结构 `{ updatedAt: "YYYY-MM-DD", agents: Agent[] }`；无写入时回退内置种子数据，保证首访 / SSR 与刷新一致。
-  - `/eval` 评测结束「并入榜单数据」＝ `saveAgents(mergeAgents(当前榜单, 本次结果))`，按 Agent 名称同名更新、新名追加；数据接入区「导入 JSON 替换」＝ `saveAgents(整批新数据)` 整体覆盖。
-  - `useLeaderboardSnapshot` Hook 首帧渲染种子（hydration 一致），挂载后读取本地并订阅变更；`saveAgents` 写内存缓存 + `localStorage` 并向所有订阅者广播，因此 `/board` 打开即最新，无需再次手动导入。
-  - `/board` 右上角「数据快照」chip 展示存储里的 `updatedAt`，本地入库后日期实时更新。
+- `src/lib/agentbench-data.ts` 只含类型、常量与纯函数，不做网络调用：
+  - `LoopAgent`（`kind: controller | reference | product`）与 `LoopResult`（`type1Acc / type2Ssr / type2Cost / type3Ssr / type3Cost / src`）。
+  - 种子数据 `AGENTS` = 论文 Table 2 的 5 个 Controller + 2 个参考策略；`PRODUCTS` = 额外补充的主流编程智能体（`demo: true`，无分数）。
+  - 导出 `CONTROLLERS` / `REFERENCES` / `rankedAgents()` / `kindLabel` / `fmtPct` / `fmtCost`。
+- `src/lib/leaderboard-store.ts` 的 `useLeaderboardSnapshot()` 直接返回常量快照（`SNAPSHOT_DATE = "2026-08"`），首页 / `/board` / `/agents/:name` 共用同一份策展数据，`/board` 右上角「数据快照」chip 展示该日期。
 
 ## 质量约定
 
 - 纯展示数据与交互逻辑分离：改文案不碰逻辑，改逻辑不碰文案。
-- 移动端：表格滚动容器兜底，禁止页面级横向溢出（以 Playwright 双端视口校验为准）。
-- 可访问性：交互控件带 `aria-label`，对比复选框有明确语义标签。
+- 移动端：表格滚动容器兜底，禁止页面级横向溢出。
+- 可访问性：交互控件带 `aria-label`；排序表头为可点击按钮。
 - 命令：`bun run dev` 本地预览；`bun run build` 产物验证；`bunx tsc --noEmit` 类型检查；`bunx eslint <file>` 与 `bunx prettier --write <file>` 维护格式。
-- TS 严格约束：`exactOptionalPropertyTypes` / `noUncheckedIndexedAccess`；服务端响应对象必须声明显式接口并用 `?.` 访问，避免“索引签名对象可能为 undefined”一类错误。
+- TS 严格约束：`exactOptionalPropertyTypes` / `noUncheckedIndexedAccess`；可选属性不得直接赋 `undefined`（用条件展开）。

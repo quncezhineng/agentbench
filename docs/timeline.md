@@ -9,6 +9,41 @@
 | M1.1 排行榜独立页面 | ✅ 已完成（2026-09-03） | 排行榜从单页长滚动拆出为独立路由 `/board`（见下方变更记录）                      |
 | M1.2 顶部导航精修   | ✅ 已完成（2026-09-03） | 导航字体 / 排版 / 动效精修：胶囊悬停、区块激活指示、品牌区升级（见下方变更记录） |
 | M2 接入真实评测管线 | ✅ v0 已落地（2026-09-04） | `/eval` 可调真实 LLM 跑分并「并入榜单数据」；数据接入区迁移至评测页底部；当前覆盖对话 / 研究与操作两类（无沙盒），编码类留待后续（见 M2.1 / M2.2） |
+| M3 LoopArena 重构   | ✅ 已完成（2026-09-08） | 按 LoopArena 论文重建全站：榜单改为「只评编程智能体」、`/eval` 改为机制说明页、数据模型改为 Controller/Worker + Type I/II/III（见下方变更记录） |
+
+## M3 变更记录（2026-09-08）· LoopArena 机制重构
+
+### 背景与目标
+
+依据 LoopArena 论文（`docs/eval/2608.28281v1.pdf`）与两篇教学材料（X 帖子、LoopArena 教學），把站点从「六维 LLM-as-Judge 自动评测」整体重构为「编程智能体 LoopArena 评测与排行」：
+
+1. **采用 LoopArena 评测机制**：Controller（被评测模型，只决策）与 Worker（固定编码 Agent，只动手）分开测，隔离出控制能力。
+2. **排行榜只对主流编程智能体排序打分**：主榜 = 论文 Table 2 真实跑过的 5 个模型，额外补充 Claude Code / Codex / Cursor 等主流产品作为「待评测」占位。
+3. **`/eval` 改为 LoopArena 说明页**：保留路由，移除旧 LLM-as-Judge 跑分与数据导入/导出功能，改为介绍机制与复现入口。
+
+### 主要改动
+
+1. **数据模型（`src/lib/agentbench-data.ts` 重写）**
+   - `LoopAgent`（`kind: controller | reference | product`）与 `LoopResult`（`type1Acc / type2Ssr / type2Cost / type3Ssr / type3Cost / src`）。
+   - 种子 `AGENTS` = 论文 Table 2 的 5 个 Controller（GPT-5.5 / Claude Opus 4.8 / Qwen3.7-Plus / DeepSeek-V4-Flash-0731 / GLM 5.2）+ 2 个参考策略（No control / Fixed control）；`PRODUCTS` = 9 个待评测产品。
+   - 导出 `CONTROLLERS` / `REFERENCES` / `rankedAgents()` / `kindLabel` / `fmtPct` / `fmtCost`。
+2. **榜单存储（`src/lib/leaderboard-store.ts` 重写）**：移除 localStorage 读写，改为直接返回策展常量 `SNAPSHOT`（`SNAPSHOT_DATE = "2026-08"`，SSR 安全）。
+3. **排行榜（`BenchApp.tsx` 重写）**：主榜按 Type III SSR 降序，支持按名称 / Type I / Type II / Type III 排序；参考策略独立表格；待评测产品卡片网格。
+4. **详情页（`AgentDetail.tsx` 重写）**：三级结果卡片（Type I 合同准确率 / Type II / Type III SSR + 成本）；参考策略不显示 Type I；待评测产品显示空态。
+5. **首页方法区块（`StaticSections.tsx` 重写）**：导出 `Mechanism / Tiers / Pipeline / Metrics / Scope`，覆盖三角色、两对象、三级评测、双层循环、指标与参考策略、评测范围。
+6. **`/eval` 说明页（`LoopArenaExplainer.tsx` 新增 + `eval.tsx` 重写）**：角色 / 对象 / 三级评测表（论文真值）/ 参考策略 / 复现入口。
+7. **路由与站点外壳（`index.tsx` / `board.tsx` / `agents/$name.tsx` / `SiteShell.tsx`）**：首页首屏与 meta、榜单导航与 CTA、详情页 meta 全部更新为 LoopArena 口径；`/eval` 导航文案改为「LoopArena 机制」。
+8. **删除旧 LLM-as-Judge 代码**：`src/lib/agent-eval.ts`、`src/lib/eval-server.ts`、`src/components/agentbench/EvalApp.tsx`、`src/components/agentbench/DataPipeline.tsx`、`scripts/run-agent-eval.ts`。
+
+### 验证结果
+
+- `bunx tsc --noEmit`：0 错误；`bun run build`：通过（nitro 产物含 `board / eval / agents` 页面，route 树自动生成）。
+
+### 反思与改进空间
+
+- **数据口径**：榜单分数来自论文公开发布快照，仅代表论文口径与当时复现环境；后续若需真实复现，需在官方 harness 上跑 Type II / Type III 再更新种子。
+- **待评测产品**：目前 9 个主流产品均为占位；接入真实 LoopArena 分数后并入主榜即可。
+- **内容维护**：机制文案集中在 `StaticSections.tsx` 与 `LoopArenaExplainer.tsx`，后续如做 i18n 可先抽为文案模块。
 
 ## M1 变更记录（2026-09-03）
 

@@ -3,15 +3,16 @@ import { BenchApp } from "@/components/agentbench/BenchApp";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 import { useLeaderboardSnapshot } from "@/lib/leaderboard-store";
 
-const TITLE = "AgentBench 智衡 · AI Agent 排行榜";
+const TITLE = "AgentBench 智衡 · 编程智能体排行榜";
 const DESC =
-  "AI Agent 排行榜工作台：编码 / 对话 / 研究与操作三类场景差异化加权，六维独立打分；支持权重自定义、表头排序与勾选雷达对比。数据来自「自动化评测」页的评测结果或导入的 JSON。";
+  "编程智能体 LoopArena 排行榜：只对目前主流的编程智能体排序打分。主榜按 Type III 严格成功率（SSR）排名，辅以 Type I 合同准确率、Type II 任务切片 SSR 与估算推理成本（$/run）；数据来自 LoopArena 论文 Table 2。";
+const BASE_URL = "https://getagentbench.lovable.app";
 
-// 排行榜工作台页面导航（页内锚点，指向 BenchApp 渲染的两个区块；
-// 「排行榜」站点级入口由 SiteShell 全局导航提供）
+// 排行榜页面导航（页内锚点，指向 BenchApp 渲染的三个区块）
 const NAV = [
-  { href: "#board", label: "榜单" },
-  { href: "#radar", label: "多维对比" },
+  { href: "#board", label: "主榜" },
+  { href: "#references", label: "参考策略" },
+  { href: "#pending", label: "待评测" },
 ];
 
 export const Route = createFileRoute("/board")({
@@ -22,17 +23,17 @@ export const Route = createFileRoute("/board")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://getagentbench.lovable.app/board" },
+      { property: "og:url", content: `${BASE_URL}/board` },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://getagentbench.lovable.app/board" }],
+    links: [{ rel: "canonical", href: `${BASE_URL}/board` }],
   }),
 
   component: Board,
 });
 
 function Board() {
-  // 右上角「数据快照」chip 展示当前生效数据的快照日期（本地入库后实时更新）
+  // 右上角「数据快照」chip 展示当前生效数据的快照日期
   const { updatedAt } = useLeaderboardSnapshot();
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -40,10 +41,10 @@ function Board() {
       <SiteHeader
         navs={NAV}
         chip={`数据快照 ${updatedAt}`}
-        cta={{ href: "/eval", label: "去自动化评测" }}
+        cta={{ href: "/eval", label: "LoopArena 机制" }}
       />
 
-      {/* ---------- 榜单工作台：排行榜 / 多维对比（数据接入已移入自动化评测页） ---------- */}
+      {/* ---------- 榜单工作台：主榜 / 参考策略 / 待评测产品 ---------- */}
       <main>
         <BenchApp />
       </main>

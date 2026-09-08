@@ -2,13 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AgentDetail } from "@/components/agentbench/AgentDetail";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
-const TITLE = "智能体详情 · AgentBench 智衡";
+const TITLE = "编程智能体详情 · AgentBench 智衡";
+const DESC =
+  "查看单个编程智能体的 LoopArena 三级评测结果：Type I 合同准确率、Type II / Type III 严格成功率（SSR）与估算推理成本，以及数据来源。";
 
 export const Route = createFileRoute("/agents/$name")({
   head: () => ({
     meta: [
       { title: TITLE },
-      { name: "description", content: "查看单个 AI 智能体的六维评测结果、分数构成、雷达图与数据来源。" },
+      { name: "description", content: DESC },
       { property: "og:type", content: "website" },
     ],
   }),

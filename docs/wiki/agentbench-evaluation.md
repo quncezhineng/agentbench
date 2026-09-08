@@ -1,5 +1,7 @@
 # AgentBench 智衡 · AI Agent 评估机制 Wiki
 
+> ⚠️ **已过期（历史存档）**：本文描述的是 2026-09-08 之前「六维 LLM-as-Judge 自动评测」机制。站点现已在 M3 重构为 **LoopArena 评测机制**（Controller / Worker 分开测 + Type I/II/III 三级评测），详见 `docs/overview.md`、`docs/requirements.md` 与 `docs/eval/2608.28281v1.pdf`。本文保留作为评测方法论的历史参考。
+
 > 本文是 AgentBench 智衡对"如何评估 AI Agent"的统一口径说明，覆盖评估链路、术语对齐、指标定义、计分规则、评分器分工、能力/回归评估、数据接入、效度审计与评测管线建设路线。
 >
 > 当前项目定位是"AI Agent 多维评测与排行工作台"：真实评测任务由各公开基准执行，本项目负责把结果按统一维度沉淀、计算、排序与呈现。项目本身目前没有运行 Agent 沙箱或采集 trace 的后端管线。

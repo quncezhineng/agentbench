@@ -1,17 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  AgentTypes,
-  Audit,
-  EvalPipeline,
-  Graders,
-  Methodology,
-  Roadmap,
+  Mechanism,
+  Metrics,
+  Pipeline,
+  Scope,
+  Tiers,
 } from "@/components/agentbench/StaticSections";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
-const TITLE = "AgentBench 智衡 · AI Agent 多维评测与排行";
+const TITLE = "AgentBench 智衡 · 编程智能体 LoopArena 评测与排行";
 const DESC =
-  "AI Agent 多维评测与排行：6 个维度独立打分（成功率 / 稳定性 passᵏ / 工具调用准确率 / 进度率 / 效率 / 可信与安全），按编码、对话、研究操作三类场景差异化加权，全维度可排序可对比。";
+  "编程智能体 LoopArena 评测与排行：Controller 与 Worker 分开测，用 Evidence Packet + Loop Contract 隔离控制能力；Type I / II / III 三级评测（合同选择 / 任务切片 / 完整任务）+ 严格成功率（SSR）+ 估算成本，只对目前主流的编程智能体排序打分。";
+const BASE_URL = "https://getagentbench.lovable.app";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,40 +21,26 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://getagentbench.lovable.app/" },
+      { property: "og:url", content: `${BASE_URL}/` },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://getagentbench.lovable.app/" }],
+    links: [{ rel: "canonical", href: `${BASE_URL}/` }],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Dataset",
-          name: "AgentBench 智衡 · AI Agent 多维评测数据集",
+          name: "AgentBench 智衡 · 编程智能体 LoopArena 评测数据集",
           description: DESC,
-          url: "https://getagentbench.lovable.app/board",
-          license: "https://getagentbench.lovable.app/",
+          url: `${BASE_URL}/board`,
+          license: `${BASE_URL}/`,
           creator: { "@type": "Organization", name: "AgentBench 智衡" },
           variableMeasured: [
-            "任务成功率",
-            "稳定性 passᵏ",
-            "工具调用准确率",
-            "进度率",
-            "效率",
-            "可信与安全",
-          ],
-          distribution: [
-            {
-              "@type": "DataDownload",
-              encodingFormat: "application/json",
-              contentUrl: "https://getagentbench.lovable.app/eval#data",
-            },
-            {
-              "@type": "DataDownload",
-              encodingFormat: "text/csv",
-              contentUrl: "https://getagentbench.lovable.app/eval#data",
-            },
+            "Type I 合同准确率",
+            "Type II 严格成功率（SSR）",
+            "Type III 严格成功率（SSR）",
+            "平均估算推理成本（$/run）",
           ],
         }),
       },
@@ -64,55 +50,55 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// 排行榜已独立为 /board 页面，首页导航保留首页各内容区块锚点
+// 首页导航：页内区块锚点
 const NAV = [
-  { href: "#method", label: "评测方法" },
+  { href: "#mechanism", label: "评测机制" },
+  { href: "#tiers", label: "三级评测" },
   { href: "#pipeline", label: "评测链路" },
-  { href: "#graders", label: "评分器" },
-  { href: "#audit", label: "效度审计" },
-  { href: "#agents", label: "Agent 类型" },
-  { href: "#roadmap", label: "落地路线" },
+  { href: "#metrics", label: "指标口径" },
+  { href: "#scope", label: "评测范围" },
 ];
 
 function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* ---------- 顶部导航：点击「查看排行榜」进入独立榜单页 ---------- */}
+      {/* ---------- 顶部导航：区块锚点在前，站点入口居后 ---------- */}
       <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} siteAfterNav />
 
-      {/* ---------- 首屏：工作台概览 ---------- */}
+      {/* ---------- 首屏：LoopArena 机制概览 ---------- */}
       <section className="ab-container ab-section pt-8 sm:pt-10">
         <div className="ab-panel ab-grid-bg overflow-hidden">
           <div className="grid gap-8 px-5 py-7 sm:px-8 sm:py-9 lg:grid-cols-[minmax(0,1.15fr)_400px] lg:items-start">
             {/* 左：定位说明 */}
             <div>
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="ab-chip ab-chip-brand">AI Agent 多维评测与排行</span>
-                <span className="ab-chip">结果导向 × 过程追踪</span>
+                <span className="ab-chip ab-chip-brand">编程智能体评测与排行</span>
+                <span className="ab-chip">Controller / Worker 分开测</span>
               </div>
 
               <h1 className="text-[32px] font-bold leading-[1.08] tracking-[-0.04em] sm:text-[44px] lg:text-[50px]">
-                Agent 到底行不行，
+                把「控制」和「执行」拆开，
                 <br />
-                <span className="text-brand">用数据说话</span>
+                <span className="text-brand">Agent 行不行用数据说话</span>
               </h1>
 
               <p className="mt-4 max-w-[640px] text-[15px] leading-7 text-text-2 sm:text-[16px]">
-                6 个维度独立打分，按编码、对话、研究操作三类场景差异化加权。
+                LoopArena 机制：<b className="text-foreground">Controller 只决策、Worker 只动手</b>
+                ，固定 Worker 后分数差只反映控制能力。用
                 <b className="text-foreground">
-                  成功率、稳定性 passᵏ、工具准确率、进度率、效率、可信与安全
+                  严格成功率（SSR）+ 估算推理成本 + Type I / II / III 三级评测
                 </b>
-                ——全维度可排序、可对比、可审计。
+                ，只对目前主流的编程智能体排序打分。
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
                 <a href="/board" className="ab-button ab-button-primary">
-                  查看实时排行榜
+                  查看排行榜
                 </a>
                 <a href="/eval" className="ab-button ab-button-secondary">
-                  自动化评测
+                  LoopArena 机制
                 </a>
-                <a href="#method" className="ab-button ab-button-ghost">
+                <a href="#mechanism" className="ab-button ab-button-ghost">
                   评测方法论
                 </a>
               </div>
@@ -120,9 +106,9 @@ function Index() {
               {/* 底部三个价值点 */}
               <div className="mt-8 grid gap-3 border-t border-border/80 pt-6 sm:grid-cols-3">
                 {[
-                  { k: "6", t: "核心维度", d: "独立打分，不靠单指标定胜负" },
-                  { k: "3", t: "场景权重组", d: "编码 / 对话 / 研究与操作" },
-                  { k: "JSON", t: "真实数据可接入", d: "导入即替换，无需改代码" },
+                  { k: "3", t: "评测档位", d: "Type I / II / III，成本递减逼近同一结论" },
+                  { k: "5", t: "已评测模型", d: "论文 Table 2 真实结果，参与排名" },
+                  { k: "9", t: "待评测产品", d: "Claude Code / Codex / Cursor 等，待接入" },
                 ].map((it) => (
                   <div
                     key={it.t}
@@ -136,7 +122,7 @@ function Index() {
               </div>
             </div>
 
-            {/* 右：评测构成卡片 */}
+            {/* 右：主排序指标与数据来源 */}
             <aside className="flex flex-col gap-4">
               <div
                 className="rounded-[20px] border border-border p-5"
@@ -144,42 +130,37 @@ function Index() {
               >
                 <div className="flex items-center justify-between">
                   <div className="text-[12px] font-bold uppercase tracking-[0.08em] text-text-3">
-                    总分构成
+                    主排序指标
                   </div>
-                  <span className="ab-chip ab-chip-brand">按场景加权</span>
+                  <span className="ab-chip ab-chip-brand">Type III</span>
                 </div>
 
-                {/* 模拟总分拆解 */}
-                <div className="mt-5 flex items-end gap-2">
-                  <div className="flex-1">
-                    <div className="flex items-end justify-between">
-                      <span className="text-[13px] font-semibold">编码智能体 · 当前场景</span>
-                    </div>
-                    <div className="metric mt-1 text-[13px] font-bold text-brand">
-                      成功率 35% · 工具 25% · pass³ 20%
-                    </div>
+                <div className="mt-5">
+                  <div className="text-[13px] font-semibold">完整任务 · 严格成功率（SSR）</div>
+                  <div className="metric mt-1 text-[13px] font-bold text-brand">
+                    从零开始，把完整编码任务「真正做完」
                   </div>
                 </div>
 
-                {/* 维度权重可视化 */}
+                {/* 主榜 Top 3 概览 */}
                 <div className="mt-4 space-y-2.5">
                   {[
-                    ["任务成功率", 35, "var(--brand)"],
-                    ["工具调用准确率", 25, "var(--info)"],
-                    ["稳定性 passᵏ", 20, "var(--brand-2)"],
-                    ["进度率 / 效率 / 可信", 20, "var(--ok)"],
-                  ].map(([label, w, color]) => (
-                    <div key={label as string}>
-                      <div className="mb-1 flex items-center justify-between text-[11.5px]">
+                    ["GPT-5.5", "24.69%"],
+                    ["Qwen3.7-Plus", "23.46%"],
+                    ["Claude Opus 4.8", "20.99%"],
+                  ].map(([label, v], i) => (
+                    <div key={label} className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-[12.5px]">
+                        <span
+                          className={`metric inline-flex h-5 w-5 items-center justify-center rounded text-[11px] font-bold ${
+                            i === 0 ? "bg-brand-soft text-brand" : "bg-white/70 text-text-3"
+                          }`}
+                        >
+                          {i + 1}
+                        </span>
                         <span className="font-medium text-text-2">{label}</span>
-                        <span className="metric font-bold text-text-3">{w}%</span>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-white/70">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${w}%`, background: color as string }}
-                        />
-                      </div>
+                      </span>
+                      <span className="metric text-[13px] font-bold text-foreground">{v}</span>
                     </div>
                   ))}
                 </div>
@@ -187,31 +168,31 @@ function Index() {
 
               <div className="rounded-[20px] border border-border bg-white/85 p-5 shadow-[var(--metric-shadow)]">
                 <div className="text-[12px] font-bold uppercase tracking-[0.08em] text-text-3">
-                  数据可信度
+                  数据来源
                 </div>
                 <div className="mt-3 flex items-center justify-between">
-                  <span className="text-[13px] font-semibold">公开来源覆盖</span>
+                  <span className="text-[13px] font-semibold">LoopArena 论文</span>
                   <span className="metric rounded-lg bg-ok-soft px-2 py-0.5 text-[12px] font-bold text-ok">
-                    5 / 8 有标注来源
+                    Table 2
                   </span>
                 </div>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between rounded-xl bg-surface-2/90 px-3.5 py-2.5">
-                    <span className="text-[12.5px] text-text-2">来源声明</span>
+                    <span className="text-[12.5px] text-text-2">被评测对象</span>
                     <span className="rounded-md bg-info-soft px-2 py-0.5 text-[11px] font-bold text-info">
-                      已强化
+                      Controller
                     </span>
                   </div>
                   <div className="flex items-center justify-between rounded-xl bg-surface-2/90 px-3.5 py-2.5">
-                    <span className="text-[12.5px] text-text-2">占位值标注</span>
-                    <span className="rounded-md bg-warn-soft px-2 py-0.5 text-[11px] font-bold text-warn">
-                      构造值标黄
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-surface-2/90 px-3.5 py-2.5">
-                    <span className="text-[12.5px] text-text-2">passᵏ 口径</span>
+                    <span className="text-[12.5px] text-text-2">Worker 固定</span>
                     <span className="rounded-md bg-chip px-2 py-0.5 text-[11px] font-bold text-text-3">
-                      pᵏ 推算，注明
+                      Qwen3.7-Plus
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl bg-surface-2/90 px-3.5 py-2.5">
+                    <span className="text-[12.5px] text-text-2">排名一致性</span>
+                    <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[11px] font-bold text-brand">
+                      Spearman ρ 0.9747
                     </span>
                   </div>
                 </div>
@@ -224,23 +205,21 @@ function Index() {
         <div className="mt-4 flex gap-3 rounded-2xl border border-warn/25 bg-warn-soft/80 px-4 py-3.5 text-[12.5px] leading-6 text-warn">
           <span className="mt-0.5 select-none text-[15px] font-bold leading-none">!</span>
           <div>
-            <b>数据口径声明</b>：已标注来源的分数来自公开发布快照，仅代表发布方口径与当时复现环境；
-            不同基准、不同日期和不同 harness 结果不能直接横向混用；稳定性
-            <code className="mx-1 rounded bg-white/70 px-1 font-semibold">passᵏ</code>
-            为由成功率推算的解释性指标，不等于独立实测。本站为第三方评测榜单，与清华大学
-            THUDM/AgentBench 基准项目无隶属关系。
+            <b>数据口径声明</b>：榜单中已标注来源的分数来自 LoopArena 论文（arXiv 2608.28281）
+            Table 2 的公开发布快照，仅代表论文口径与当时复现环境；其余主流编程智能体产品暂为
+            「待评测」占位，尚未在 LoopArena 统一口径下跑分。本站为第三方评测榜单，与论文作者
+            及各家模型/产品厂商无隶属关系。
           </div>
         </div>
       </section>
 
-      {/* ---------- 主体功能：方法 / 链路 / 评分器 / 审计 / 类型 / 路线 ---------- */}
+      {/* ---------- 主体：机制 / 三级评测 / 链路 / 指标 / 范围 ---------- */}
       <main>
-        <Methodology />
-        <EvalPipeline />
-        <Graders />
-        <Audit />
-        <AgentTypes />
-        <Roadmap />
+        <Mechanism />
+        <Tiers />
+        <Pipeline />
+        <Metrics />
+        <Scope />
       </main>
 
       {/* ---------- 页脚 ---------- */}

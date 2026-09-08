@@ -1,17 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EvalApp } from "@/components/agentbench/EvalApp";
+import { LoopArenaExplainer } from "@/components/agentbench/LoopArenaExplainer";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
-const TITLE = "AgentBench 智衡 · 自动化 AI Agent 评测";
+const TITLE = "AgentBench 智衡 · LoopArena 评测机制";
 const DESC =
-  "用真实大模型自动评测 AI Agent：选择模型通道与评测套件（对话 / 研究与操作），自动执行多次试验并按成功率 / 稳定性 passᵏ / 工具 / 进度率 / 效率 / 可信六维口径打分；结果一键并入共享榜单，或在页底数据接入区导入 / 导出 JSON。";
+  "LoopArena 评测机制说明：Controller 与 Worker 分开测，用 Evidence Packet + Loop Contract 隔离控制能力；Type I / II / III 三级评测（合同选择 / 任务切片 / 完整任务）与严格成功率（SSR）口径。";
 const BASE_URL = "https://getagentbench.lovable.app";
 
-// 自动化评测页面导航（页内锚点；排行榜 / 自动化评测 全局入口由 SiteShell 提供）
+// LoopArena 机制说明页导航（页内锚点）
 const NAV = [
-  { href: "#config", label: "评测配置" },
-  { href: "#report", label: "评测报告" },
-  { href: "#data", label: "数据接入" },
+  { href: "#roles", label: "三个角色" },
+  { href: "#tiers", label: "三级评测" },
+  { href: "#references", label: "参考策略" },
+  { href: "#reproduce", label: "复现" },
 ];
 
 export const Route = createFileRoute("/eval")({
@@ -35,11 +36,11 @@ function Eval() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航 ---------- */}
-      <SiteHeader navs={NAV} cta={{ href: "#config", label: "开始评测" }} />
+      <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} />
 
-      {/* ---------- 自动化评测工作台 ---------- */}
+      {/* ---------- LoopArena 机制说明 ---------- */}
       <main>
-        <EvalApp />
+        <LoopArenaExplainer />
       </main>
 
       {/* ---------- 页脚 ---------- */}

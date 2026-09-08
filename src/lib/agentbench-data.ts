@@ -1,474 +1,242 @@
-export type DimKey = "success" | "stability" | "tool" | "progress" | "efficiency" | "trust";
+/**
+ * AgentBench 智衡 · 编程智能体榜单数据模型（LoopArena 口径）
+ *
+ * 说明：
+ * - 本模块只定义「LoopArena 三级评测」的数据结构、论文种子数据与排序/展示辅助函数；
+ * - 榜单只面向「编程智能体」：被评测对象是作为 Controller 的模型，Worker 固定为
+ *   Qwen3.7-Plus（论文口径），Reporter 复用 Worker 同款模型配置；
+ * - 三个评测档位：Type I（合同选择，无 Worker 执行）/ Type II（任务切片）/ Type III（完整任务）；
+ * - 种子数据来自论文 Table 2（arXiv 2608.28281），并额外补充若干主流编程智能体产品
+ *   作为「待评测」占位条目（demo = true，无 LoopArena 分数）。
+ */
 
-export type ScenarioKey = "coding" | "conv" | "os";
+/* ============================================================ */
+/* 类型与常量                                                    */
+/* ============================================================ */
 
-export interface Dim {
-  key: DimKey;
-  name: string;
-  short: string;
-  grader: "code" | "model";
-  derived?: boolean;
-  desc: string;
-}
-
-export const DIMS: Dim[] = [
-  {
-    key: "success",
-    name: "任务成功率",
-    short: "成功率",
-    grader: "code",
-    desc: 'pass@1：单次运行即达成终态目标的比例，衡量"能不能跑通"。',
-  },
-  {
-    key: "stability",
-    name: "稳定性 passᵏ",
-    short: "pass³",
-    grader: "code",
-    derived: true,
-    desc: "k=3 时连续三次全部成功的概率（passᵏ=pᵏ）。面向用户的 Agent 尤其看重这一项。",
-  },
-  {
-    key: "tool",
-    name: "工具调用准确率",
-    short: "工具",
-    grader: "code",
-    desc: "Tool / Grounding Accuracy：API 选择、参数提取、冗余与错误调用控制的综合正确率。",
-  },
-  {
-    key: "progress",
-    name: "进度率",
-    short: "进度率",
-    grader: "model",
-    desc: '多步任务中已完成子目标占比，用于区分"差一点"与"完全没动"。',
-  },
-  {
-    key: "efficiency",
-    name: "效率",
-    short: "效率",
-    grader: "code",
-    desc: "交互轮数、Token 消耗与端到端延迟的归一化得分。",
-  },
-  {
-    key: "trust",
-    name: "可信与安全",
-    short: "可信",
-    grader: "model",
-    desc: "幻觉率、领域规则合规率、偏见率的反向综合。",
-  },
-];
-
-export type Weights = Record<DimKey, number>;
-
-export interface Scenario {
-  key: ScenarioKey;
-  name: string;
-  ref: string;
-  weights: Weights;
-}
-
-export const SCENARIOS: Scenario[] = [
-  {
-    key: "coding",
-    name: "编码智能体",
-    ref: "参考基准：Terminal-Bench 2.0 / SWE-bench Verified / Expert-SWE",
-    weights: { success: 35, stability: 20, tool: 25, progress: 10, efficiency: 5, trust: 5 },
-  },
-  {
-    key: "conv",
-    name: "对话智能体",
-    ref: "参考基准：τ-bench / τ²-Bench · 模拟用户多轮交互",
-    weights: { success: 25, stability: 30, tool: 15, progress: 10, efficiency: 15, trust: 5 },
-  },
-  {
-    key: "os",
-    name: "研究与操作智能体",
-    ref: "参考基准：GAIA / WebArena / OSWorld-Verified / GDPval",
-    weights: { success: 25, stability: 20, tool: 25, progress: 20, efficiency: 5, trust: 5 },
-  },
-];
-
+/** 来源标注：某个分数的出处与口径 */
 export interface Src {
   label: string;
   val: string;
   by: string;
 }
 
-export interface ScenarioScore {
-  success: number;
-  tool: number;
-  progress: number;
-  efficiency: number;
-  trust: number;
+/**
+ * LoopArena 三级结果。
+ * - type1Acc：Type I 合同准确率（Contract Accuracy，0–100）
+ * - type2Ssr / type3Ssr：Type II / Type III 严格成功率（Strict Success Rate，0–100）
+ * - type2Cost / type3Cost：Type II / Type III 平均估算推理成本（$/run，无缓存口径）
+ * 参考策略（No control / Fixed control）没有 Type I 分数，对应字段为 null。
+ */
+export interface LoopResult {
+  type1Acc: number | null;
+  type2Ssr: number | null;
+  type2Cost: number | null;
+  type3Ssr: number | null;
+  type3Cost: number | null;
   src: Src | null;
 }
 
-export interface Agent {
+/** 条目类别：被评测模型 / 参考策略（不参与排名）/ 编程智能体产品（待评测） */
+export type LoopAgentKind = "controller" | "reference" | "product";
+
+export interface LoopAgent {
   name: string;
   vendor: string;
+  kind: LoopAgentKind;
+  /** true = 占位 / 待评测（无真实 LoopArena 分数） */
   demo: boolean;
-  /**
-   * 三类场景。
-   * 常规种子数据三场景齐全；自动化评测（/eval）允许只带已评测场景，
-   * 未提供的场景不会出现在该场景的榜单中。
-   */
-  s: Partial<Record<ScenarioKey, ScenarioScore>>;
+  /** 补充说明（可选，展示在详情或榜单行内） */
+  note?: string;
+  r: LoopResult;
 }
 
-export const AGENTS: Agent[] = [
+/** 论文数据快照日期（榜单右上角 chip 展示用） */
+export const PAPER_SRC: Src = {
+  label: "LoopArena",
+  val: "Table 2 · Type I / II / III",
+  by: "arXiv 2608.28281 · 2026-08",
+};
+
+/** 参考策略来源（不参与 Controller 排名） */
+export const REF_SRC: Src = {
+  label: "LoopArena 参考策略",
+  val: "Table 2 · No control / Fixed control",
+  by: "arXiv 2608.28281 · 2026-08",
+};
+
+const empty = (): LoopResult => ({
+  type1Acc: null,
+  type2Ssr: null,
+  type2Cost: null,
+  type3Ssr: null,
+  type3Cost: null,
+  src: null,
+});
+
+/* ============================================================ */
+/* 种子数据：论文 Table 2 的 5 个 Controller + 2 个参考策略        */
+/* ============================================================ */
+
+export const AGENTS: LoopAgent[] = [
   {
     name: "GPT-5.5",
     vendor: "OpenAI",
+    kind: "controller",
     demo: false,
-    s: {
-      coding: {
-        success: 82.7,
-        tool: 91,
-        progress: 85,
-        efficiency: 76,
-        trust: 88,
-        src: { label: "Terminal-Bench 2.0", val: "82.7%", by: "OpenAI 2026-04-23 发布表" },
-      },
-      conv: {
-        success: 84.9,
-        tool: 87,
-        progress: 82,
-        efficiency: 79,
-        trust: 86,
-        src: { label: "GDPval", val: "84.9%", by: "OpenAI 2026-04-23 发布表" },
-      },
-      os: {
-        success: 78.7,
-        tool: 89,
-        progress: 83,
-        efficiency: 74,
-        trust: 85,
-        src: { label: "OSWorld-Verified", val: "78.7%", by: "OpenAI 2026-04-23 发布表" },
-      },
+    note: "gpt-5.5-0424-global · 厂商默认思考",
+    r: {
+      type1Acc: 87.78,
+      type2Ssr: 51.85,
+      type2Cost: 5.0,
+      type3Ssr: 24.69,
+      type3Cost: 18.84,
+      src: PAPER_SRC,
     },
   },
   {
-    name: "Claude Opus 4.7",
+    name: "Claude Opus 4.8",
     vendor: "Anthropic",
+    kind: "controller",
     demo: false,
-    s: {
-      coding: {
-        success: 69.4,
-        tool: 86,
-        progress: 78,
-        efficiency: 72,
-        trust: 90,
-        src: { label: "Terminal-Bench 2.0", val: "69.4%", by: "OpenAI 2026-04-23 发布表" },
-      },
-      conv: {
-        success: 80.3,
-        tool: 85,
-        progress: 80,
-        efficiency: 81,
-        trust: 91,
-        src: { label: "GDPval", val: "80.3%", by: "OpenAI 2026-04-23 发布表" },
-      },
-      os: {
-        success: 78.0,
-        tool: 88,
-        progress: 82,
-        efficiency: 77,
-        trust: 89,
-        src: { label: "OSWorld-Verified", val: "78.0%", by: "OpenAI 2026-04-23 发布表" },
-      },
+    note: "claude-opus-4-8 · 厂商默认思考",
+    r: {
+      type1Acc: 76.67,
+      type2Ssr: 48.15,
+      type2Cost: 5.87,
+      type3Ssr: 20.99,
+      type3Cost: 16.82,
+      src: PAPER_SRC,
     },
   },
   {
-    name: "Gemini 3.1 Pro",
-    vendor: "Google",
+    name: "Qwen3.7-Plus",
+    vendor: "阿里云",
+    kind: "controller",
     demo: false,
-    s: {
-      coding: {
-        success: 68.5,
-        tool: 84,
-        progress: 76,
-        efficiency: 80,
-        trust: 84,
-        src: { label: "Terminal-Bench 2.0", val: "68.5%", by: "OpenAI 2026-04-23 发布表" },
-      },
-      conv: { success: 76.0, tool: 82, progress: 75, efficiency: 83, trust: 83, src: null },
-      os: { success: 72.0, tool: 83, progress: 77, efficiency: 81, trust: 82, src: null },
+    note: "temperature 0 · 20,480 输出 token",
+    r: {
+      type1Acc: 72.22,
+      type2Ssr: 48.15,
+      type2Cost: 4.3,
+      type3Ssr: 23.46,
+      type3Cost: 6.89,
+      src: PAPER_SRC,
     },
   },
   {
-    name: "GPT-5.4",
-    vendor: "OpenAI",
+    name: "DeepSeek-V4-Flash-0731",
+    vendor: "深度求索",
+    kind: "controller",
     demo: false,
-    s: {
-      coding: {
-        success: 68.5,
-        tool: 83,
-        progress: 74,
-        efficiency: 71,
-        trust: 85,
-        src: { label: "Expert-SWE", val: "68.5%", by: "不同基准，口径与 Terminal-Bench 不同" },
-      },
-      conv: { success: 75.0, tool: 81, progress: 74, efficiency: 73, trust: 84, src: null },
-      os: { success: 70.0, tool: 82, progress: 73, efficiency: 70, trust: 83, src: null },
+    note: "temperature 0 · 20,480 输出 token",
+    r: {
+      type1Acc: 77.78,
+      type2Ssr: 45.68,
+      type2Cost: 2.1,
+      type3Ssr: 19.75,
+      type3Cost: 10.24,
+      src: PAPER_SRC,
     },
   },
   {
-    name: "Deep Agents CLI",
-    vendor: "LangChain",
+    name: "GLM 5.2",
+    vendor: "智谱",
+    kind: "controller",
     demo: false,
-    s: {
-      coding: {
-        success: 66.5,
-        tool: 88,
-        progress: 80,
-        efficiency: 85,
-        trust: 82,
-        src: {
-          label: "Terminal-Bench 2.0",
-          val: "66.5%",
-          by: "Harness 级编排优化：52.8 → 66.5（未换模型）",
-        },
-      },
-      conv: { success: 70.0, tool: 80, progress: 72, efficiency: 86, trust: 80, src: null },
-      os: { success: 64.0, tool: 79, progress: 71, efficiency: 84, trust: 79, src: null },
+    note: "temperature 0 · 20,480 输出 token",
+    r: {
+      type1Acc: 74.44,
+      type2Ssr: 37.04,
+      type2Cost: 1.63,
+      type3Ssr: 16.05,
+      type3Cost: 4.86,
+      src: PAPER_SRC,
     },
   },
   {
-    name: "Claude Code",
-    vendor: "Anthropic",
+    name: "Fixed control",
+    vendor: "基准策略",
+    kind: "reference",
     demo: false,
-    s: {
-      conv: {
-        success: 66.7,
-        tool: 75,
-        progress: 93.3,
-        efficiency: 8.3,
-        trust: 96.7,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
-          val: "success 66.7% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=claude（claude -p 无交互打印模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-      os: {
-        success: 100,
-        tool: 90,
-        progress: 96.7,
-        efficiency: 0,
-        trust: 95,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
-          val: "success 100% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=claude（claude -p 无交互打印模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
+    note: "不读取 Evidence Packet，重复重申任务目标",
+    r: {
+      type1Acc: null,
+      type2Ssr: 46.91,
+      type2Cost: 1.08,
+      type3Ssr: 18.52,
+      type3Cost: 5.58,
+      src: REF_SRC,
     },
   },
   {
-    name: "Codex",
-    vendor: "OpenAI",
+    name: "No control",
+    vendor: "基准策略",
+    kind: "reference",
     demo: false,
-    s: {
-      conv: {
-        success: 66.7,
-        tool: 35,
-        progress: 86.7,
-        efficiency: 0,
-        trust: 80,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
-          val: "success 66.7% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=codex（codex exec 非交互模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-      os: {
-        success: 100,
-        tool: 85,
-        progress: 91.7,
-        efficiency: 24.7,
-        trust: 93.3,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
-          val: "success 100% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=codex（codex exec 非交互模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-    },
-  },
-  {
-    name: "OpenCode",
-    vendor: "opencode",
-    demo: false,
-    s: {
-      conv: {
-        success: 66.7,
-        tool: 20,
-        progress: 66.7,
-        efficiency: 0,
-        trust: 83.3,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
-          val: "success 66.7% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=opencode（opencode run --pure 纯运行模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-      os: {
-        success: 100,
-        tool: 75,
-        progress: 93.3,
-        efficiency: 33.3,
-        trust: 86.7,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
-          val: "success 100% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=opencode（opencode run --pure 纯运行模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-    },
-  },
-  {
-    name: "Hermes",
-    vendor: "Nous Research",
-    demo: false,
-    s: {
-      conv: {
-        success: 100,
-        tool: 95,
-        progress: 100,
-        efficiency: 15,
-        trust: 98.3,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
-          val: "success 100% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=hermes（hermes -z 一次性提示模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-      os: {
-        success: 100,
-        tool: 100,
-        progress: 100,
-        efficiency: 23.7,
-        trust: 100,
-        src: {
-          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
-          val: "success 100% · 内部自动化口径",
-          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=hermes（hermes -z 一次性提示模式）· 裁判=claude · trials=1 · 有效样本 3",
-        },
-      },
-    },
-  },
-  {
-    name: "Trae",
-    vendor: "ByteDance",
-    demo: true,
-    s: {
-      conv: { success: 0, tool: 0, progress: 0, efficiency: 0, trust: 0, src: null },
-      os: { success: 0, tool: 0, progress: 0, efficiency: 0, trust: 0, src: null },
+    note: "无 Controller，Worker 直接自主执行",
+    r: {
+      type1Acc: null,
+      type2Ssr: 39.51,
+      type2Cost: 1.04,
+      type3Ssr: 18.52,
+      type3Cost: 2.01,
+      src: REF_SRC,
     },
   },
 ];
 
-export const K = 3;
-export const passK = (p: number) => Math.pow(p / 100, K) * 100;
+/* ============================================================ */
+/* 额外补充：主流编程智能体产品（占位 / 待评测）                    */
+/* ============================================================ */
 
-export type Scores = Record<DimKey, number>;
+const product = (name: string, vendor: string, note?: string): LoopAgent => ({
+  name,
+  vendor,
+  kind: "product",
+  demo: true,
+  ...(note !== undefined ? { note } : {}),
+  r: empty(),
+});
 
-const ZERO_SCORES: Scores = { success: 0, stability: 0, tool: 0, progress: 0, efficiency: 0, trust: 0 };
+export const PRODUCTS: LoopAgent[] = [
+  product("Claude Code", "Anthropic", "CLI 编码代理"),
+  product("Codex", "OpenAI", "CLI / IDE 编码代理"),
+  product("Cursor", "Anysphere", "AI 编程 IDE"),
+  product("Gemini CLI", "Google", "CLI 编码代理"),
+  product("Devin", "Cognition", "自主编码代理"),
+  product("Windsurf", "Codeium", "AI 编程 IDE"),
+  product("Aider", "开源", "终端结对编程工具"),
+  product("OpenCode", "opencode", "开源 CLI 编码代理"),
+  product("Trae", "ByteDance", "AI 编程 IDE"),
+];
 
-export function scoresOf(agent: Agent, scenarioKey: ScenarioKey): Scores {
-  const raw = agent.s[scenarioKey];
-  if (!raw) return ZERO_SCORES;
-  return {
-    success: raw.success,
-    stability: passK(raw.success),
-    tool: raw.tool,
-    progress: raw.progress,
-    efficiency: raw.efficiency,
-    trust: raw.trust,
-  };
+/* ============================================================ */
+/* 派生与排序 / 展示辅助                                          */
+/* ============================================================ */
+
+/** 被评测的 Controller 模型（参与排名） */
+export const CONTROLLERS: LoopAgent[] = AGENTS.filter((a) => a.kind === "controller");
+
+/** 参考策略（不参与 Controller 排名，仅作对照） */
+export const REFERENCES: LoopAgent[] = AGENTS.filter((a) => a.kind === "reference");
+
+/** 完整榜单顺序：Controller（按 Type III SSR 降序）→ 参考策略 → 待评测产品 */
+export function rankedAgents(): LoopAgent[] {
+  const byType3 = (a: LoopAgent, b: LoopAgent) =>
+    (b.r.type3Ssr ?? -1) - (a.r.type3Ssr ?? -1);
+  return [...CONTROLLERS].sort(byType3).concat(REFERENCES, PRODUCTS);
 }
 
-/** 该 Agent 是否具备某个场景的评测数据 */
-export const hasScenario = (agent: Agent, scenarioKey: ScenarioKey): boolean =>
-  Boolean(agent.s[scenarioKey]);
+export const kindLabel: Record<LoopAgentKind, string> = {
+  controller: "被评测模型",
+  reference: "参考策略",
+  product: "待评测产品",
+};
 
-export function totalOf(scores: Scores, weights: Weights) {
-  return DIMS.reduce((sum, d) => sum + (scores[d.key] * weights[d.key]) / 100, 0);
-}
+/** 数值格式化：0–100 百分比（null → 占位符） */
+export const fmtPct = (x: number | null, digits = 2) =>
+  x == null ? "—" : `${x.toFixed(digits)}%`;
 
-export function normalizeWeights(w: Weights): Weights {
-  const sum = DIMS.reduce((a, d) => a + (w[d.key] || 0), 0);
-  const out = {} as Weights;
-  DIMS.forEach((d) => {
-    out[d.key] = sum ? ((w[d.key] || 0) * 100) / sum : 100 / DIMS.length;
-  });
-  return out;
-}
-
-export const AUDIT = [
-  {
-    bench: "SWE-bench Verified",
-    type: "编码",
-    ver: "Verified（人工清洗版）",
-    st: "risk",
-    stText: "已退化",
-    note: "OpenAI 2026-02-23 专文指出其不再能衡量前沿编码能力。人工清洗是一次性的，饱和与污染是持续的。",
-    action: "不再作为上线决策的唯一依据",
-  },
-  {
-    bench: "Terminal-Bench 2.0",
-    type: "编码",
-    ver: "2.0 · 快照 2026-04-23",
-    st: "none",
-    stText: "未见公开审计",
-    note: "发布方口径的 dated snapshot，harness 影响显著——LangChain 仅靠 Harness 级优化就从 52.8 提到 66.5（未换模型）。",
-    action: "引用时标注 harness 版本",
-  },
-  {
-    bench: "Expert-SWE",
-    type: "编码",
-    ver: "快照 2026-04-23",
-    st: "none",
-    stText: "未见公开审计",
-    note: "长程软件工程，中位人类完成时间约 20 小时。口径与 Terminal-Bench 不同。",
-    action: "勿与 Terminal-Bench 分数并列横评",
-  },
-  {
-    bench: "OSWorld-Verified",
-    type: "操作",
-    ver: "Verified · 快照 2026-04-23",
-    st: "none",
-    stText: "未见公开审计",
-    note: "真实桌面 OS 环境，跨应用工作流，分数受环境配置影响大。",
-    action: "固定环境镜像后复现",
-  },
-  {
-    bench: "GDPval",
-    type: "知识工作",
-    ver: "快照 2026-04-23",
-    st: "none",
-    stText: "未见公开审计",
-    note: "跨 44 个职业领域，任务偏主观，评分为模型评审口径。",
-    action: "需人工抽样校准后再用",
-  },
-  {
-    bench: "τ-bench / τ²-Bench",
-    type: "对话",
-    ver: "2024 / τ² 2025（arXiv 2506.07982）",
-    st: "ok",
-    stText: "方法学公开",
-    note: "τ² 引入双控制（Dec-POMDP），失败可归因为推理错误 / 沟通协调错误两类。",
-    action: "对话类主基准",
-  },
-] as const;
-
-export const DEFECTS = [
-  {
-    t: "判分过严",
-    d: "隐藏测试要求的实现方式过于具体，功能正确的提交被判失败",
-    e: "低估",
-    tone: "warn",
-  },
-  { t: "提示词欠定义", d: "任务描述没说清隐藏测试实际强制的要求", e: "低估", tone: "warn" },
-  { t: "提示词误导", d: "任务描述把解题方向指偏了", e: "低估", tone: "warn" },
-  { t: "测试覆盖不足", d: "测试没有真正检查所要求的功能", e: "高估", tone: "risk" },
-] as const;
+/** 成本格式化：$/run（null → 占位符） */
+export const fmtCost = (x: number | null) => (x == null ? "—" : `$${x.toFixed(2)}`);

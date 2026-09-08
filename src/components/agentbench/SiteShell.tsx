@@ -1,8 +1,8 @@
 /**
- * 站点外壳：首页（/）、排行榜页（/board）与自动化评测页（/eval）共用的顶部导航与页脚。
+ * 站点外壳：首页（/）、排行榜页（/board）与 LoopArena 机制说明页（/eval）共用的顶部导航与页脚。
  *
  * 导航结构：
- * - 站点主导航：排行榜 /board · 自动化评测 /eval —— 依据当前路径高亮；
+ * - 站点主导航：排行榜 /board · LoopArena 机制 /eval —— 依据当前路径高亮；
  * - 区块导航（props.navs）：当前页面内的内容区块锚点 —— 依据 URL hash 高亮；
  * - 次序：默认站点入口在前（/board、/eval）；首页传入 siteAfterNav，改为区块锚点在前、站点入口居后；
  * - 右上角：数据快照 chip + 主 CTA（props 参数化）。
@@ -32,7 +32,7 @@ interface SiteHeaderProps {
 /** 全站统一的工作台入口：不同页面间切换 */
 const SITES: NavItem[] = [
   { href: "/board", label: "排行榜" },
-  { href: "/eval", label: "自动化评测" },
+  { href: "/eval", label: "LoopArena 机制" },
 ];
 
 export function SiteHeader({ navs, chip, cta, siteAfterNav = false }: SiteHeaderProps) {
@@ -144,7 +144,9 @@ export function SiteFooter() {
   return (
     <footer className="mt-12 border-t border-border py-8 text-[12px] text-text-3">
       <div className="ab-container flex flex-wrap gap-x-6 gap-y-2">
-        <span className="font-semibold text-text-2">AgentBench 智衡 · AI Agent 多维评测与排行</span>
+        <span className="font-semibold text-text-2">
+          AgentBench 智衡 · 编程智能体 LoopArena 评测与排行
+        </span>
         <span className="sm:ml-auto">© 2026 AgentBench. All rights reserved.</span>
       </div>
     </footer>
