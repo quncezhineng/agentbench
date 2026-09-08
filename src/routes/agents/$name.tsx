@@ -2,18 +2,24 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AgentDetail } from "@/components/agentbench/AgentDetail";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
-const TITLE = "编程智能体详情 · AgentBench 智衡";
-const DESC =
-  "查看单个编程智能体的 LoopArena 三级评测结果：Type I 合同准确率、Type II / Type III 严格成功率（SSR）与估算推理成本，以及数据来源。";
-
 export const Route = createFileRoute("/agents/$name")({
-  head: () => ({
-    meta: [
-      { title: TITLE },
-      { name: "description", content: DESC },
-      { property: "og:type", content: "website" },
-    ],
-  }),
+  head: ({ params }) => {
+    const name = params.name;
+    const title = `${name} 评测详情 · AgentBench 智衡`;
+    const desc = `查看 ${name} 的 LoopArena 三级评测结果：Type I 合同准确率、Type II / Type III 严格成功率（SSR）与估算推理成本，以及数据来源。`;
+    const url = `https://getagentbench.lovable.app/agents/${name}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:type", content: "website" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:url", content: url },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
 
   component: AgentPage,
 });

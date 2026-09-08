@@ -61,7 +61,7 @@ export function BenchApp() {
         <div className="ab-section-head">
           <div>
             <div className="ab-chip ab-chip-brand mb-3">LoopArena Leaderboard</div>
-            <h2 className="ab-section-title">编程智能体排行榜</h2>
+            <h1 className="ab-section-title">编程智能体排行榜</h1>
             <p className="ab-section-desc mt-2">
               只对目前主流的编程智能体排序打分。主榜按{" "}
               <b className="text-foreground">Type III 严格成功率（SSR）</b>
