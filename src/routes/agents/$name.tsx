@@ -21,6 +21,7 @@ export const Route = createFileRoute("/agents/$name")({
     };
   },
 
+  loader: ({ context }) => context.queryClient.ensureQueryData(runsQuery),
   component: AgentPage,
 });
 
