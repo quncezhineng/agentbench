@@ -106,7 +106,12 @@ export interface Agent {
   name: string;
   vendor: string;
   demo: boolean;
-  s: Record<ScenarioKey, ScenarioScore>;
+  /**
+   * 三类场景。
+   * 常规种子数据三场景齐全；自动化评测（/eval）允许只带已评测场景，
+   * 未提供的场景不会出现在该场景的榜单中。
+   */
+  s: Partial<Record<ScenarioKey, ScenarioScore>>;
 }
 
 export const AGENTS: Agent[] = [
@@ -227,6 +232,139 @@ export const AGENTS: Agent[] = [
       os: { success: 64.0, tool: 79, progress: 71, efficiency: 84, trust: 79, src: null },
     },
   },
+  {
+    name: "Claude Code",
+    vendor: "Anthropic",
+    demo: false,
+    s: {
+      conv: {
+        success: 66.7,
+        tool: 75,
+        progress: 93.3,
+        efficiency: 8.3,
+        trust: 96.7,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
+          val: "success 66.7% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=claude（claude -p 无交互打印模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+      os: {
+        success: 100,
+        tool: 90,
+        progress: 96.7,
+        efficiency: 0,
+        trust: 95,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
+          val: "success 100% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=claude（claude -p 无交互打印模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+    },
+  },
+  {
+    name: "Codex",
+    vendor: "OpenAI",
+    demo: false,
+    s: {
+      conv: {
+        success: 66.7,
+        tool: 35,
+        progress: 86.7,
+        efficiency: 0,
+        trust: 80,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
+          val: "success 66.7% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=codex（codex exec 非交互模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+      os: {
+        success: 100,
+        tool: 85,
+        progress: 91.7,
+        efficiency: 24.7,
+        trust: 93.3,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
+          val: "success 100% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=codex（codex exec 非交互模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+    },
+  },
+  {
+    name: "OpenCode",
+    vendor: "opencode",
+    demo: false,
+    s: {
+      conv: {
+        success: 66.7,
+        tool: 20,
+        progress: 66.7,
+        efficiency: 0,
+        trust: 83.3,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
+          val: "success 66.7% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=opencode（opencode run --pure 纯运行模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+      os: {
+        success: 100,
+        tool: 75,
+        progress: 93.3,
+        efficiency: 33.3,
+        trust: 86.7,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
+          val: "success 100% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=opencode（opencode run --pure 纯运行模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+    },
+  },
+  {
+    name: "Hermes",
+    vendor: "Nous Research",
+    demo: false,
+    s: {
+      conv: {
+        success: 100,
+        tool: 95,
+        progress: 100,
+        efficiency: 15,
+        trust: 98.3,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 对话）",
+          val: "success 100% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=hermes（hermes -z 一次性提示模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+      os: {
+        success: 100,
+        tool: 100,
+        progress: 100,
+        efficiency: 23.7,
+        trust: 100,
+        src: {
+          label: "内置评测套件 v0（CLI 真实跑分 · 研究与操作）",
+          val: "success 100% · 内部自动化口径",
+          by: "AgentBench CLI 评测 · 2026-09-04 · 被测=hermes（hermes -z 一次性提示模式）· 裁判=claude · trials=1 · 有效样本 3",
+        },
+      },
+    },
+  },
+  {
+    name: "Trae",
+    vendor: "ByteDance",
+    demo: true,
+    s: {
+      conv: { success: 0, tool: 0, progress: 0, efficiency: 0, trust: 0, src: null },
+      os: { success: 0, tool: 0, progress: 0, efficiency: 0, trust: 0, src: null },
+    },
+  },
 ];
 
 export const K = 3;
@@ -234,8 +372,11 @@ export const passK = (p: number) => Math.pow(p / 100, K) * 100;
 
 export type Scores = Record<DimKey, number>;
 
+const ZERO_SCORES: Scores = { success: 0, stability: 0, tool: 0, progress: 0, efficiency: 0, trust: 0 };
+
 export function scoresOf(agent: Agent, scenarioKey: ScenarioKey): Scores {
   const raw = agent.s[scenarioKey];
+  if (!raw) return ZERO_SCORES;
   return {
     success: raw.success,
     stability: passK(raw.success),
@@ -245,6 +386,10 @@ export function scoresOf(agent: Agent, scenarioKey: ScenarioKey): Scores {
     trust: raw.trust,
   };
 }
+
+/** 该 Agent 是否具备某个场景的评测数据 */
+export const hasScenario = (agent: Agent, scenarioKey: ScenarioKey): boolean =>
+  Boolean(agent.s[scenarioKey]);
 
 export function totalOf(scores: Scores, weights: Weights) {
   return DIMS.reduce((sum, d) => sum + (scores[d.key] * weights[d.key]) / 100, 0);

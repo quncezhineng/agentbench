@@ -8,7 +8,7 @@
 | M1 设计系统化重构   | ✅ 已完成（2026-09-03） | 依据 TraeWork 设计系统重构全站视觉与结构（见下方变更记录）                       |
 | M1.1 排行榜独立页面 | ✅ 已完成（2026-09-03） | 排行榜从单页长滚动拆出为独立路由 `/board`（见下方变更记录）                      |
 | M1.2 顶部导航精修   | ✅ 已完成（2026-09-03） | 导航字体 / 排版 / 动效精修：胶囊悬停、区块激活指示、品牌区升级（见下方变更记录） |
-| M2 接入真实评测管线 | ⏳ 待启动               | 用真实评测结果替换种子数据；当前已具备 JSON 一键导入能力                         |
+| M2 接入真实评测管线 | ✅ v0 已落地（2026-09-04） | `/eval` 可调真实 LLM 跑分并「并入榜单数据」；数据接入区迁移至评测页底部；当前覆盖对话 / 研究与操作两类（无沙盒），编码类留待后续（见 M2.1 / M2.2） |
 
 ## M1 变更记录（2026-09-03）
 
@@ -150,3 +150,119 @@
 
 - **口径边界**：首页现以「方法讲透」为主，若未来接入真实评测管线（M2），可在 `#roadmap` 前把「演示数据 → 真实数据」的状态切换做成可视化，避免方法论与演示数据混淆。
 - **内容维护**：六区块大量中文文案集中在 `StaticSections.tsx`，后续若需 i18n 或内容中台，应先抽出为文案模块再改造。
+
+## M2.1 变更记录（2026-09-04）· 自动化 AI Agent 评测
+
+> 注：本节描述的「一键导入到 /board（localStorage 收件箱）」结果流转已由同日 M2.2 改为「共享榜单存储」（见下），当前实现以 M2.2 为准。
+
+### 背景与目标
+
+依据 Wiki《AI Agent 评估机制》（`agentbench-evaluation.md` §8/§9）落地「真实跑分 v0」：从「纯前端看榜」跨到「自己造真分」。新增独立页面 `/eval`，真正调用大模型 API 完成「选模型 → 配套件 → 多次试跑 → 六维判分 → 产出 JSON」，并与 `/board` 现有导入能力闭环。本次范围不含编码沙盒类任务。
+
+### 主要改动
+
+1. **评测纯函数层（新增 `src/lib/agent-eval.ts`）**
+   - 四通道厂商预设（OpenAI / Anthropic / Google Gemini / OpenRouter，含模型列表与 key 提示）；`EvalTask` / `EvalSuite` 模型。
+   - 内置 6 个任务：对话套件（订阅退款政策判断 / 混合订单分项处理 / 账户安全身份核验）+ 研究与操作套件（市场规模信源引用 / 并购尽调风险清单 / 长文研究结构化简报）；每题带 prompt、工具说明、checkpoints、裁判提示与 token 预算。
+   - 样本聚合（pass 率与均值）、`scenarioScoreOf`、Agent JSON 构建、`EvalInboxPayload` 类型。
+2. **评测服务端层（新增 `src/lib/eval-server.ts`，server functions）**
+   - `getEvalServerInfo`：只回传哪些通道已在服务端配置 Key（布尔）。
+   - `runEvalSample`：单样本两段调用（被测 Agent 作答 → LLM-as-Judge 结构化 Rubric）；success/progress/tool/trust 走 Judge JSON，efficiency 走代码级 token 预算；OpenAI 兼容 / Anthropic / Gemini 三种 HTTP 适配，150s 超时；任何异常折叠为带 `error` 的作废样本返回，不触发整页 500。
+   - 环境变量：`OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GOOGLE_API_KEY` / `OPEN_ROUTER_API_KEY`，临时 Key 优先于环境变量。
+3. **评测工作台组件（新增 `src/components/agentbench/EvalApp.tsx`）**
+   - 配置面板（通道 / 模型 / Agent 名称·厂商 / 临时 Key / 套件勾选 / 试跑次数）→ 运行进度（逐样本状态）→ 报告区（分场景六维聚合 + 逐样本明细表 + 产物 JSON 预览）。
+   - 结束动作：下载 JSON / 复制 JSON / 「一键导入到 /board」（写 localStorage 收件箱后跳转）。
+4. **评测路由与站点外壳**
+   - 新增 `src/routes/eval.tsx`（SEO head + 区块锚点导航 `#config/#report`）；sitemap 加入 `/eval`。
+   - `SiteShell.tsx` 重构为「全局站点导航（排行榜 / 自动化评测，按 pathname 高亮）+ 页面区块锚点导航（按 hash 高亮）」双轨结构；首页与 `/board` 导航同步微调。
+5. **榜单侧配套（`BenchApp.tsx` / `agentbench-data.ts`）**
+   - `Agent.s` 放宽为部分场景结构；JSON 导入校验改为「至少一个已评测场景、仅校验存在的场景字段」，支持只测了 conv/os 的评测结果直接上榜。
+   - 数据接入区新增收件箱「一键导入榜单」横幅与丢弃操作；空场景榜单渲染空态与跳转提示。
+6. **健壮性修复**：本轮把 `tsc` 35 个错误全部清零（严格模式下的索引访问、可选属性、`src` 字段补齐、页面判断等），并对涉及文件统一 `prettier`。
+
+### 验证结果
+
+- `bunx tsc --noEmit`：0 错误；`bun run build`：通过（nitro 产物含 `eval` 页面与 `eval-server` chunk，route 树自动生成）。
+- `bunx eslint` / `prettier --write`：涉及文件 0 error。
+- 浏览器实测（dev :8082，桌面视口）：首页 / `/board` / `/eval` 三页均正常渲染、无业务报错；三页顶部全局导航均有「排行榜 · 自动化评测」且可互跳；`/eval` 配置面板（四通道 + 模型预设 + 临时 Key + 套件勾选）与无 Key 引导正常；`/board#data` 数据接入区与收件箱横幅落点存在。
+- 未能本机真实验证真实跑分：当前服务端未配置任何 Key（四通道均探测为未配置），真实调用需在部署环境配置 Key 后由真人触发（预计一次全量 = 6 任务 × 次数 × 2 次模型调用）。
+
+### 反思与改进空间
+
+- **v0 口径取舍**：Judge 与被测模型同源同模型（非独立裁判），对能力接近的模型存在自评偏差风险；后续可支持「裁判模型独立选择」。
+- **无沙盒**：v0 任务均为「作答 / 决策文本」形态（客服政策、信源研究），无真实 GUI / 代码执行环境；编码与计算机操作类（需 Outcome 真实终态核验）留待沙盒接入。
+- **任务规模**：每套件 3 题，稳定性估计仍需更多试跑（trials ↑）与题目扩充（题库化）。
+- **可复现性**：样本明细仅在页内展示，未持久化 Transcript；后续可将每样本答案落库或随 JSON 附注，支撑审计回溯。
+- **成本提醒**：全量 6 任务 × 2 次 × 2 段调用 = 24 次模型调用，长模型单次评测成本可观；报告区已给出预计调用次数，建议先用小模型跑通流程。
+
+## M2.2 变更记录（2026-09-04）· 数据接入区迁移至评测页 + 共享榜单存储
+
+### 背景与目标
+
+原「数据接入」区块位于 `/board` 底部，评测结果需经「localStorage 收件箱 → 跳转 `/board#data` → 一键导入」两步闭环，跨页数据不同步、流程割裂。按用户「把数据接入 section 移到自动化评测页」的诉求，将数据接入整体迁移到 `/eval` 底部，并把评测结果改为直接写入**跨页共享的榜单存储**，`/board` 打开即最新。
+
+### 主要改动
+
+1. **新增共享榜单存储（`src/lib/leaderboard-store.ts`）**
+   - `localStorage[ab:leaderboard:v1]` 存 `{ updatedAt, agents }`；无写入时回退内置种子，首访 / SSR 一致。
+   - `saveAgents`（整体替换 + 持久化 + 广播）、`mergeAgents`（按名称同名更新 / 新名追加）、`subscribeSnapshot` + `useLeaderboardSnapshot` Hook（首帧种子 → 挂载后同步本地并订阅变更）。
+2. **评测页入库（`EvalApp.tsx`）**
+   - 删除收件箱写入 / `goBoard` 跳转；报告区主按钮改为「并入榜单数据」＝ `saveAgents(mergeAgents(storeAgents, 本次结果))`，成功提示快照日期已更新并引导打开排行榜。
+   - 页面底部常驻渲染迁移后的数据接入区块 `<DataPipeline />`；报告区保留「下载 / 复制 JSON」。
+3. **数据接入组件（新增 `src/components/agentbench/DataPipeline.tsx`）**
+   - 迁移自原 `/board` 数据接入：榜单状态总览（记录数 / 覆盖场景 / 快照日期）、导入 JSON 整体替换（校验逻辑不变）、导出当前 JSON / 全场景 CSV、schema 说明。
+   - 原收件箱横幅与“一键导入”交互删除（评测结果已无需二次导入）。
+4. **榜单页瘦身（`BenchApp.tsx` / `board.tsx`）**
+   - `BenchApp` 改为读取共享榜单存储（`useLeaderboardSnapshot`），删除数据接入区块与全部导入 / 导出 / 收件箱逻辑，仅保留排行榜 + 多维对比；空态文案改为引导到自动化评测页。
+   - `/board` 导航移除 `#data` 锚点；右上角「数据快照」chip 读取存储里的 `updatedAt` 实时展示；主 CTA 改为「去自动化评测」。
+5. **评测路由与首页文案同步（`eval.tsx` / `index.tsx` / `StaticSections.tsx` / `SiteShell`）**
+   - `/eval` 区块锚点加入 `#data`（评测配置 / 评测报告 / 数据接入）；SEO 描述更新。
+   - 首页「数据下载」结构化数据 contentUrl 与收尾 CTA 由 `/board#data` 改为 `/eval#data`；正文「一键导入」措辞更新。
+6. **契约清理（`src/lib/agent-eval.ts`）**：删除已无引用的 `EVAL_INBOX_KEY` / `EvalInboxPayload` 与孤立 `round1` 导出；相关注释改为「共享榜单 schema」。
+
+### 验证结果
+
+- `bunx tsc --noEmit`：0 错误；`bunx eslint --fix` 涉及文件 0 error；`bun run build`：通过。
+- 浏览器实测（dev :8082，桌面视口，Puppeteer）：
+  - `/board`：仅剩 `#board` / `#radar` 两个区块，`#data` 已不存在；导航无「数据接入」锚点；chip 显示 `数据快照 2026-04-23`（种子）。
+  - `/eval`：底部渲染 `#data`「接入真实评测数据」区块（导入 / 导出按钮齐全），顶部导航含「数据接入」锚点。
+  - 存储回流：向 `localStorage[ab:leaderboard:v1]` 写入含新 Agent 的快照（`updatedAt: 2026-09-04`）后重开 `/board`，chip 变为 `数据快照 2026-09-04`，切到「对话智能体」场景可见新 Agent 上榜；清空存储后回落种子（5 条 / 原快照日期）。
+- 真实跑分仍待部署环境配置 Key 后人工触发（同 M2.1 边界）。
+
+### 反思与改进空间
+
+- **数据仅存本机**：榜单数据存浏览器 `localStorage`，换设备 / 清缓存即回退种子；若要做“多人共享榜单”，后续可接服务端存储 / 导出上传。
+- **只覆盖已评测场景**：导入 / 并入的条目若只含单场景，其他场景榜单自然缺位并有空态引导，符合“只测了部分也可见”的产品语义。
+- **合并是整条替换**：`mergeAgents` 对同名 Agent 用新数据整体覆盖其 `s`，若只重测了部分场景会丢掉旧场景数据；如需要“按场景合并”，可扩展为 `s` 层合并。
+
+## M2.3 变更记录（2026-09-04）· 市面智能体 CLI 真实评测 + 智能体详情页
+
+### 背景与目标
+
+用户希望对市面上真实存在的智能体产品（Codex、Claude Code、Hermes、OpenCode、Trae 等）做评测，在排行榜按分数排名，并为每个智能体提供独立详情页查看评测结果。在既有 `/eval`（LLM API 跑分）之外，新增「CLI 智能体」这一真实被测形态：直接无交互调用本机已安装的智能体 CLI 作答内置套件，再用 Claude 当裁判打分。
+
+### 主要改动
+
+1. **新增真实 CLI 评测 runner（`scripts/run-agent-eval.ts`，Bun 运行）**
+   - 定义 5 个被测 CLI（claude / codex / opencode / hermes / trae）的无交互命令模板，与裁判（固定 Claude）。
+   - 复用 `src/lib/agent-eval.ts` 的 `SUITES` 与 `aggregateSamples`：对每个「任务 × trial」先让被测 CLI 作答，再让裁判按六维 Rubric 输出 JSON（success / progress / tool / trust），efficiency 走 token 预算代码级口径。
+   - 逐样本容错（超时 / 无输出 / 裁判不可解析都折叠为带 error 的作废样本），最终产出符合共享榜单 schema 的 `scripts/output/agentbench-cli-eval-<日期>.json`，可在 `/eval#data` 直接导入。
+   - 支持 `--only / --trials / --tasks / --dry-run` 参数。
+2. **新增智能体详情页（`src/routes/agents/$name.tsx` + `src/components/agentbench/AgentDetail.tsx`）**
+   - 展示单 Agent 基本信息、场景切换、六维分数表（含权重与维度说明）、六维雷达图、总分与数据来源（src）标注；无匹配条目时渲染 404 空态。
+3. **排行榜联动（`BenchApp.tsx`）**：Agent 名称改为指向 `/agents/<name>` 的可点击链接。
+4. **种子数据（`src/lib/agentbench-data.ts`）**
+   - 并入本轮**真实跑出**的 `Claude Code`（Anthropic，demo=false）：对话 66.7 / 研究与操作 100，来源标注「内置评测套件 v0（CLI 真实跑分）」。
+   - 新增 `Codex / OpenCode / Hermes / Trae` 四条目为 demo=true 占位（分数 0、src=null，标注「占位示例 / 构造值，接入真实评测后替换」），待本机（非沙箱）跑脚本生成真实分数后覆盖。
+
+### 验证结果
+
+- `bunx tsc --noEmit`：0 错误；`bun run build`：通过（route 树自动生成 `/agents/$name`，产物含 `_name-*.mjs` chunk）。
+- 真实跑分链路实测：`bun scripts/run-agent-eval.ts --only "Claude Code" --trials 1` 真实调用 `claude -p` 跑完 6 个任务并产出 JSON（对话 success 66.7%、研究与操作 success 100%）。
+- 环境边界：当前受限沙箱内仅 `claude` 可无交互跑通；`codex`（state 文件被沙箱拦截）、`hermes`（日志文件被拦）、`opencode`（provider 未配置 + 锁文件被拦）、`trae`（GUI）均需在非沙箱本机终端运行脚本。
+
+### 反思与改进空间
+
+- **裁判同源自评**：裁判固定为 Claude，与「Claude Code」被测对象同源，存在自评偏差；后续可让裁判模型独立于被测对象（如指定其它 CLI 或独立 API）。
+- **efficiency 口径偏粗糙**：以「字符数」近似 token 并与单题预算比较，导致输出较长的 CLI 得分被压低（Claude Code 对话 efficiency=0）；后续应改为按真实 token 计数或放宽预算。
+- **zcode / deepseek harness 未接入**：`zcode` 本机未安装、`deepseek harness` 无可识别的对应 CLI，本轮跳过；确认真实工具后补充到 `CLIS` 列表即可复用同一脚本。

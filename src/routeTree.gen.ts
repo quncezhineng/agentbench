@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BoardRouteImport } from './routes/board'
+import { Route as EvalRouteImport } from './routes/eval'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AgentsNameRouteImport } from './routes/agents/$name'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,40 +25,58 @@ const BoardRoute = BoardRouteImport.update({
   path: '/board',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EvalRoute = EvalRouteImport.update({
+  id: '/eval',
+  path: '/eval',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsNameRoute = AgentsNameRouteImport.update({
+  id: '/agents/$name',
+  path: '/agents/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/eval': typeof EvalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/agents/$name': typeof AgentsNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/eval': typeof EvalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/agents/$name': typeof AgentsNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/board': typeof BoardRoute
+  '/eval': typeof EvalRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/agents/$name': typeof AgentsNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/board' | '/sitemap.xml'
+  fullPaths: '/' | '/board' | '/eval' | '/sitemap.xml' | '/agents/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/board' | '/sitemap.xml'
-  id: '__root__' | '/' | '/board' | '/sitemap.xml'
+  to: '/' | '/board' | '/eval' | '/sitemap.xml' | '/agents/$name'
+  id: '__root__' | '/' | '/board' | '/eval' | '/sitemap.xml' | '/agents/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BoardRoute: typeof BoardRoute
+  EvalRoute: typeof EvalRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AgentsNameRoute: typeof AgentsNameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +95,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BoardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eval': {
+      id: '/eval'
+      path: '/eval'
+      fullPath: '/eval'
+      preLoaderRoute: typeof EvalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/$name': {
+      id: '/agents/$name'
+      path: '/agents/$name'
+      fullPath: '/agents/$name'
+      preLoaderRoute: typeof AgentsNameRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +122,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoardRoute: BoardRoute,
+  EvalRoute: EvalRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AgentsNameRoute: AgentsNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

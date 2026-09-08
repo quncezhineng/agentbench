@@ -1,8 +1,8 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  AGENTS as SEED_AGENTS,
   DIMS,
   SCENARIOS,
+  hasScenario,
   normalizeWeights,
   scoresOf,
   totalOf,
@@ -11,6 +11,7 @@ import {
   type ScenarioKey,
   type Weights,
 } from "@/lib/agentbench-data";
+import { useLeaderboardSnapshot } from "@/lib/leaderboard-store";
 
 const RADAR_COLORS = ["var(--brand)", "var(--ok)", "var(--info)", "var(--warn)"];
 
@@ -21,21 +22,29 @@ const tdBase = "border-b border-border/80 px-3 py-3 align-middle whitespace-nowr
 const sortMark = (active: boolean, asc: boolean) => (active ? (asc ? " ↑" : " ↓") : " ↕");
 
 export function BenchApp() {
-  const [agents, setAgents] = useState<Agent[]>(SEED_AGENTS);
+  // 共享榜单数据：来自 /eval（并入/导入后保存于本浏览器），挂载后自动同步最新
+  const { agents } = useLeaderboardSnapshot();
   const [scenario, setScenario] = useState<ScenarioKey>("coding");
   const [sortKey, setSortKey] = useState<string>("total");
   const [sortAsc, setSortAsc] = useState(false);
   const [picked, setPicked] = useState<string[]>(["GPT-5.5", "Claude Opus 4.7"]);
   const [custom, setCustom] = useState<Weights | null>(null);
-  const [ioStatus, setIoStatus] = useState<{ msg: string; ok: boolean } | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const current = SCENARIOS.find((s) => s.key === scenario)!;
   const rawWeights = custom ?? current.weights;
   const weights = useMemo(() => normalizeWeights(rawWeights), [rawWeights]);
 
+  // 仅统计具备当前场景数据的条目：允许导入“只测了部分场景”的评测结果
+  const present = useMemo(() => agents.filter((a) => hasScenario(a, scenario)), [agents, scenario]);
+  const presentNames = useMemo(() => new Set(present.map((a) => a.name)), [present]);
+  // 全量数据里真正具备评测结果的场景（用于空态提示“去哪个场景看”）
+  const availableScenarios = useMemo(
+    () => SCENARIOS.filter((s) => agents.some((a) => hasScenario(a, s.key))),
+    [agents],
+  );
+
   const rows = useMemo(() => {
-    const list = agents.map((a) => {
+    const list = present.map((a) => {
       const sc = scoresOf(a, scenario);
       return { agent: a, scores: sc, total: totalOf(sc, weights) };
     });
@@ -47,7 +56,7 @@ export function BenchApp() {
       return (a.scores[sortKey as DimKey] - b.scores[sortKey as DimKey]) * dir;
     });
     return list;
-  }, [agents, scenario, weights, sortKey, sortAsc]);
+  }, [present, scenario, weights, sortKey, sortAsc]);
 
   const sortBy = (key: string) => {
     if (sortKey === key) setSortAsc(!sortAsc);
@@ -65,66 +74,12 @@ export function BenchApp() {
     });
   };
 
+  // 当前场景下实际可对比的已勾选项（部分场景数据下，勾了别的场景也会自动隐去）
+  const pickedInView = picked.filter((n) => presentNames.has(n));
+
   const rawSum = DIMS.reduce((a, d) => a + (rawWeights[d.key] || 0), 0);
 
-  /* ---------- import / export ---------- */
-  const download = (filename: string, text: string, mime: string) => {
-    const url = URL.createObjectURL(new Blob([text], { type: mime }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportJson = () => {
-    download("agentbench-data.json", JSON.stringify(agents, null, 2), "application/json");
-    setIoStatus({ msg: "已导出 JSON", ok: true });
-  };
-
-  const exportCsv = () => {
-    const head = ["排名", "Agent", "厂商", "总分", ...DIMS.map((d) => d.name)];
-    const body = rows.map((r, i) => [
-      i + 1,
-      r.agent.name,
-      r.agent.vendor,
-      r.total.toFixed(2),
-      ...DIMS.map((d) => r.scores[d.key].toFixed(2)),
-    ]);
-    const csv = [head, ...body].map((line) => line.join(",")).join("\n");
-    download(`agentbench-${scenario}.csv`, "\uFEFF" + csv, "text/csv");
-    setIoStatus({ msg: "已导出 CSV", ok: true });
-  };
-
-  const importJson = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(String(reader.result));
-        if (!Array.isArray(data)) throw new Error("根节点必须是数组");
-        const need: ScenarioKey[] = ["coding", "conv", "os"];
-        data.forEach((a: Agent, i: number) => {
-          if (!a.name) throw new Error(`第 ${i + 1} 条缺少 name`);
-          if (!a.s) throw new Error(`第 ${i + 1} 条缺少 s`);
-          need.forEach((k) => {
-            const sc = a.s[k];
-            if (!sc) throw new Error(`${a.name} 缺少场景 ${k}`);
-            (["success", "tool", "progress", "efficiency", "trust"] as const).forEach((f) => {
-              if (typeof sc[f] !== "number") throw new Error(`${a.name}/${k} 的 ${f} 必须是数字`);
-            });
-          });
-        });
-        setAgents(data);
-        setPicked((p) => p.filter((n) => data.some((a: Agent) => a.name === n)));
-        setIoStatus({ msg: `导入成功：${data.length} 条数据已替换榜单`, ok: true });
-      } catch (err) {
-        setIoStatus({ msg: "导入失败：" + (err as Error).message, ok: false });
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const pickedRows = rows.filter((r) => picked.includes(r.agent.name));
+  const pickedRows = rows.filter((r) => pickedInView.includes(r.agent.name));
 
   return (
     <>
@@ -161,10 +116,10 @@ export function BenchApp() {
 
         <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-text-3">
           <span>{current.ref}</span>
-          {picked.length > 0 && (
+          {pickedInView.length > 0 && (
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-ok-soft px-2 py-0.5 font-semibold text-ok">
               <span className="ab-dot" />
-              已选 {picked.length} 个用于对比
+              已选 {pickedInView.length} 个用于对比
             </span>
           )}
         </div>
@@ -276,89 +231,138 @@ export function BenchApp() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r, i) => {
-                  const checked = picked.includes(r.agent.name);
-                  const src = r.agent.s[scenario].src;
-                  return (
-                    <tr
-                      key={r.agent.name}
-                      className={`transition-colors ${
-                        checked ? "bg-brand-soft/70" : "hover:bg-surface-2/70"
-                      }`}
-                    >
-                      <td className={tdBase}>
-                        <span
-                          className={`metric inline-flex h-6 w-7 items-center justify-center rounded-lg text-[12.5px] font-bold ${
-                            i === 0
-                              ? "bg-brand-soft text-brand"
-                              : i === 1
-                                ? "bg-surface-2 text-text-2"
-                                : "text-text-3"
-                          }`}
-                        >
-                          {i + 1}
-                        </span>
-                      </td>
-                      <td className={tdBase}>
-                        <div className="font-semibold">
-                          {r.agent.name}
-                          {r.agent.demo && (
-                            <span className="ml-2 rounded-md bg-warn-soft px-1.5 py-0.5 text-[10px] font-bold text-warn align-middle">
-                              占位示例
-                            </span>
+                {rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={DIMS.length + 4} className="px-6 py-12 text-center">
+                      {agents.length === 0 ? (
+                        <div className="mx-auto max-w-sm">
+                          <div className="text-[13px] font-semibold text-text-2">
+                            榜单暂无任何数据
+                          </div>
+                          <p className="mt-1.5 text-[12.5px] leading-6 text-text-3">
+                            请到「自动化评测」页跑一次评测并并入榜单，或在该页底部数据接入区导入符合
+                            schema 的 JSON。
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="mx-auto max-w-sm">
+                          <div className="text-[13px] font-semibold text-text-2">
+                            「{current.name}」场景暂无评测数据
+                          </div>
+                          <p className="mt-1.5 text-[12.5px] leading-6 text-text-3">
+                            当前数据集只覆盖了部分场景。切换到已评测场景即可查看对应排行：
+                          </p>
+                          {availableScenarios.length > 0 && (
+                            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                              {availableScenarios.map((s) => (
+                                <button
+                                  key={s.key}
+                                  onClick={() => {
+                                    setScenario(s.key);
+                                    setCustom(null);
+                                  }}
+                                  className="inline-flex min-h-[30px] items-center rounded-full border border-border bg-white px-3.5 text-[12.5px] font-semibold text-text-2 transition-colors hover:border-brand/40 hover:text-brand"
+                                >
+                                  {s.name}
+                                </button>
+                              ))}
+                            </div>
                           )}
                         </div>
-                        <div className="mt-0.5 text-[11.5px] text-text-3">{r.agent.vendor}</div>
-                        <div className="mt-1.5 text-[11px] leading-4">
-                          {src ? (
-                            <span className="inline-flex flex-wrap items-center gap-x-1.5">
-                              <span className="rounded-md bg-info-soft px-1.5 py-0.5 font-bold text-info">
-                                有来源
-                              </span>
-                              <b className="text-info">
-                                {src.label} {src.val}
-                              </b>
-                              <span className="text-text-3">· {src.by}</span>
-                            </span>
-                          ) : (
-                            <span className="text-text-3">
-                              {r.agent.demo
-                                ? "构造值，接入真实评测后替换"
-                                : "该场景无公开来源，使用构造值"}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className={tdBase}>
-                        <div className="flex items-center justify-end gap-3">
-                          <span className="metric text-[18px] font-bold tracking-tight">
-                            {r.total.toFixed(1)}
+                      )}
+                    </td>
+                  </tr>
+                ) : (
+                  rows.map((r, i) => {
+                    const checked = picked.includes(r.agent.name);
+                    const sc = r.agent.s[scenario];
+                    const src = sc?.src;
+                    return (
+                      <tr
+                        key={r.agent.name}
+                        className={`transition-colors ${
+                          checked ? "bg-brand-soft/70" : "hover:bg-surface-2/70"
+                        }`}
+                      >
+                        <td className={tdBase}>
+                          <span
+                            className={`metric inline-flex h-6 w-7 items-center justify-center rounded-lg text-[12.5px] font-bold ${
+                              i === 0
+                                ? "bg-brand-soft text-brand"
+                                : i === 1
+                                  ? "bg-surface-2 text-text-2"
+                                  : "text-text-3"
+                            }`}
+                          >
+                            {i + 1}
                           </span>
-                          <span className="h-[5px] w-16 overflow-hidden rounded-full bg-surface-2">
-                            <span
-                              className="block h-full rounded-full bg-gradient-to-r from-brand-2 to-brand"
-                              style={{ width: `${Math.max(2, r.total)}%` }}
-                            />
-                          </span>
-                        </div>
-                      </td>
-                      {DIMS.map((d) => (
-                        <td key={d.key} className={`${tdBase} metric text-right text-[12.5px]`}>
-                          {r.scores[d.key].toFixed(1)}
                         </td>
-                      ))}
-                      <td className={tdBase}>
-                        <input
-                          type="checkbox"
-                          aria-label={`对比 ${r.agent.name}`}
-                          className="h-4 w-4 cursor-pointer accent-[var(--brand)]"
-                          checked={checked}
-                          onChange={() => togglePick(r.agent.name)}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
+                        <td className={tdBase}>
+                          <div className="font-semibold">
+                            <a
+                              href={`/agents/${encodeURIComponent(r.agent.name)}`}
+                              className="text-brand hover:underline"
+                            >
+                              {r.agent.name}
+                            </a>
+                            {r.agent.demo && (
+                              <span className="ml-2 rounded-md bg-warn-soft px-1.5 py-0.5 text-[10px] font-bold text-warn align-middle">
+                                占位示例
+                              </span>
+                            )}
+                          </div>
+                          <div className="mt-0.5 text-[11.5px] text-text-3">{r.agent.vendor}</div>
+                          <div className="mt-1.5 text-[11px] leading-4">
+                            {src ? (
+                              <span className="inline-flex flex-wrap items-center gap-x-1.5">
+                                <span className="rounded-md bg-info-soft px-1.5 py-0.5 font-bold text-info">
+                                  有来源
+                                </span>
+                                <b className="text-info">
+                                  {src.label} {src.val}
+                                </b>
+                                <span className="text-text-3">· {src.by}</span>
+                              </span>
+                            ) : (
+                              <span className="text-text-3">
+                                {r.agent.demo
+                                  ? "构造值，接入真实评测后替换"
+                                  : "该场景无公开来源，使用构造值"}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className={tdBase}>
+                          <div className="flex items-center justify-end gap-3">
+                            <span className="metric text-[18px] font-bold tracking-tight">
+                              {r.total.toFixed(1)}
+                            </span>
+                            <span className="h-[5px] w-16 overflow-hidden rounded-full bg-surface-2">
+                              <span
+                                className="block h-full rounded-full bg-gradient-to-r from-brand-2 to-brand"
+                                style={{ width: `${Math.max(2, r.total)}%` }}
+                              />
+                            </span>
+                          </div>
+                        </td>
+                        {DIMS.map((d) => (
+                          <td key={d.key} className={`${tdBase} metric text-right text-[12.5px]`}>
+                            {r.scores[d.key].toFixed(1)}
+                          </td>
+                        ))}
+                        <td className={tdBase}>
+                          <input
+                            type="checkbox"
+                            aria-label={`对比 ${r.agent.name}`}
+                            className="h-4 w-4 cursor-pointer accent-[var(--brand)]"
+                            checked={checked}
+                            onChange={() => togglePick(r.agent.name)}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -425,93 +429,6 @@ export function BenchApp() {
               </>
             )}
           </aside>
-        </div>
-      </section>
-
-      {/* ================= 数据接入 ================= */}
-      <section id="data" className="ab-container ab-section">
-        <div className="ab-section-head">
-          <div>
-            <div className="ab-chip ab-chip-brand mb-3">Data Pipeline</div>
-            <h2 className="ab-section-title">接入真实评测数据</h2>
-            <p className="ab-section-desc mt-2">
-              榜单当前含占位构造值。导入符合 schema 的 JSON 即可全量替换，无需改动页面代码。
-            </p>
-          </div>
-        </div>
-
-        <div className="ab-panel bg-white p-5 sm:p-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <button onClick={exportJson} className="ab-button ab-button-secondary">
-              导出当前数据 JSON
-            </button>
-            <button onClick={exportCsv} className="ab-button ab-button-secondary">
-              导出当前榜单 CSV
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".json"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) importJson(f);
-                e.target.value = "";
-              }}
-            />
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="ab-button ab-button-primary"
-            >
-              导入 JSON 替换
-            </button>
-            {ioStatus && (
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[12px] font-semibold ${
-                  ioStatus.ok ? "bg-ok-soft text-ok" : "bg-risk-soft text-risk"
-                }`}
-              >
-                {ioStatus.ok && <span className="ab-dot" />}
-                {ioStatus.msg}
-              </span>
-            )}
-          </div>
-
-          <div className="mt-5 overflow-hidden rounded-xl border border-border">
-            <div className="border-b border-border bg-surface-2/80 px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.08em] text-text-3">
-              JSON schema · 字段说明
-            </div>
-            <div className="overflow-x-auto bg-surface-2/40 px-4 py-3 font-mono text-[12px] leading-6">
-              <pre className="whitespace-pre">
-                {`{
-  "name":   "Agent 名称（必填）",
-  "vendor": "厂商",
-  "demo":   true | false,          // true = 占位示例，标注「构造值」
-  "s": {
-    "coding" | "conv" | "os": {    // 三类场景需齐全
-      "success":    0–100,         // 任务成功率
-      "tool":       0–100,         // 工具调用准确率
-      "progress":   0–100,         // 进度率
-      "efficiency": 0–100,         // 效率
-      "trust":      0–100,         // 可信与安全
-      "src": { "label": "基准名", "val": "分数口径", "by": "发布方" } | null
-    }
-  }
-}`}
-              </pre>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-text-3">
-            <span>
-              <b className="text-text-2">stability 无需提供</b>
-              ——由 success 按 passᵏ = pᵏ (k=3) 自动推算。
-            </span>
-            <span>
-              <b className="text-text-2">src 为 null</b>
-              时，该条目自动标注为「无公开来源 · 构造值」。
-            </span>
-          </div>
         </div>
       </section>
     </>

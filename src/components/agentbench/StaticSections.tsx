@@ -190,14 +190,15 @@ export function Methodology() {
             </table>
           </div>
           <p className="mt-3 text-[12.5px] leading-5 text-text-2">
-            k 越大，pass@k 越接近 100%（“只要能成功一次”）；passᵏ 反而随 k 指数衰减（“每次都要成功”）。
-            同样是 75% 的单次成功率，k = 10 时两个口径相差约 94 个百分点。
+            k 越大，pass@k 越接近 100%（“只要能成功一次”）；passᵏ 反而随 k
+            指数衰减（“每次都要成功”）。 同样是 75% 的单次成功率，k = 10 时两个口径相差约 94
+            个百分点。
           </p>
           <div className="mt-4 rounded-xl border border-border bg-surface-2 px-4 py-3 font-mono text-[12px] leading-6 text-text-2">
             <b className="text-brand">怎么选</b>：有人把关可试错（代码补全 / 创意生成 / 研究辅助）→
             用 pass@k 衡量峰值能力；无人把关须零失误（自动客服 / 金融交易 / 内容审核）→ 用 passᵏ
-            衡量稳定性。本站 <b className="text-brand">stability</b> 采用 passᵏ（k=3），是解释性推算，
-            不等于独立实测。
+            衡量稳定性。本站 <b className="text-brand">stability</b> 采用
+            passᵏ（k=3），是解释性推算， 不等于独立实测。
           </div>
         </div>
 
@@ -542,7 +543,8 @@ export function Audit() {
           </div>
           <p className="mt-3 text-[12px] leading-5 text-text-3">
             饱和提示：当某个基准分数逼近 80–85% 且长期增速放缓，说明它对前沿改进的区分度在下降（如
-            SWE-bench Verified 一年内从约 40% 涨到 80%+）。此时该分数只适合回归监控，不宜再作为上线决策的
+            SWE-bench Verified 一年内从约 40% 涨到
+            80%+）。此时该分数只适合回归监控，不宜再作为上线决策的
             唯一依据——审计台账会标注这类状态。
           </p>
         </div>
@@ -605,7 +607,8 @@ export function Audit() {
           </div>
           <p className="mt-4 text-[12.5px] leading-6 text-text-2">
             <b className="text-foreground">对本工作台的含义：</b>
-            榜单上的自动化数字只是“信号之一”。Agent 上线后若出现生产监控漂移或用户反馈集中回归，应回到
+            榜单上的自动化数字只是“信号之一”。Agent
+            上线后若出现生产监控漂移或用户反馈集中回归，应回到
             对应基准重跑回归评估并更新审计台账，而不是只盯着聚合页上的数字。
           </p>
         </div>
@@ -631,11 +634,27 @@ const FLOW_STEPS = [
 
 const GLOSSARY = [
   { en: "Task", zh: "考题", d: "有明确输入与成功标准的单个测试用例，即外部基准的“题目”单元。" },
-  { en: "Trial", zh: "尝试", d: "对同一 Task 的一次运行。模型输出有随机性，需多次 Trial 才能得到稳定估计。" },
+  {
+    en: "Trial",
+    zh: "尝试",
+    d: "对同一 Task 的一次运行。模型输出有随机性，需多次 Trial 才能得到稳定估计。",
+  },
   { en: "Transcript", zh: "转录", d: "一次运行的完整轨迹：推理、工具调用、中间结果、消息序列。" },
-  { en: "Outcome", zh: "终态", d: "试验结束时环境的真实状态：数据库记录、文件系统、UI / 页面状态。" },
-  { en: "Grader", zh: "评分器", d: "对某方面表现打分的逻辑；一个 Task 可挂多个 Grader，分 Code / Model / Human。" },
-  { en: "Harness", zh: "执行框架", d: "让模型能作为 Agent 运行的系统（工具编排 + 环境）；评估的是“模型 + Harness”。" },
+  {
+    en: "Outcome",
+    zh: "终态",
+    d: "试验结束时环境的真实状态：数据库记录、文件系统、UI / 页面状态。",
+  },
+  {
+    en: "Grader",
+    zh: "评分器",
+    d: "对某方面表现打分的逻辑；一个 Task 可挂多个 Grader，分 Code / Model / Human。",
+  },
+  {
+    en: "Harness",
+    zh: "执行框架",
+    d: "让模型能作为 Agent 运行的系统（工具编排 + 环境）；评估的是“模型 + Harness”。",
+  },
 ];
 
 export function EvalPipeline() {
@@ -680,7 +699,8 @@ export function EvalPipeline() {
             </div>
             <p className="mt-1.5 text-[12.5px] leading-[1.7] text-text-2">
               不亲自跑 Trial：把公开结果做口径映射，换成统一的六维 0–100 分，推算
-              <b className="text-foreground"> passᵏ</b>，按场景加权得总分，再排序对比、标注来源并定期审计。
+              <b className="text-foreground"> passᵏ</b>
+              ，按场景加权得总分，再排序对比、标注来源并定期审计。
             </p>
           </div>
 
@@ -693,7 +713,9 @@ export function EvalPipeline() {
               {FLOW_STEPS.map((s, i) => (
                 <Fragment key={s.t}>
                   <span className="rounded-lg border border-border bg-white px-2.5 py-1.5">
-                    <span className="block text-[11px] font-bold leading-none text-foreground">{s.t}</span>
+                    <span className="block text-[11px] font-bold leading-none text-foreground">
+                      {s.t}
+                    </span>
                     <span className="mt-1 block text-[9.5px] leading-none text-text-3">{s.d}</span>
                   </span>
                   {i < FLOW_STEPS.length - 1 && (
@@ -725,8 +747,8 @@ export function EvalPipeline() {
             ))}
           </div>
           <div className="mt-2 rounded-xl border border-border bg-surface-2 px-4 py-3 font-mono text-[12px] leading-6 text-text-2">
-            完整边界与推导细节见项目 Wiki「agentbench-evaluation.md」；Grader 属于执行层或 M2 自建管线，
-            聚合层不重新打分，只做口径映射。
+            完整边界与推导细节见项目 Wiki「agentbench-evaluation.md」；Grader 属于执行层或 M2
+            自建管线， 聚合层不重新打分，只做口径映射。
           </div>
         </div>
       </div>
@@ -741,9 +763,9 @@ export function EvalPipeline() {
             <h4 className="text-[13.5px] font-bold tracking-tight">评估的是系统，不只是模型</h4>
           </div>
           <p className="mt-2.5 text-[12.5px] leading-[1.7] text-text-2">
-            同一个模型挂在不同 Harness 上，成功率可以从约 30% 拉到 80%。所以“某模型在某基准得
-            X 分”这句话不完整——必须连同 harness / 复现说明一起引用，这正是审计台账要求标注
-            harness 版本的原因。
+            同一个模型挂在不同 Harness 上，成功率可以从约 30% 拉到 80%。所以“某模型在某基准得 X
+            分”这句话不完整——必须连同 harness / 复现说明一起引用，这正是审计台账要求标注 harness
+            版本的原因。
           </p>
         </div>
         <div className="ab-panel bg-white p-5 sm:p-6">
@@ -751,16 +773,17 @@ export function EvalPipeline() {
             <span className="rounded-lg bg-warn-soft px-2 py-0.5 text-[11px] font-bold text-warn">
               推论 ②
             </span>
-            <h4 className="text-[13.5px] font-bold tracking-tight">Transcript 会撒谎，Outcome 才是真相</h4>
+            <h4 className="text-[13.5px] font-bold tracking-tight">
+              Transcript 会撒谎，Outcome 才是真相
+            </h4>
           </div>
           <p className="mt-2.5 text-[12.5px] leading-[1.7] text-text-2">
-            订票 Agent 在 Transcript 里说“预订成功，订单号 CA1234”，数据库却空空如也——判分应验证环境的
-            真实终态，而不是 Agent 的自述。反向也一样：Opus 4.5 在 τ²-Bench 订票任务中利用政策漏洞帮用户
+            订票 Agent 在 Transcript 里说“预订成功，订单号
+            CA1234”，数据库却空空如也——判分应验证环境的 真实终态，而不是 Agent
+            的自述。反向也一样：Opus 4.5 在 τ²-Bench 订票任务中利用政策漏洞帮用户
             省了钱，只因没走“标准流程”就被误判失败。
           </p>
-          <p className="mt-2 text-[12px] font-semibold leading-5 text-brand">
-            评结果，不评路径。
-          </p>
+          <p className="mt-2 text-[12px] font-semibold leading-5 text-brand">评结果，不评路径。</p>
         </div>
       </div>
     </section>
@@ -772,7 +795,9 @@ export function EvalPipeline() {
  * 四类 Agent 的差异化评估重点，以及它们如何归并到本站的三类场景。
  * ================================================================ */
 
-const AGENT_ROWS = [
+type SceneKey = "coding" | "conv" | "os";
+
+const AGENT_ROWS: { type: string; method: string; trap: string; scene: SceneKey }[] = [
   {
     type: "编码 Agent",
     method: "单元测试判正确性（fail-to-pass + pass-to-pass）；代码质量、工具使用再看 Transcript",
@@ -799,7 +824,7 @@ const AGENT_ROWS = [
   },
 ];
 
-const SCENE_META: Record<string, { name: string; tone: string }> = {
+const SCENE_META: Record<SceneKey, { name: string; tone: string }> = {
   coding: { name: "编码", tone: "bg-info-soft text-info" },
   conv: { name: "对话", tone: "bg-brand-soft text-brand" },
   os: { name: "研究与操作", tone: "bg-ok-soft text-ok" },
@@ -816,7 +841,10 @@ export function AgentTypes() {
       <div className="grid gap-4 lg:grid-cols-2">
         {/* 四类对照表 */}
         <div className="ab-panel bg-white p-5 sm:p-6">
-          <SubTitle title="四类 Agent 的差异评估" desc="评估手段要匹配任务形态，不能一套基准打天下" />
+          <SubTitle
+            title="四类 Agent 的差异评估"
+            desc="评估手段要匹配任务形态，不能一套基准打天下"
+          />
           <div className="ab-table-scroll mt-4">
             <table className="ab-data-table min-w-[620px] text-[13px]">
               <thead>
@@ -848,7 +876,8 @@ export function AgentTypes() {
             </table>
           </div>
           <div className="mt-4 rounded-xl border border-border bg-surface-2 px-4 py-3 font-mono text-[12px] leading-6 text-text-2">
-            <b className="text-brand">归并逻辑</b>：研究与计算机操作合并为「研究与操作」——二者都要检查环境的
+            <b className="text-brand">归并逻辑</b>
+            ：研究与计算机操作合并为「研究与操作」——二者都要检查环境的
             真实终态，评估手段相近；但解释分数时仍应区分桌面操作与长程研究任务，以条目内
             <b className="text-brand"> src 标注的基准</b>为准，勿跨基准混比。
           </div>
@@ -957,10 +986,7 @@ export function Roadmap() {
           <SubTitle title="起步步骤（0 → 6）" desc="每一步都给出关键结论与常见反例" />
           <div className="mt-2">
             {ROADMAP_STEPS.map((s) => (
-              <div
-                key={s.n}
-                className="flex gap-3 border-b border-border/70 py-3 last:border-0"
-              >
+              <div key={s.n} className="flex gap-3 border-b border-border/70 py-3 last:border-0">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-brand-soft font-mono text-[11px] font-bold text-brand">
                   {s.n}
                 </span>
@@ -998,8 +1024,8 @@ export function Roadmap() {
             框架只是加速。另外注意：工具定义（ACI）会直接影响 <b className="text-brand">tool</b>
             维度得分——工具文档与入参格式应像写代码一样被评审和测试。
             <br />
-            成熟后记住<b className="text-brand">评估驱动开发</b>：先写评测定义能力，再迭代 Agent 达标；
-            100% 的评估只能追回归，给不了改进信号。
+            成熟后记住<b className="text-brand">评估驱动开发</b>：先写评测定义能力，再迭代 Agent
+            达标； 100% 的评估只能追回归，给不了改进信号。
           </div>
         </div>
       </div>
@@ -1007,10 +1033,10 @@ export function Roadmap() {
       {/* 收尾 CTA */}
       <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 rounded-2xl border border-border bg-surface-2/70 px-5 py-4">
         <p className="text-[13px] leading-6 text-text-2">
-          已经有评测结果？先把数据接进工作台，用六维加权和场景权重跑一遍排名，再回头搭自己的管线。
+          已经有评测结果？到「自动化评测」页把数据接进共享榜单，用六维加权和场景权重跑一遍排名，再回头搭自己的管线。
         </p>
-        <a href="/board#data" className="ab-button ab-button-primary">
-          打开排行榜 · 接入数据
+        <a href="/eval#data" className="ab-button ab-button-primary">
+          打开自动化评测 · 接入数据
         </a>
       </div>
     </section>

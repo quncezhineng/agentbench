@@ -48,12 +48,12 @@ export const Route = createFileRoute("/")({
             {
               "@type": "DataDownload",
               encodingFormat: "application/json",
-              contentUrl: "https://getagentbench.lovable.app/board#data",
+              contentUrl: "https://getagentbench.lovable.app/eval#data",
             },
             {
               "@type": "DataDownload",
               encodingFormat: "text/csv",
-              contentUrl: "https://getagentbench.lovable.app/board#data",
+              contentUrl: "https://getagentbench.lovable.app/eval#data",
             },
           ],
         }),
@@ -78,7 +78,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航：点击「查看排行榜」进入独立榜单页 ---------- */}
-      <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} />
+      <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} siteAfterNav />
 
       {/* ---------- 首屏：工作台概览 ---------- */}
       <section className="ab-container ab-section pt-8 sm:pt-10">
@@ -109,8 +109,8 @@ function Index() {
                 <a href="/board" className="ab-button ab-button-primary">
                   查看实时排行榜
                 </a>
-                <a href="/board#radar" className="ab-button ab-button-secondary">
-                  多维对比雷达
+                <a href="/eval" className="ab-button ab-button-secondary">
+                  自动化评测
                 </a>
                 <a href="#method" className="ab-button ab-button-ghost">
                   评测方法论
