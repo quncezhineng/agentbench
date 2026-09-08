@@ -402,11 +402,27 @@ export function BenchApp() {
           <div className="ab-panel bg-white p-4">
             <div className="mb-1 text-[13px] font-bold tracking-tight">五维能力雷达图</div>
             <div className="mb-2 text-[11.5px] text-text-3">
-              {SCENARIOS.find((s) => s.key === scenario)?.label}（0–100）
+              {SCENARIOS.find((s) => s.key === scenario)?.label}（0–100）· 拖动轴上的蓝色圆点即可调整该维度权重
             </div>
-            <RadarChart axes={CLI_DIMS.map((d) => d.label)} series={radarSeries} />
+            <RadarChart
+              axes={CLI_DIMS.map((d) => d.label)}
+              series={radarSeries}
+              weights={weights}
+              onWeightsChange={setRawWeights}
+            />
             <RadarLegend series={radarSeries} />
+            <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3 text-[11.5px] text-text-3">
+              <span>{weightsTouched ? "已使用自定义权重，综合分与排名已同步刷新" : "当前为默认权重"}</span>
+              <button
+                type="button"
+                onClick={() => setRawWeights(CLI_DIMS.map((d) => d.weight))}
+                className="rounded-full border border-border px-3 py-1 text-[11.5px] font-semibold text-text-2 hover:border-brand hover:text-brand"
+              >
+                恢复默认
+              </button>
+            </div>
           </div>
+
         </div>
 
         <p className="mt-3 text-[12px] leading-5 text-text-3">
