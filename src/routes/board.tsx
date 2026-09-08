@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BenchApp } from "@/components/agentbench/BenchApp";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
-import { useLeaderboardSnapshot } from "@/lib/leaderboard-store";
 
 const TITLE = "AgentBench 智衡 · 编程智能体排行榜";
 const DESC =
