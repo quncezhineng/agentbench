@@ -143,11 +143,19 @@ export function SiteHeader({ navs, chip, cta, siteAfterNav = false }: SiteHeader
 export function SiteFooter() {
   return (
     <footer className="mt-12 border-t border-border py-8 text-[12px] text-text-3">
-      <div className="ab-container flex flex-wrap gap-x-6 gap-y-2">
+      <div className="ab-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
         <span className="font-semibold text-text-2">
           AgentBench 智衡 · 编程智能体 LoopArena 评测与排行
         </span>
-        <span className="sm:ml-auto">© 2026 AgentBench. All rights reserved.</span>
+        <a
+          href="https://huggingface.co/papers/2608.28281"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-brand hover:underline"
+        >
+          本项目依托 LoopArena 开展评测工作 ↗
+        </a>
+        <span>© 2026 AgentBench. All rights reserved.</span>
       </div>
     </footer>
   );
