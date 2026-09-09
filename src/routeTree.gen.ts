@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BoardRouteImport } from './routes/board'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as EvalRouteImport } from './routes/eval'
@@ -20,11 +22,21 @@ import { Route as AgentsNameRouteImport } from './routes/agents/$name'
 import { Route as CompareSweBenchRouteImport } from './routes/compare/swe-bench'
 import { Route as RunsIndexRouteImport } from './routes/runs.index'
 import { Route as RunsIdRouteImport } from './routes/runs.$id'
+import { Route as AuthenticatedAdminReviewRouteImport } from './routes/_authenticated/admin.review'
 import { Route as ApiPublicEvalIngestRouteImport } from './routes/api/public/eval-ingest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BoardRoute = BoardRouteImport.update({
@@ -77,6 +89,12 @@ const RunsIdRoute = RunsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => RunsRoute,
 } as any)
+const AuthenticatedAdminReviewRoute =
+  AuthenticatedAdminReviewRouteImport.update({
+    id: '/admin/review',
+    path: '/admin/review',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicEvalIngestRoute = ApiPublicEvalIngestRouteImport.update({
   id: '/api/public/eval-ingest',
   path: '/api/public/eval-ingest',
@@ -85,6 +103,7 @@ const ApiPublicEvalIngestRoute = ApiPublicEvalIngestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/board': typeof BoardRoute
   '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
@@ -95,10 +114,12 @@ export interface FileRoutesByFullPath {
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
   '/runs/': typeof RunsIndexRoute
+  '/admin/review': typeof AuthenticatedAdminReviewRoute
   '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/board': typeof BoardRoute
   '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
@@ -108,11 +129,14 @@ export interface FileRoutesByTo {
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
   '/runs': typeof RunsIndexRoute
+  '/admin/review': typeof AuthenticatedAdminReviewRoute
   '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/board': typeof BoardRoute
   '/calendar': typeof CalendarRoute
   '/eval': typeof EvalRoute
@@ -123,12 +147,14 @@ export interface FileRoutesById {
   '/compare/swe-bench': typeof CompareSweBenchRoute
   '/runs/$id': typeof RunsIdRoute
   '/runs/': typeof RunsIndexRoute
+  '/_authenticated/admin/review': typeof AuthenticatedAdminReviewRoute
   '/api/public/eval-ingest': typeof ApiPublicEvalIngestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/board'
     | '/calendar'
     | '/eval'
@@ -139,10 +165,12 @@ export interface FileRouteTypes {
     | '/compare/swe-bench'
     | '/runs/$id'
     | '/runs/'
+    | '/admin/review'
     | '/api/public/eval-ingest'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/board'
     | '/calendar'
     | '/eval'
@@ -152,10 +180,13 @@ export interface FileRouteTypes {
     | '/compare/swe-bench'
     | '/runs/$id'
     | '/runs'
+    | '/admin/review'
     | '/api/public/eval-ingest'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/board'
     | '/calendar'
     | '/eval'
@@ -166,11 +197,14 @@ export interface FileRouteTypes {
     | '/compare/swe-bench'
     | '/runs/$id'
     | '/runs/'
+    | '/_authenticated/admin/review'
     | '/api/public/eval-ingest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BoardRoute: typeof BoardRoute
   CalendarRoute: typeof CalendarRoute
   EvalRoute: typeof EvalRoute
@@ -189,6 +223,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/board': {
@@ -261,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RunsIdRouteImport
       parentRoute: typeof RunsRoute
     }
+    '/_authenticated/admin/review': {
+      id: '/_authenticated/admin/review'
+      path: '/admin/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AuthenticatedAdminReviewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/eval-ingest': {
       id: '/api/public/eval-ingest'
       path: '/api/public/eval-ingest'
@@ -270,6 +325,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminReviewRoute: typeof AuthenticatedAdminReviewRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminReviewRoute: AuthenticatedAdminReviewRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface RunsRouteChildren {
   RunsIdRoute: typeof RunsIdRoute
@@ -285,6 +351,8 @@ const RunsRouteWithChildren = RunsRoute._addFileChildren(RunsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   BoardRoute: BoardRoute,
   CalendarRoute: CalendarRoute,
   EvalRoute: EvalRoute,
