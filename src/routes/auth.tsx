@@ -59,7 +59,7 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
+      <SiteHeader navs={[]} />
       <main className="mx-auto w-full max-w-md px-4 py-14">
         <h1 className="mb-1 text-[22px] font-bold">{mode === "signin" ? "登录" : "注册"}</h1>
         <p className="mb-5 text-[13px] text-text-3">
