@@ -94,7 +94,13 @@ export function deriveAgents(rows: EvalRunRow[]): LoopAgent[] {
     return a;
   };
 
-  for (const r of rows) {
+  // 从旧到新遍历：同一智能体 + 同一任务的新评测覆盖旧评测
+  const ordered = [...rows].sort((x, y) => {
+    const d = x.run_date.localeCompare(y.run_date);
+    return d !== 0 ? d : x.created_at.localeCompare(y.created_at);
+  });
+
+  for (const r of ordered) {
     const a = ensure(r);
     const src = { label: r.source_label, val: r.method, by: r.source_by };
     if (r.suite === "looparena") {
