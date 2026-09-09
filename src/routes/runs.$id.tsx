@@ -6,7 +6,6 @@ import { getEvalRun } from "@/lib/eval-runs.functions";
 import { SUITE_LABEL, TASK_LABEL, type EvalRunRow } from "@/lib/eval-queries";
 import { RunTimeline } from "@/components/agentbench/RunTimeline";
 
-
 const runQuery = (id: string) =>
   queryOptions({
     queryKey: ["eval-run", id],
@@ -91,7 +90,6 @@ function RunPage() {
               <Block title="原始工具调用日志" body={run.tool_log} />
               <Block title="评分依据" body={run.rationale} />
             </div>
-
 
             <div className="ab-panel mt-3 bg-white p-4 text-[12.5px] text-text-2">
               <div className="mb-1 font-bold text-foreground">数据来源</div>

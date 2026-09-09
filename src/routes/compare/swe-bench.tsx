@@ -114,9 +114,10 @@ function CompareSweBench() {
             </h1>
             <p className="mt-4 max-w-[720px] text-[15px] leading-7 text-text-2 sm:text-[16px]">
               SWE-bench 是编程智能体领域使用最广的基准：给 Agent 一个真实 GitHub issue 和仓库快照，
-              让它产出补丁，然后跑仓库测试看问题是否被解决。它回答的是「整套系统端到端行不行」，
-              但<b className="text-foreground">无法区分功劳属于模型、还是属于外围 scaffold</b>。
-              LoopArena 的核心差异在于<b className="text-foreground">把 Controller（决策）与 Worker（执行）分开</b>：
+              让它产出补丁，然后跑仓库测试看问题是否被解决。它回答的是「整套系统端到端行不行」， 但
+              <b className="text-foreground">无法区分功劳属于模型、还是属于外围 scaffold</b>。
+              LoopArena 的核心差异在于
+              <b className="text-foreground">把 Controller（决策）与 Worker（执行）分开</b>：
               固定同一个 Worker 后，不同 Controller 之间的分数差只反映控制能力的差异。
               两个基准并不矛盾——SWE-bench 适合验收系统整体，LoopArena 适合定位「控制」这一层的强弱。
             </p>
@@ -142,7 +143,8 @@ function CompareSweBench() {
               两个基准，两种测量目标
             </h2>
             <p className="mt-2 max-w-[680px] text-[14px] leading-6 text-text-2">
-              下表按双方公开论文的口径整理：左列为对比维度，中列为 SWE-bench（含 Verified 子集），右列为 LoopArena。
+              下表按双方公开论文的口径整理：左列为对比维度，中列为 SWE-bench（含 Verified
+              子集），右列为 LoopArena。
             </p>
           </div>
 
@@ -185,8 +187,8 @@ function CompareSweBench() {
               在端到端基准里，一次失败可能是模型判断力不行，也可能只是工具封装或提示词脚手架的问题——
               分数本身不会告诉你。LoopArena 用
               <b className="text-foreground"> Evidence Packet（证据包）</b>统一信息输入、用
-              <b className="text-foreground"> Loop Contract（循环合同）</b>统一任务下发与验收，
-              再把 Worker 固定为同一模型，让「控制」成为唯一变量。
+              <b className="text-foreground"> Loop Contract（循环合同）</b>统一任务下发与验收， 再把
+              Worker 固定为同一模型，让「控制」成为唯一变量。
               三级评测让预算不同的团队都能参与：从秒级的合同选择，到完整任务的严格成功率。
             </p>
 
@@ -214,17 +216,28 @@ function CompareSweBench() {
             <div className="rounded-[20px] border border-border bg-white/85 p-5 shadow-[var(--metric-shadow)]">
               <div className="text-[15px] font-bold">选 SWE-bench，当你要——</div>
               <ul className="mt-3 space-y-2.5 text-[13.5px] leading-6 text-text-2">
-                <li>· 验收一套<b className="text-foreground">完整 Agent 系统</b>（模型 + scaffold + 工具链）在真实 issue 上的端到端表现；</li>
-                <li>· 与社区已有的大量公开结果横向对照（SWE-bench 已积累多个公开榜单与复现数据）；</li>
+                <li>
+                  · 验收一套<b className="text-foreground">完整 Agent 系统</b>（模型 + scaffold +
+                  工具链）在真实 issue 上的端到端表现；
+                </li>
+                <li>
+                  · 与社区已有的大量公开结果横向对照（SWE-bench 已积累多个公开榜单与复现数据）；
+                </li>
                 <li>· 在 12 个流行 Python 仓库的真实维护场景中做发布前回归。</li>
               </ul>
             </div>
             <div className="rounded-[20px] border border-border bg-white/85 p-5 shadow-[var(--metric-shadow)]">
               <div className="text-[15px] font-bold">选 LoopArena，当你要——</div>
               <ul className="mt-3 space-y-2.5 text-[13.5px] leading-6 text-text-2">
-                <li>· 单独比较不同模型的<b className="text-foreground">控制与决策能力</b>，排除 scaffold 差异的干扰；</li>
+                <li>
+                  · 单独比较不同模型的<b className="text-foreground">控制与决策能力</b>，排除
+                  scaffold 差异的干扰；
+                </li>
                 <li>· 用 Type I / II 低成本档位快速初筛，再用 Type III 严格成功率定榜；</li>
-                <li>· 同时关注「做不做得完」和「<b className="text-foreground">花多少钱做完</b>」（估算推理成本 $/run）。</li>
+                <li>
+                  · 同时关注「做不做得完」和「<b className="text-foreground">花多少钱做完</b>
+                  」（估算推理成本 $/run）。
+                </li>
               </ul>
             </div>
           </div>
@@ -232,7 +245,8 @@ function CompareSweBench() {
           <div className="mt-5 flex gap-3 rounded-2xl border border-warn/25 bg-warn-soft/80 px-4 py-3.5 text-[12.5px] leading-6 text-warn">
             <span className="mt-0.5 select-none text-[15px] font-bold leading-none">!</span>
             <div>
-              <b>口径提醒</b>：SWE-bench 的 % Resolved 与 LoopArena 的 SSR 测量目标不同，分数不可直接互换或合并排名；
+              <b>口径提醒</b>：SWE-bench 的 % Resolved 与 LoopArena 的 SSR
+              测量目标不同，分数不可直接互换或合并排名；
               同一模型在两个基准上的名次差异，往往反映的是评测口径而非能力矛盾。
             </div>
           </div>

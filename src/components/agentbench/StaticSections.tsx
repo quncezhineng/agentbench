@@ -311,7 +311,10 @@ export function Metrics() {
           />
           <div className="mt-3 space-y-2">
             {REF_POLICIES.map((r) => (
-              <div key={r.name} className="rounded-xl border border-border bg-surface-2/70 px-3.5 py-2.5">
+              <div
+                key={r.name}
+                className="rounded-xl border border-border bg-surface-2/70 px-3.5 py-2.5"
+              >
                 <div className="font-mono text-[12.5px] font-bold text-brand">{r.name}</div>
                 <p className="mt-1 text-[12px] leading-5 text-text-2">{r.d}</p>
               </div>
@@ -319,7 +322,10 @@ export function Metrics() {
           </div>
           <p className="mt-3 text-[12px] leading-5 text-text-3">
             论文观察：Fixed control 在 Type II 上把 No control 的 39.51% 拉到 46.91%，但 Type III
-            两者都只有 18.52%——<b className="text-text-2">机械重申目标只能帮有限切片，完整任务需要能自适应切换的控制。</b>
+            两者都只有 18.52%——
+            <b className="text-text-2">
+              机械重申目标只能帮有限切片，完整任务需要能自适应切换的控制。
+            </b>
           </p>
         </div>
       </div>
@@ -343,19 +349,22 @@ export function Scope() {
         <div className="ab-panel bg-white p-5">
           <div className="text-[13px] font-semibold">动作空间匹配</div>
           <p className="mt-2 text-[12.5px] leading-6 text-text-2">
-            拿编码基准去评客服/研究 Agent 没有意义。LoopArena 的 Worker 只会「写代码 + 跑命令」，只有编程智能体落在这个动作空间里。
+            拿编码基准去评客服/研究 Agent 没有意义。LoopArena 的 Worker 只会「写代码 +
+            跑命令」，只有编程智能体落在这个动作空间里。
           </p>
         </div>
         <div className="ab-panel bg-white p-5">
           <div className="text-[13px] font-semibold">隔离控制能力</div>
           <p className="mt-2 text-[12.5px] leading-6 text-text-2">
-            固定 Worker 后，分数差只来自 Controller 的控制能力。跨场景会引入完全不同的动作空间，破坏这一隔离。
+            固定 Worker 后，分数差只来自 Controller
+            的控制能力。跨场景会引入完全不同的动作空间，破坏这一隔离。
           </p>
         </div>
         <div className="ab-panel bg-white p-5">
           <div className="text-[13px] font-semibold">主流产品聚焦</div>
           <p className="mt-2 text-[12.5px] leading-6 text-text-2">
-            Claude Code、Codex、Cursor 等当前主流智能体都以「编程」为核心场景，聚焦这里对用户最有参考价值。
+            Claude Code、Codex、Cursor
+            等当前主流智能体都以「编程」为核心场景，聚焦这里对用户最有参考价值。
           </p>
         </div>
       </div>

@@ -5,10 +5,11 @@ author:
   - "[[@shao__meng]]"
 published: 2026-09-01
 created: 2026-09-08
-description: "LoopArena：把\"模型当管理者\"变成可测量的基准 https://huggingface.co/papers/2608.28281… 论文解决什么问题？ \"Loop Engineering\" 正在成为使用 Coding Agents 的新范式：开发者不再逐条手写 prom"
+description: 'LoopArena：把"模型当管理者"变成可测量的基准 https://huggingface.co/papers/2608.28281… 论文解决什么问题？ "Loop Engineering" 正在成为使用 Coding Agents 的新范式：开发者不再逐条手写 prom'
 tags:
   - "clippings"
 ---
+
 LoopArena：把"模型当管理者"变成可测量的基准
 
 https://huggingface.co/papers/2608.28281…
@@ -54,13 +55,13 @@ Type III - 完整长程任务：从原始状态跑到停止决策（27 个任务
 5\. 两个诚实的负面发现。 GLM 5.2 作为 Controller 时 75.93% 的 Type III 评测出现输出触顶（20,480 token 上限），协议失败直接计为任务失败——冗长决策本身就是控制缺陷；排名一致性对评分标准敏感（SCBench 换用"全部检查"标准时 ρ 跌至 0.148），说明 Core 检查集的选择承载了实质影响。
 
 > **AK @\_akhaliq** · 2026-08-31
-> 
+>
 > LoopArena
-> 
+>
 > Benchmarking Models as Runtime Controllers for Loop Engineering
-> 
+>
 > paper: https://huggingface.co/papers/2608.28281…
-> 
+>
 > ![图像](https://pbs.twimg.com/media/HRF7TYLaAAAvC5q?format=jpg&name=large)
 
 ---
@@ -68,13 +69,13 @@ Type III - 完整长程任务：从原始状态跑到停止决策（27 个任务
 ## Comments
 
 > **曾波 @zengbozb** · [2026-09-01](https://x.com/zengbozb/status/2094592524505784444)
-> 
+>
 > 固定控制在 Type II 有效、Type III 无效，和我带 agent 干长任务的体感一致：有边界的切片里重申目标就够了，完整任务难在凭证据在推进/验证/停止间切换。Reporter 的“验证证据”字段才是承重墙——只看进度汇报不看证据，worker 一句“测试通过了”就能把 controller 骗到底。
 
 > **Crio Songo @shuizhuyu** · [2026-09-01](https://x.com/shuizhuyu/status/2094666308352639292)
-> 
+>
 > 这个拆分思路很实用，终于能把指挥模型的调度能力单独拉出来评测，之前一直都是混在一起测不准。
 
 > **xiangxiang chu @cxx1353574** · [2026-09-02](https://x.com/cxx1353574/status/2095075999562306019)
-> 
+>
 > thanks for sharing our work

@@ -8,8 +8,9 @@ description: "Discover how Anthropic approaches the development of reliable AI a
 tags:
   - "clippings"
 ---
-*Note: Much of the tooling landscape described in this post has changed since December 2024. For our current approach, see [**how we built Claude Managed Agents**](https://www.anthropic.com/engineering/managed-agents)* *and the [**Managed Agents documentation**.](https://platform.claude.com/docs/en/managed-agents/overview)*  
-  
+
+_Note: Much of the tooling landscape described in this post has changed since December 2024. For our current approach, see [**how we built Claude Managed Agents**](https://www.anthropic.com/engineering/managed-agents)_ _and the [**Managed Agents documentation**.](https://platform.claude.com/docs/en/managed-agents/overview)_
+
 Over the past year, we've worked with dozens of teams building large language model (LLM) agents across industries. Consistently, the most successful implementations weren't using complex frameworks or specialized libraries. Instead, they were building with simple, composable patterns.
 
 In this post, we share what we’ve learned from working with our customers and building agents ourselves, and give practical advice for developers on building effective agents.
@@ -106,11 +107,11 @@ The parallelization workflow
 **Examples where parallelization is useful:**
 
 - **Sectioning**:
-	- Implementing guardrails where one model instance processes user queries while another screens them for inappropriate content or requests. This tends to perform better than having the same LLM call handle both guardrails and the core response.
-		- Automating evals for evaluating LLM performance, where each LLM call evaluates a different aspect of the model’s performance on a given prompt.
+  - Implementing guardrails where one model instance processes user queries while another screens them for inappropriate content or requests. This tends to perform better than having the same LLM call handle both guardrails and the core response.
+    - Automating evals for evaluating LLM performance, where each LLM call evaluates a different aspect of the model’s performance on a given prompt.
 - **Voting**:
-	- Reviewing a piece of code for vulnerabilities, where several different prompts review and flag the code if they find a problem.
-		- Evaluating whether a given piece of content is inappropriate, with multiple prompts evaluating different aspects or requiring different vote thresholds to balance false positives and negatives.
+  - Reviewing a piece of code for vulnerabilities, where several different prompts review and flag the code if they find a problem.
+    - Evaluating whether a given piece of content is inappropriate, with multiple prompts evaluating different aspects or requiring different vote thresholds to balance false positives and negatives.
 
 ### Workflow: Orchestrator-workers
 
@@ -169,11 +170,11 @@ High-level flow of a coding agent
 
 ## Combining and customizing these patterns
 
-These building blocks aren't prescriptive. They're common patterns that developers can shape and combine to fit different use cases. The key to success, as with any LLM features, is measuring performance and iterating on implementations. To repeat: you should consider adding complexity *only* when it demonstrably improves outcomes.
+These building blocks aren't prescriptive. They're common patterns that developers can shape and combine to fit different use cases. The key to success, as with any LLM features, is measuring performance and iterating on implementations. To repeat: you should consider adding complexity _only_ when it demonstrably improves outcomes.
 
 ## Summary
 
-Success in the LLM space isn't about building the most sophisticated system. It's about building the *right* system for your needs. Start with simple prompts, optimize them with comprehensive evaluation, and add multi-step agentic systems only when simpler solutions fall short.
+Success in the LLM space isn't about building the most sophisticated system. It's about building the _right_ system for your needs. Start with simple prompts, optimize them with comprehensive evaluation, and add multi-step agentic systems only when simpler solutions fall short.
 
 When implementing agents, we try to follow three core principles:
 
@@ -225,7 +226,7 @@ Our suggestions for deciding on tool formats are the following:
 - Keep the format close to what the model has seen naturally occurring in text on the internet.
 - Make sure there's no formatting "overhead" such as having to keep an accurate count of thousands of lines of code, or string-escaping any code it writes.
 
-One rule of thumb is to think about how much effort goes into human-computer interfaces (HCI), and plan to invest just as much effort in creating good *agent* -computer interfaces (ACI). Here are some thoughts on how to do so:
+One rule of thumb is to think about how much effort goes into human-computer interfaces (HCI), and plan to invest just as much effort in creating good _agent_ -computer interfaces (ACI). Here are some thoughts on how to do so:
 
 - Put yourself in the model's shoes. Is it obvious how to use this tool, based on the description and parameters, or would you need to think carefully about it? If so, then it’s probably also true for the model. A good tool definition often includes example usage, edge cases, input format requirements, and clear boundaries from other tools.
 - How can you change parameter names or descriptions to make things more obvious? Think of this as writing a great docstring for a junior developer on your team. This is especially important when using many similar tools.

@@ -1,16 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Mechanism,
-  Metrics,
-  Pipeline,
-  Scope,
-  Tiers,
-} from "@/components/agentbench/StaticSections";
+import { Mechanism, Metrics, Pipeline, Scope, Tiers } from "@/components/agentbench/StaticSections";
 import { SiteFooter, SiteHeader } from "@/components/agentbench/SiteShell";
 
-const TITLE = "AgentBench 智衡 · 编程智能体 LoopArena 评测与排行";
+const TITLE = "AgentBench 智衡 · 智能体 LoopArena 评测与排行";
 const DESC =
-  "编程智能体 LoopArena 评测与排行：Controller 与 Worker 分开测，用 Evidence Packet + Loop Contract 隔离控制能力；Type I / II / III 三级评测（合同选择 / 任务切片 / 完整任务）+ 严格成功率（SSR）+ 估算成本，只对目前主流的编程智能体排序打分。";
+  "智能体 LoopArena 评测与排行：Controller 与 Worker 分开测，用 Evidence Packet + Loop Contract 隔离控制能力；Type I / II / III 三级评测（合同选择 / 任务切片 / 完整任务）+ 严格成功率（SSR）+ 估算成本，只对目前主流的编程智能体排序打分。";
 const BASE_URL = "https://getagentbench.lovable.app";
 
 export const Route = createFileRoute("/")({
@@ -205,8 +199,8 @@ function Index() {
         <div className="mt-4 flex gap-3 rounded-2xl border border-warn/25 bg-warn-soft/80 px-4 py-3.5 text-[12.5px] leading-6 text-warn">
           <span className="mt-0.5 select-none text-[15px] font-bold leading-none">!</span>
           <div>
-            <b>数据口径声明</b>：榜单中已标注来源的分数来自 LoopArena 论文（arXiv 2608.28281）
-            Table 2 的公开发布快照，仅代表论文口径与当时复现环境；其余主流编程智能体产品暂为
+            <b>数据口径声明</b>：榜单中已标注来源的分数来自 LoopArena 论文（arXiv 2608.28281） Table
+            2 的公开发布快照，仅代表论文口径与当时复现环境；其余主流编程智能体产品暂为
             「待评测」占位，尚未在 LoopArena 统一口径下跑分。本站为第三方评测榜单，与论文作者
             及各家模型/产品厂商无隶属关系。
           </div>

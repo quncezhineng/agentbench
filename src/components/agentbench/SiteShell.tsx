@@ -114,9 +114,19 @@ export function SiteHeader({ navs, chip, cta }: SiteHeaderProps) {
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
               {menuOpen ? (
-                <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                <path
+                  d="M4 4l10 10M14 4L4 14"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
               ) : (
-                <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                <path
+                  d="M3 5h12M3 9h12M3 13h12"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
               )}
             </svg>
           </button>
@@ -187,7 +197,7 @@ export function SiteFooter() {
     <footer className="mt-12 border-t border-border py-8 text-[12px] text-text-3">
       <div className="ab-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
         <span className="font-semibold text-text-2">
-          AgentBench 智衡 · 编程智能体 LoopArena 评测与排行
+          AgentBench 智衡 · 智能体 LoopArena 评测与排行
         </span>
         <a
           href="https://huggingface.co/papers/2608.28281"

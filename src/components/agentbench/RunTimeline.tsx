@@ -46,7 +46,13 @@ export function parseToolLog(log: string): TimelineStep[] {
                 : typeof o["seconds"] === "number"
                   ? (o["seconds"] as number) * 1000
                   : null,
-          status: FAIL.test(s) ? "fail" : OK.test(s) || s === "" ? (s ? "ok" : "unknown") : "unknown",
+          status: FAIL.test(s)
+            ? "fail"
+            : OK.test(s) || s === ""
+              ? s
+                ? "ok"
+                : "unknown"
+              : "unknown",
         } satisfies TimelineStep;
       });
     }
@@ -128,7 +134,9 @@ export function RunTimeline({ log }: { log: string }) {
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() =>
-                  setOpen((o) => (o.includes(s.index) ? o.filter((x) => x !== s.index) : [...o, s.index]))
+                  setOpen((o) =>
+                    o.includes(s.index) ? o.filter((x) => x !== s.index) : [...o, s.index],
+                  )
                 }
                 className="w-full rounded-lg px-2 py-2 text-left hover:bg-surface-2"
               >

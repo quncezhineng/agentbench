@@ -45,20 +45,20 @@
 
 ## 代码组织
 
-| 文件                                             | 职责                                                                     |
-| ------------------------------------------------ | ------------------------------------------------------------------------ |
-| `src/styles.css`                                 | 全局设计 token、自定义工具类、组件类                                     |
-| `src/routes/index.tsx`                           | 首页：品牌导航 + LoopArena 首屏 Hero，装配机制 / 三级评测 / 链路 / 指标 / 范围区块与页脚 |
-| `src/routes/board.tsx`                           | 排行榜页 `/board`：顶部导航（区块锚点 `#board/#references/#pending`，右上角展示数据快照日期）+ `BenchApp` + 页脚 |
-| `src/routes/eval.tsx`                            | LoopArena 机制说明页 `/eval`：SEO head + `SiteHeader`（区块锚点 `#roles/#tiers/#references/#reproduce`）+ `LoopArenaExplainer` + 页脚 |
-| `src/routes/agents/$name.tsx`                    | 智能体详情页 `/agents/:name`：SEO head + `AgentDetail` + 页脚            |
-| `src/components/agentbench/SiteShell.tsx`        | 三页共用的站点外壳：全局站点导航（排行榜 / LoopArena 机制）+ 页面区块锚点导航（按 pathname / hash 分别高亮）+ 页脚 |
-| `src/components/agentbench/BenchApp.tsx`         | 排行榜：主榜（Type I/II/III 可排序评分表）+ 参考策略表 + 待评测产品卡片  |
-| `src/components/agentbench/AgentDetail.tsx`      | 单智能体详情：概览 + Type I / II / III 三级结果 + 数据来源               |
-| `src/components/agentbench/StaticSections.tsx`   | 首页静态区块：机制（Controller/Worker/Reporter）/ 三级评测 / 链路 / 指标 / 范围 |
-| `src/components/agentbench/LoopArenaExplainer.tsx` | `/eval` 说明页主体：角色 / 对象 / 三级评测表 / 参考策略 / 复现入口      |
-| `src/lib/agentbench-data.ts`                     | LoopArena 数据模型、论文种子数据、参考策略、排序与格式化纯函数           |
-| `src/lib/leaderboard-store.ts`                   | 榜单快照：直接返回策展常量 `SNAPSHOT`（SSR 安全，不再读写 localStorage） |
+| 文件                                               | 职责                                                                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/styles.css`                                   | 全局设计 token、自定义工具类、组件类                                                                                                  |
+| `src/routes/index.tsx`                             | 首页：品牌导航 + LoopArena 首屏 Hero，装配机制 / 三级评测 / 链路 / 指标 / 范围区块与页脚                                              |
+| `src/routes/board.tsx`                             | 排行榜页 `/board`：顶部导航（区块锚点 `#board/#references/#pending`，右上角展示数据快照日期）+ `BenchApp` + 页脚                      |
+| `src/routes/eval.tsx`                              | LoopArena 机制说明页 `/eval`：SEO head + `SiteHeader`（区块锚点 `#roles/#tiers/#references/#reproduce`）+ `LoopArenaExplainer` + 页脚 |
+| `src/routes/agents/$name.tsx`                      | 智能体详情页 `/agents/:name`：SEO head + `AgentDetail` + 页脚                                                                         |
+| `src/components/agentbench/SiteShell.tsx`          | 三页共用的站点外壳：全局站点导航（排行榜 / LoopArena 机制）+ 页面区块锚点导航（按 pathname / hash 分别高亮）+ 页脚                    |
+| `src/components/agentbench/BenchApp.tsx`           | 排行榜：主榜（Type I/II/III 可排序评分表）+ 参考策略表 + 待评测产品卡片                                                               |
+| `src/components/agentbench/AgentDetail.tsx`        | 单智能体详情：概览 + Type I / II / III 三级结果 + 数据来源                                                                            |
+| `src/components/agentbench/StaticSections.tsx`     | 首页静态区块：机制（Controller/Worker/Reporter）/ 三级评测 / 链路 / 指标 / 范围                                                       |
+| `src/components/agentbench/LoopArenaExplainer.tsx` | `/eval` 说明页主体：角色 / 对象 / 三级评测表 / 参考策略 / 复现入口                                                                    |
+| `src/lib/agentbench-data.ts`                       | LoopArena 数据模型、论文种子数据、参考策略、排序与格式化纯函数                                                                        |
+| `src/lib/leaderboard-store.ts`                     | 榜单快照：直接返回策展常量 `SNAPSHOT`（SSR 安全，不再读写 localStorage）                                                              |
 
 ### 数据层说明（LoopArena 口径）
 

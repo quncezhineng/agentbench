@@ -67,7 +67,10 @@ function AuthPage() {
         </p>
         <form onSubmit={onSubmit} className="ab-panel space-y-3 bg-white p-5">
           <div>
-            <label className="mb-1 block text-[11.5px] font-semibold text-text-2" htmlFor="au-email">
+            <label
+              className="mb-1 block text-[11.5px] font-semibold text-text-2"
+              htmlFor="au-email"
+            >
               邮箱
             </label>
             <input

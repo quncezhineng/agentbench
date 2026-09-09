@@ -15,9 +15,6 @@ const NAV = [
   { href: "#cli", label: "CLI 实测榜" },
   { href: "#pending", label: "待评测" },
   { href: "#submit", label: "提交结果" },
-  { href: "/sources", label: "数据来源" },
-  { href: "/runs", label: "评测结果库" },
-  { href: "/calendar", label: "评测日历" },
 ];
 
 export const Route = createFileRoute("/board")({
@@ -46,10 +43,7 @@ function Board() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航：区块锚点均在当前榜单页内 ---------- */}
-      <SiteHeader
-        navs={NAV}
-        cta={{ href: "/eval", label: "LoopArena 机制" }}
-      />
+      <SiteHeader navs={NAV} cta={{ href: "/eval", label: "LoopArena 机制" }} />
 
       {/* ---------- 榜单工作台：主榜 / 参考策略 / 待评测产品 ---------- */}
       <main>

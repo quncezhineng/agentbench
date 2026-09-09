@@ -60,10 +60,10 @@ export const Route = createFileRoute("/api/public/eval-ingest")({
         try {
           parsed = bodySchema.parse(await request.json());
         } catch (e) {
-          return new Response(
-            JSON.stringify({ ok: false, error: (e as Error).message }),
-            { status: 400, headers: { "content-type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ ok: false, error: (e as Error).message }), {
+            status: 400,
+            headers: { "content-type": "application/json" },
+          });
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -117,17 +117,15 @@ export const Route = createFileRoute("/api/public/eval-ingest")({
           await supabaseAdmin
             .from("eval_schedule")
             .update(
-              s.cadence === "once"
-                ? { status: "done" }
-                : { status: "planned", planned_date: next },
+              s.cadence === "once" ? { status: "done" } : { status: "planned", planned_date: next },
             )
             .eq("id", s.id);
         }
 
-        return new Response(
-          JSON.stringify({ ok: true, inserted: data?.length ?? 0 }),
-          { status: 200, headers: { "content-type": "application/json" } },
-        );
+        return new Response(JSON.stringify({ ok: true, inserted: data?.length ?? 0 }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
       },
     },
   },

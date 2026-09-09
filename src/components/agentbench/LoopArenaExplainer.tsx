@@ -26,11 +26,23 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 /* ---------- 三级评测表（论文 Table 2 真值） ---------- */
 
 const TIER_TABLE = [
-  { key: "Type I", head: "合同准确率", get: (a: (typeof CONTROLLERS)[number]) => fmtPct(a.r.type1Acc) },
+  {
+    key: "Type I",
+    head: "合同准确率",
+    get: (a: (typeof CONTROLLERS)[number]) => fmtPct(a.r.type1Acc),
+  },
   { key: "Type II", head: "SSR", get: (a: (typeof CONTROLLERS)[number]) => fmtPct(a.r.type2Ssr) },
-  { key: "Type II", head: "成本", get: (a: (typeof CONTROLLERS)[number]) => fmtCost(a.r.type2Cost) },
+  {
+    key: "Type II",
+    head: "成本",
+    get: (a: (typeof CONTROLLERS)[number]) => fmtCost(a.r.type2Cost),
+  },
   { key: "Type III", head: "SSR", get: (a: (typeof CONTROLLERS)[number]) => fmtPct(a.r.type3Ssr) },
-  { key: "Type III", head: "成本", get: (a: (typeof CONTROLLERS)[number]) => fmtCost(a.r.type3Cost) },
+  {
+    key: "Type III",
+    head: "成本",
+    get: (a: (typeof CONTROLLERS)[number]) => fmtCost(a.r.type3Cost),
+  },
 ];
 
 export function LoopArenaExplainer() {
@@ -50,7 +62,8 @@ export function LoopArenaExplainer() {
               LoopArena 评测机制
             </h1>
             <p className="mt-3 max-w-[760px] text-[14px] leading-7 text-text-2 sm:text-[15px]">
-              LoopArena 把「编程智能体」拆成两个 Agent：<b className="text-foreground">Controller</b>
+              LoopArena 把「编程智能体」拆成两个 Agent：
+              <b className="text-foreground">Controller</b>
               只做决策、<b className="text-foreground">Worker</b> 只动手。被评测、被排序的是
               Controller——它读结构化证据，输出「下一步该干嘛」的 Loop Contract，全程不碰代码。
             </p>
@@ -88,7 +101,8 @@ export function LoopArenaExplainer() {
           </Block>
           <Block title="Worker · 固定编码 Agent">
             <p>
-              唯一能读写代码、运行命令的角色。全榜单统一用 <b className="text-foreground">Qwen3.7-Plus</b>
+              唯一能读写代码、运行命令的角色。全榜单统一用{" "}
+              <b className="text-foreground">Qwen3.7-Plus</b>
               ，把「执行能力」固定住，让分数差只反映控制能力。
             </p>
           </Block>
@@ -210,7 +224,10 @@ export function LoopArenaExplainer() {
             <h3 className="text-[15px] font-semibold tracking-tight">参考策略（不参与排名）</h3>
             <div className="mt-3 space-y-2">
               {REFERENCES.map((r) => (
-                <div key={r.name} className="rounded-xl border border-border bg-surface-2/70 px-3.5 py-2.5">
+                <div
+                  key={r.name}
+                  className="rounded-xl border border-border bg-surface-2/70 px-3.5 py-2.5"
+                >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[12.5px] font-bold text-brand">{r.name}</span>
                     <span className="text-[11px] text-text-3">
@@ -226,8 +243,8 @@ export function LoopArenaExplainer() {
             <h3 className="text-[15px] font-semibold tracking-tight">指标口径</h3>
             <ul className="mt-3 space-y-2 text-[12.5px] leading-6 text-text-2">
               <li>
-                <b className="text-foreground">SSR（Strict Success Rate）</b>：既通过任务 evaluator、
-                又遵守 LoopArena 协议才算成功。
+                <b className="text-foreground">SSR（Strict Success Rate）</b>：既通过任务
+                evaluator、 又遵守 LoopArena 协议才算成功。
               </li>
               <li>
                 <b className="text-foreground">估算推理成本</b>：$/run，无缓存口径，含 Worker /
@@ -252,13 +269,21 @@ export function LoopArenaExplainer() {
         </div>
         <div className="ab-panel bg-white p-5 sm:p-6">
           <p className="text-[12.5px] leading-6 text-text-2">
-            官方仓库提供 Type I / Type III 的运行命令，支持 <code className="rounded bg-surface-2 px-1 font-mono text-[11.5px]">--preflight-only</code>
-             、<code className="rounded bg-surface-2 px-1 font-mono text-[11.5px]">no-control</code>、
-            <code className="rounded bg-surface-2 px-1 font-mono text-[11.5px]"> fixed-control</code> 等参数。
+            官方仓库提供 Type I / Type III 的运行命令，支持{" "}
+            <code className="rounded bg-surface-2 px-1 font-mono text-[11.5px]">
+              --preflight-only
+            </code>
+            、<code className="rounded bg-surface-2 px-1 font-mono text-[11.5px]">no-control</code>
+            、
+            <code className="rounded bg-surface-2 px-1 font-mono text-[11.5px]">
+              {" "}
+              fixed-control
+            </code>{" "}
+            等参数。
           </p>
           <div className="mt-4 overflow-x-auto rounded-xl bg-surface-2/60 px-4 py-3">
             <pre className="font-mono text-[12px] leading-6 text-text-2">
-{`looparena-type1-run   # Type I 合同选择（零 Worker 执行）
+              {`looparena-type1-run   # Type I 合同选择（零 Worker 执行）
 looparena-type3-run   # Type III 完整任务（最终标准）
 # 支持 --preflight-only 预检、no-control / fixed-control 参考策略`}
             </pre>

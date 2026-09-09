@@ -37,7 +37,7 @@ const TIMEOUT = Number(arg("timeout", "180")) * 1000;
 const DRY = flag("dry");
 
 if (!AGENT || !CMD) {
-  console.error("缺少 --agent 或 --cmd。示例：--agent \"Claude Code\" --cmd \"claude -p\"");
+  console.error('缺少 --agent 或 --cmd。示例：--agent "Claude Code" --cmd "claude -p"');
   process.exit(1);
 }
 
@@ -125,7 +125,10 @@ const main = async () => {
     });
   }
 
-  const outFile = path.join("scripts/output", `cli-${AGENT.replace(/\s+/g, "-").toLowerCase()}-${runDate}.json`);
+  const outFile = path.join(
+    "scripts/output",
+    `cli-${AGENT.replace(/\s+/g, "-").toLowerCase()}-${runDate}.json`,
+  );
   await mkdir("scripts/output", { recursive: true });
   await writeFile(outFile, JSON.stringify(runs, null, 2));
   console.log(`\n结果已保存：${outFile}`);

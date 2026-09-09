@@ -127,8 +127,8 @@ function ReviewPage() {
                         {r.vendor ? <span className="text-text-3"> · {r.vendor}</span> : null}
                       </p>
                       <p className="text-[12px] text-text-3">
-                        {SUITE_LABEL[r.suite] ?? r.suite} · {TASK_LABEL[r.task_type] ?? r.task_type} ·{" "}
-                        {r.run_date} · 样本 {r.sample_size}
+                        {SUITE_LABEL[r.suite] ?? r.suite} · {TASK_LABEL[r.task_type] ?? r.task_type}{" "}
+                        · {r.run_date} · 样本 {r.sample_size}
                         {r.judge ? ` · 裁判 ${r.judge}` : ""}
                       </p>
                     </div>

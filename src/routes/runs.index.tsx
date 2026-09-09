@@ -75,7 +75,12 @@ function RunsPage() {
           <label className="text-[12px] text-text-3" htmlFor="f-agent">
             模型
           </label>
-          <select id="f-agent" className={sel} value={agent} onChange={(e) => setAgent(e.target.value)}>
+          <select
+            id="f-agent"
+            className={sel}
+            value={agent}
+            onChange={(e) => setAgent(e.target.value)}
+          >
             <option value="all">全部</option>
             {agentNames.map((n) => (
               <option key={n} value={n}>
@@ -86,7 +91,12 @@ function RunsPage() {
           <label className="text-[12px] text-text-3" htmlFor="f-task">
             任务
           </label>
-          <select id="f-task" className={sel} value={task} onChange={(e) => setTask(e.target.value)}>
+          <select
+            id="f-task"
+            className={sel}
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+          >
             <option value="all">全部</option>
             {taskTypes.map((t) => (
               <option key={t} value={t}>
@@ -97,7 +107,12 @@ function RunsPage() {
           <label className="text-[12px] text-text-3" htmlFor="f-metric">
             指标
           </label>
-          <select id="f-metric" className={sel} value={metric} onChange={(e) => setMetric(e.target.value)}>
+          <select
+            id="f-metric"
+            className={sel}
+            value={metric}
+            onChange={(e) => setMetric(e.target.value)}
+          >
             <option value="all">全部</option>
             {METRIC_KEYS.map((m) => (
               <option key={m} value={m}>

@@ -69,14 +69,15 @@ function CalendarPage() {
             每步耗时和工具调用日志直接写入排行榜、雷达图、维度表与结果库，对应排期自动标记完成并顺延。
           </p>
           <pre className="mt-2 overflow-x-auto rounded-lg bg-surface-2 p-3 text-[12px] leading-5 text-text-2">
-{`AB_INGEST_TOKEN=<你的口令> ./scripts/install-cron.sh "Claude Code" "claude -p" Anthropic`}
+            {`AB_INGEST_TOKEN=<你的口令> ./scripts/install-cron.sh "Claude Code" "claude -p" Anthropic`}
           </pre>
           <p className="mt-2 text-[12.5px] text-text-2">
             想先看一次结果而不上传，可以跑{" "}
             <code className="metric rounded bg-surface-2 px-1">
               node scripts/run-cli-eval.mjs --agent "Claude Code" --cmd "claude -p" --dry
             </code>
-            。任务集在 <code className="metric rounded bg-surface-2 px-1">scripts/eval-tasks.json</code>，
+            。任务集在{" "}
+            <code className="metric rounded bg-surface-2 px-1">scripts/eval-tasks.json</code>，
             可自行增删题目。手动结果仍可用{" "}
             <a className="text-brand hover:underline" href="/board#submit">
               提交表单
@@ -85,16 +86,11 @@ function CalendarPage() {
           </p>
         </div>
 
-
-
         <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {schedule.map((s) => {
             const due = s.planned_date <= today && s.status === "planned";
             return (
-              <div
-                key={s.id}
-                className={`ab-panel bg-white p-4 ${due ? "border-brand" : ""}`}
-              >
+              <div key={s.id} className={`ab-panel bg-white p-4 ${due ? "border-brand" : ""}`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="text-[14px] font-bold">{s.agent_name}</div>
                   <span

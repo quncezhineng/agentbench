@@ -59,7 +59,10 @@ export function SubmitForm() {
     };
     const parsed = submitSchema.safeParse(payload);
     if (!parsed.success) {
-      setMsg({ ok: false, text: `请检查填写内容：${parsed.error.issues[0]?.message ?? "格式不正确"}` });
+      setMsg({
+        ok: false,
+        text: `请检查填写内容：${parsed.error.issues[0]?.message ?? "格式不正确"}`,
+      });
       return;
     }
     setBusy(true);
@@ -312,10 +315,7 @@ export function SubmitForm() {
       </div>
 
       {msg && (
-        <p
-          className={`mt-3 text-[12.5px] ${msg.ok ? "text-brand" : "text-danger"}`}
-          role="status"
-        >
+        <p className={`mt-3 text-[12.5px] ${msg.ok ? "text-brand" : "text-danger"}`} role="status">
           {msg.text}
         </p>
       )}

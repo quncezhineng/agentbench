@@ -321,8 +321,7 @@ export const REFERENCES: LoopAgent[] = AGENTS.filter((a) => a.kind === "referenc
 
 /** 完整榜单顺序：Controller（按 Type III SSR 降序）→ 参考策略 → 待评测产品 */
 export function rankedAgents(): LoopAgent[] {
-  const byType3 = (a: LoopAgent, b: LoopAgent) =>
-    (b.r.type3Ssr ?? -1) - (a.r.type3Ssr ?? -1);
+  const byType3 = (a: LoopAgent, b: LoopAgent) => (b.r.type3Ssr ?? -1) - (a.r.type3Ssr ?? -1);
   return [...CONTROLLERS].sort(byType3).concat(REFERENCES, CLI_AGENTS, PRODUCTS);
 }
 
@@ -333,8 +332,7 @@ export const kindLabel: Record<LoopAgentKind, string> = {
 };
 
 /** 数值格式化：0–100 百分比（null → 占位符） */
-export const fmtPct = (x: number | null, digits = 2) =>
-  x == null ? "—" : `${x.toFixed(digits)}%`;
+export const fmtPct = (x: number | null, digits = 2) => (x == null ? "—" : `${x.toFixed(digits)}%`);
 
 /** 成本格式化：$/run（null → 占位符） */
 export const fmtCost = (x: number | null) => (x == null ? "—" : `$${x.toFixed(2)}`);

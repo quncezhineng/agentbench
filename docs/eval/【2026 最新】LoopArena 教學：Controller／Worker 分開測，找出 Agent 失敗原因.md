@@ -9,6 +9,7 @@ description: "LoopArena 教學帶你把 Controller 與 Worker 分開測：先跑
 tags:
   - "clippings"
 ---
+
 AI Agent 跑壞了，先別急著換模型：失敗可能來自 Worker、Controller，或 runtime／evaluator。這篇 **LoopArena 教學** 先跑零呼叫 preflight 與單題 smoke test，再建立「固定 Worker、只換 Controller」的最小比較。
 
 核心式子是： **可歸因比較＝固定 Worker／任務／環境／Harness，只換 Controller，再讀 Trace＋evaluator receipt。** 它回答系統是否對 Controller 敏感，不產生全球模型排名。
@@ -249,47 +250,47 @@ looparena-type3-run \
 第 1 / 2 頁
 
 - [![Claude Code、Pi、DeepSeek Harness 換家時，以 Handoff Receipt 轉移任務狀態的 Agent Harness Swap Test](https://www.alphalab.site/_next/image?url=https%3A%2F%2Fhacktechentertainment-iylwc.wpcomstaging.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fagent-harness-swap-test-featured.png%3Fv%3D1788854516&w=3840&q=75)](https://www.alphalab.site/agent-harness-swap-test)
-	[文章](https://www.alphalab.site/agent-harness-swap-test)
-	### 【2026 最新】Agent Harness 換家不失憶：Claude Code、Pi、DeepSeek Harness Swap Test
-	延伸觀點
-	任務做到一半如何跨 Claude Code、Pi、DeepSeek Harness 接手？用七層 Receipt、三組對照與權限／回滾閘門，建立可驗證的 Swap Test。
-	閱讀文章
-	[View original](https://www.alphalab.site/agent-harness-swap-test)
+  [文章](https://www.alphalab.site/agent-harness-swap-test)
+  ### 【2026 最新】Agent Harness 換家不失憶：Claude Code、Pi、DeepSeek Harness Swap Test
+  延伸觀點
+  任務做到一半如何跨 Claude Code、Pi、DeepSeek Harness 接手？用七層 Receipt、三組對照與權限／回滾閘門，建立可驗證的 Swap Test。
+  閱讀文章
+  [View original](https://www.alphalab.site/agent-harness-swap-test)
 - [![context-mode 98% 是否成立的 Claude Code 六任務 A/B 評測教學首圖](https://www.alphalab.site/_next/image?url=https%3A%2F%2Fhacktechentertainment-iylwc.wpcomstaging.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcontext-mode-claude-code-ab-evaluation-featured.png%3Fv%3D1788853443&w=3840&q=75)](https://www.alphalab.site/context-mode-claude-code-ab-evaluation)
-	[文章](https://www.alphalab.site/context-mode-claude-code-ab-evaluation)
-	### 【2026 最新】context-mode 真的省 98%？Claude Code 六任務 A/B 評測教學（安裝＋安全＋回滾）
-	延伸觀點
-	context-mode 的 98% 省在哪？用 Claude Code 六任務 paired A/B，從版本鎖定、成功率、Token 與延遲，到假祕密、故障與完整回滾，一次建立可重現的採用判斷。
-	閱讀文章
-	[View original](https://www.alphalab.site/context-mode-claude-code-ab-evaluation)
+  [文章](https://www.alphalab.site/context-mode-claude-code-ab-evaluation)
+  ### 【2026 最新】context-mode 真的省 98%？Claude Code 六任務 A/B 評測教學（安裝＋安全＋回滾）
+  延伸觀點
+  context-mode 的 98% 省在哪？用 Claude Code 六任務 paired A/B，從版本鎖定、成功率、Token 與延遲，到假祕密、故障與完整回滾，一次建立可重現的採用判斷。
+  閱讀文章
+  [View original](https://www.alphalab.site/context-mode-claude-code-ab-evaluation)
 - [![Edit Fidelity AI 教學首圖，以一行正確修補與多行無關變更對照 Claude Code、Codex 的 patch 範圍閘門](https://www.alphalab.site/_next/image?url=https%3A%2F%2Fhacktechentertainment-iylwc.wpcomstaging.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fedit-fidelity-coding-agent-over-editing-featured.png%3Fv%3D1788852336&w=3840&q=75)](https://www.alphalab.site/edit-fidelity-coding-agent-over-editing)
-	[文章](https://www.alphalab.site/edit-fidelity-coding-agent-over-editing)
-	### 【2026 最新】Edit Fidelity 是什麼？10 個一行 Bug 測 Claude Code／Codex 有沒有改太多
-	延伸觀點
-	用 10 個已知一行修補的 Bug，建立 Claude Code／Codex 的變更範圍評測；從 gold patch、excess edit distance 到 CI receipt，一次守住功能、scope 與 locality。
-	閱讀文章
-	[View original](https://www.alphalab.site/edit-fidelity-coding-agent-over-editing)
+  [文章](https://www.alphalab.site/edit-fidelity-coding-agent-over-editing)
+  ### 【2026 最新】Edit Fidelity 是什麼？10 個一行 Bug 測 Claude Code／Codex 有沒有改太多
+  延伸觀點
+  用 10 個已知一行修補的 Bug，建立 Claude Code／Codex 的變更範圍評測；從 gold patch、excess edit distance 到 CI receipt，一次守住功能、scope 與 locality。
+  閱讀文章
+  [View original](https://www.alphalab.site/edit-fidelity-coding-agent-over-editing)
 - [![MiniCPM5-2B Tool Calling 教學首圖](https://www.alphalab.site/_next/image?url=https%3A%2F%2Fhacktechentertainment-iylwc.wpcomstaging.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fminicpm5-2b-local-agent-tool-calling-eval-featured.png%3Fv%3D1788852177&w=3840&q=75)](https://www.alphalab.site/minicpm5-2b-local-agent-tool-calling-eval)
-	[文章](https://www.alphalab.site/minicpm5-2b-local-agent-tool-calling-eval)
-	### 【2026 最新】MiniCPM5-2B 本機 Agent 教學：GGUF、MLX、SGLang 的 12 題 Tool Calling 驗收
-	延伸觀點
-	MiniCPM5-2B 適合本機 Agent 嗎？用固定 revision、12 題繁中 Tool Calling、GGUF／MLX／SGLang 三條路徑，驗收格式、多步恢復、長 context 與 fallback。
-	閱讀文章
-	[View original](https://www.alphalab.site/minicpm5-2b-local-agent-tool-calling-eval)
+  [文章](https://www.alphalab.site/minicpm5-2b-local-agent-tool-calling-eval)
+  ### 【2026 最新】MiniCPM5-2B 本機 Agent 教學：GGUF、MLX、SGLang 的 12 題 Tool Calling 驗收
+  延伸觀點
+  MiniCPM5-2B 適合本機 Agent 嗎？用固定 revision、12 題繁中 Tool Calling、GGUF／MLX／SGLang 三條路徑，驗收格式、多步恢復、長 context 與 fallback。
+  閱讀文章
+  [View original](https://www.alphalab.site/minicpm5-2b-local-agent-tool-calling-eval)
 - [![Ollama 遷移教學：同一份 GGUF 在 Ollama、llama.cpp 與 LM Studio 做受控 A/B Test](https://www.alphalab.site/_next/image?url=https%3A%2F%2Fhacktechentertainment-iylwc.wpcomstaging.com%2Fwp-content%2Fuploads%2F2026%2F09%2Follama-migration-ab-test-featured.png%3Fv%3D1788851715&w=3840&q=75)](https://www.alphalab.site/ollama-migration-ab-test)
-	[文章](https://www.alphalab.site/ollama-migration-ab-test)
-	### 【2026 最新】Ollama 遷移教學：同一 GGUF 換到 llama.cpp／LM Studio 做 A/B Test
-	延伸觀點
-	保留同一份 GGUF，讓 Ollama、llama.cpp 與 LM Studio 跑相同 API、Tool Calling 與效能測例，用五關 scorecard 和 rollback receipt 決定該保留、並存或替換。
-	閱讀文章
-	[View original](https://www.alphalab.site/ollama-migration-ab-test)
+  [文章](https://www.alphalab.site/ollama-migration-ab-test)
+  ### 【2026 最新】Ollama 遷移教學：同一 GGUF 換到 llama.cpp／LM Studio 做 A/B Test
+  延伸觀點
+  保留同一份 GGUF，讓 Ollama、llama.cpp 與 LM Studio 跑相同 API、Tool Calling 與效能測例，用五關 scorecard 和 rollback receipt 決定該保留、並存或替換。
+  閱讀文章
+  [View original](https://www.alphalab.site/ollama-migration-ab-test)
 - [![Compile by Training 教學首圖，ProgramAsWeights PAW 符號與本機神經函式主題](https://www.alphalab.site/_next/image?url=https%3A%2F%2Fhacktechentertainment-iylwc.wpcomstaging.com%2Fwp-content%2Fuploads%2F2026%2F09%2Fcompile-by-training-featured.png%3Fv%3D1788766223&w=3840&q=75)](https://www.alphalab.site/compile-by-training)
-	[文章](https://www.alphalab.site/compile-by-training)
-	### 【2026 最新】Compile by Training 是什麼？把自然語言規格編譯成本機神經函式
-	延伸觀點
-	從自然語言規格、Teacher 合成與 LoRA 訓練，到四組 holdout、OOD、spec drift、損益平衡與隱私邊界，一篇學會如何評估、版本化並安全整合 Compile by Training 神經函式。
-	閱讀文章
-	[View original](https://www.alphalab.site/compile-by-training)
+  [文章](https://www.alphalab.site/compile-by-training)
+  ### 【2026 最新】Compile by Training 是什麼？把自然語言規格編譯成本機神經函式
+  延伸觀點
+  從自然語言規格、Teacher 合成與 LoRA 訓練，到四組 holdout、OOD、spec drift、損益平衡與隱私邊界，一篇學會如何評估、版本化並安全整合 Compile by Training 神經函式。
+  閱讀文章
+  [View original](https://www.alphalab.site/compile-by-training)
 
 ALPHALAB 社群
 
