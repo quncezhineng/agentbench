@@ -43,7 +43,8 @@ function Board() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航：区块锚点均在当前榜单页内 ---------- */}
-      <SiteHeader navs={NAV} cta={{ href: "/eval", label: "LoopArena 机制" }} />
+      {/* <SiteHeader navs={NAV} cta={{ href: "/eval", label: "LoopArena 机制" }} /> */}
+      <SiteHeader navs={NAV} />
 
       {/* ---------- 榜单工作台：主榜 / 参考策略 / 待评测产品 ---------- */}
       <main>

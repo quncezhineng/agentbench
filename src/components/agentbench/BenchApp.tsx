@@ -23,7 +23,7 @@ import {
   deriveAgents,
   referencesOf,
   runsQuery,
-  scheduleQuery,
+  // scheduleQuery, // 待评测队列暂隐藏
 } from "@/lib/eval-queries";
 
 type SortKey = "type3" | "type2" | "type1" | "cost3" | "cost2" | "name";
@@ -69,7 +69,7 @@ const SCENARIOS: { key: Scenario; label: string }[] = [
 
 export function BenchApp() {
   const { data: runRows } = useSuspenseQuery(runsQuery);
-  const { data: scheduleRows } = useSuspenseQuery(scheduleQuery);
+  // const { data: scheduleRows } = useSuspenseQuery(scheduleQuery); // 待评测队列暂隐藏
 
   const agents = useMemo(() => deriveAgents(runRows), [runRows]);
   const controllers = useMemo(() => controllersOf(agents), [agents]);
@@ -140,7 +140,7 @@ export function BenchApp() {
           </div>
         </div>
 
-        <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-text-3">
+        {/* <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12.5px] text-text-3">
           <span>
             最近评测日期：<b className="text-text-2">{latest}</b>
           </span>
@@ -153,7 +153,7 @@ export function BenchApp() {
           <a className="text-brand hover:underline" href="/calendar">
             评测日历
           </a>
-        </div>
+        </div> */}
 
         <div className="ab-panel overflow-hidden bg-white">
           <div className="ab-table-scroll">
@@ -391,13 +391,13 @@ export function BenchApp() {
           </div>
         </div>
 
-        <p className="mt-3 text-[12px] leading-5 text-text-3">
+        {/* <p className="mt-3 text-[12px] leading-5 text-text-3">
           每条数据的来源、时间、方法与原始记录见{" "}
           <a className="text-brand hover:underline" href="/sources">
             实测数据来源页
           </a>
           。
-        </p>
+        </p> */}
       </section>
 
       {/* ================= 参考策略 ================= */}
@@ -454,8 +454,8 @@ export function BenchApp() {
         </div>
       </section>
 
-      {/* ================= 待评测 / 排期 ================= */}
-      <section id="pending" className="ab-container ab-section">
+      {/* ================= 待评测 / 排期（暂隐藏） ================= */}
+      {/* <section id="pending" className="ab-container ab-section">
         <div className="ab-section-head">
           <div>
             <div className="ab-chip ab-chip-brand mb-3">Pending</div>
@@ -483,10 +483,10 @@ export function BenchApp() {
               </span>
             ))}
         </div>
-      </section>
+      </section> */}
 
       {/* ================= 提交评测结果 ================= */}
-      <section id="submit" className="ab-container ab-section">
+      {/* <section id="submit" className="ab-container ab-section">
         <div className="ab-section-head">
           <div>
             <div className="ab-chip ab-chip-brand mb-3">Submit</div>
@@ -498,7 +498,7 @@ export function BenchApp() {
           </div>
         </div>
         <SubmitForm />
-      </section>
+      </section> */}
     </>
   );
 }

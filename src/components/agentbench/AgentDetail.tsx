@@ -11,10 +11,12 @@ import {
   CLI_DIMS,
   cliOverall,
   cliScenarioScore,
+  FINDINGS,
   fmtCost,
   fmtPct,
   kindLabel,
   type LoopAgent,
+  type SourceSplit,
 } from "@/lib/agentbench-data";
 import { useLeaderboardSnapshot } from "@/lib/leaderboard-store";
 
@@ -33,12 +35,18 @@ function TierCard({
   ssr,
   cost,
   acc,
+  ci,
+  split,
+  costLabel = "平均估算推理成本",
 }: {
   label: string;
   subtitle: string;
   ssr: number | null;
   cost: number | null;
   acc?: number | null;
+  ci?: [number, number] | null;
+  split?: SourceSplit | null;
+  costLabel?: string;
 }) {
   return (
     <div className="rounded-2xl border border-border bg-white p-5">
@@ -70,10 +78,47 @@ function TierCard({
         <div className="mt-4 text-[13px] text-text-3">该档位无分数（不适用）。</div>
       )}
 
+      {ci != null && (
+        <div className="mt-3 text-[12px] text-text-3">
+          95% CI：
+          <b className="text-text-2">
+            {fmtPct(ci[0])} – {fmtPct(ci[1])}
+          </b>
+        </div>
+      )}
+
       {cost != null && (
         <div className="mt-4 flex items-center justify-between border-t border-dashed border-border pt-3">
-          <span className="text-[12px] text-text-3">平均估算推理成本</span>
+          <span className="text-[12px] text-text-3">{costLabel}</span>
           <span className="metric text-[15px] font-bold text-text-2">{fmtCost(cost)}</span>
+        </div>
+      )}
+
+      {split != null && (
+        <div className="mt-3 border-t border-dashed border-border pt-3">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-text-3">
+            来源拆分（成功 / 样本）
+          </div>
+          <div className="mt-1.5 grid grid-cols-2 gap-2 text-[12px]">
+            <div>
+              <div className="text-text-3">BeyondSWE</div>
+              <div className="metric font-bold">
+                {split.beyondswe.successes}/{split.beyondswe.runs}
+                <span className="ml-1 text-[11px] font-normal text-text-3">
+                  {fmtPct((split.beyondswe.successes / split.beyondswe.runs) * 100)}
+                </span>
+              </div>
+            </div>
+            <div>
+              <div className="text-text-3">SCBench</div>
+              <div className="metric font-bold">
+                {split.scbench.successes}/{split.scbench.runs}
+                <span className="ml-1 text-[11px] font-normal text-text-3">
+                  {fmtPct((split.scbench.successes / split.scbench.runs) * 100)}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -249,29 +294,73 @@ export function AgentDetail({ name }: { name: string }) {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-3">
-            {!isReference && (
+          <>
+            <div className="grid gap-4 lg:grid-cols-3">
+              {!isReference && (
+                <TierCard
+                  label="Type I · 合同选择"
+                  subtitle="四选一 · 构建时已执行验证 · 零 Worker 运行"
+                  ssr={null}
+                  cost={agent.r.type1Cost}
+                  costLabel="90 题响应成本"
+                  acc={agent.r.type1Acc}
+                />
+              )}
               <TierCard
-                label="Type I · 合同选择"
-                subtitle="四选一 · 构建时已执行验证 · 零 Worker 运行"
-                ssr={null}
-                cost={null}
-                acc={agent.r.type1Acc}
+                label="Type II · 任务切片"
+                subtitle="从准备好的中间工作区开始"
+                ssr={agent.r.type2Ssr}
+                cost={agent.r.type2Cost}
+                ci={agent.r.type2Ci}
+                split={agent.r.type2Split}
               />
-            )}
-            <TierCard
-              label="Type II · 任务切片"
-              subtitle="从准备好的中间工作区开始"
-              ssr={agent.r.type2Ssr}
-              cost={agent.r.type2Cost}
-            />
-            <TierCard
-              label="Type III · 完整任务"
-              subtitle="从原始状态开始 · 最终标准"
-              ssr={agent.r.type3Ssr}
-              cost={agent.r.type3Cost}
-            />
-          </div>
+              <TierCard
+                label="Type III · 完整任务"
+                subtitle="从原始状态开始 · 最终标准"
+                ssr={agent.r.type3Ssr}
+                cost={agent.r.type3Cost}
+                ci={agent.r.type3Ci}
+                split={agent.r.type3Split}
+              />
+            </div>
+
+            {/* 全局结论（官网 findings，对每个已评测条目一致） */}
+            <div className="mt-4 rounded-2xl border border-border bg-white p-5">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="ab-chip ab-chip-brand">关键发现</div>
+                <span className="text-[11.5px] text-text-3">
+                  官网 findings · v{FINDINGS.release} · 校验于 {FINDINGS.validatedOn}
+                </span>
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                <div>
+                  <div className="text-[11px] text-text-3">Type II ↔ Type III 一致性</div>
+                  <div className="metric text-[20px] font-bold">
+                    Spearman ρ = {FINDINGS.spearmanRho}
+                  </div>
+                  <div className="mt-1 text-[11.5px] leading-4 text-text-3">
+                    任务切片与完整任务的 Controller 排名高度一致。
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-text-3">Type II 相对 Type III</div>
+                  <div className="metric text-[20px] font-bold">
+                    成本 -{FINDINGS.type2CostReductionPct}%
+                  </div>
+                  <div className="mt-1 text-[11.5px] leading-4 text-text-3">
+                    切片评估显著降低推理成本，仍是有效代理指标。
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[11px] text-text-3">核心策略发现</div>
+                  <div className="metric text-[20px] font-bold">{FINDINGS.headlinePolicy}</div>
+                  <div className="mt-1 text-[11.5px] leading-4 text-text-3">
+                    跟踪进度、指导下一步、要求验证是 Controller 的关键能力。
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </section>
     </>

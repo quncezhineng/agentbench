@@ -30,11 +30,11 @@ interface SiteHeaderProps {
 /** 全站统一的站点入口：覆盖所有公开页面路由（详情页 /agents/* 与 /runs/* 从列表进入，不占导航位） */
 const SITES: NavItem[] = [
   { href: "/board", label: "排行榜" },
-  { href: "/eval", label: "LoopArena 机制" },
+  // { href: "/eval", label: "LoopArena 机制" },
   { href: "/compare/swe-bench", label: "对比 SWE-bench" },
-  { href: "/runs", label: "评测结果库" },
-  { href: "/sources", label: "数据来源" },
-  { href: "/calendar", label: "评测日历" },
+  // { href: "/runs", label: "评测结果库" },
+  // { href: "/sources", label: "数据来源" },
+  // { href: "/calendar", label: "评测日历" },
 ];
 
 export function SiteHeader({ navs, chip, cta }: SiteHeaderProps) {

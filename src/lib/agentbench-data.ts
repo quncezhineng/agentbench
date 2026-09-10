@@ -21,19 +21,38 @@ export interface Src {
   by: string;
 }
 
+/** 单来源拆分：BeyondSWE 与 SCBench 各自的跑分样本 */
+export interface SourceSplitRow {
+  runs: number;
+  successes: number;
+}
+
+export interface SourceSplit {
+  beyondswe: SourceSplitRow;
+  scbench: SourceSplitRow;
+}
+
 /**
  * LoopArena 三级结果。
  * - type1Acc：Type I 合同准确率（Contract Accuracy，0–100）
+ * - type1Cost：Type I 的 90 道题 Controller 响应成本（$/90 questions）
  * - type2Ssr / type3Ssr：Type II / Type III 严格成功率（Strict Success Rate，0–100）
  * - type2Cost / type3Cost：Type II / Type III 平均估算推理成本（$/run，无缓存口径）
+ * - type2Ci / type3Ci：Type II / Type III SSR 的 95% bootstrap 置信区间
+ * - type2Split / type3Split：Type II / Type III 的 BeyondSWE vs SCBench 来源拆分
  * 参考策略（No control / Fixed control）没有 Type I 分数，对应字段为 null。
  */
 export interface LoopResult {
   type1Acc: number | null;
+  type1Cost: number | null;
   type2Ssr: number | null;
   type2Cost: number | null;
+  type2Ci: [number, number] | null;
+  type2Split: SourceSplit | null;
   type3Ssr: number | null;
   type3Cost: number | null;
+  type3Ci: [number, number] | null;
+  type3Split: SourceSplit | null;
   src: Src | null;
 }
 
@@ -69,12 +88,40 @@ export const REF_SRC: Src = {
 
 const empty = (): LoopResult => ({
   type1Acc: null,
+  type1Cost: null,
   type2Ssr: null,
   type2Cost: null,
+  type2Ci: null,
+  type2Split: null,
   type3Ssr: null,
   type3Cost: null,
+  type3Ci: null,
+  type3Split: null,
   src: null,
 });
+
+/**
+ * 来源拆分快捷构造：BeyondSWE 与 SCBench 的样本数固定为 48 / 33（16 题 ×3、11 题 ×3），
+ * 只需传入各自成功次数。
+ */
+const split = (beyondsweSuccess: number, scbenchSuccess: number): SourceSplit => ({
+  beyondswe: { runs: 48, successes: beyondsweSuccess },
+  scbench: { runs: 33, successes: scbenchSuccess },
+});
+
+/** 官网 results.json 的全局结论（findings），用于详情页「关键发现」区块 */
+export const FINDINGS = {
+  /** Type II 与 Type III SSR 的 Spearman 秩相关系数（0.9747，高度一致） */
+  spearmanRho: 0.9747,
+  /** Type II 相对 Type III 的平均成本下降幅度（%） */
+  type2CostReductionPct: 64.4,
+  /** 最高 Type III SSR（GPT-5.5） */
+  bestType3Ssr: 24.69,
+  /** 核心策略发现 */
+  headlinePolicy: "Core checks",
+  release: "0.1.0",
+  validatedOn: "2026-08-28",
+};
 
 /* ============================================================ */
 /* 种子数据：论文 Table 2 的 5 个 Controller + 2 个参考策略        */
@@ -89,10 +136,15 @@ export const AGENTS: LoopAgent[] = [
     note: "gpt-5.5-0424-global · 厂商默认思考",
     r: {
       type1Acc: 87.78,
+      type1Cost: 9.43,
       type2Ssr: 51.85,
       type2Cost: 5.0,
+      type2Ci: [34.57, 70.37],
+      type2Split: split(18, 24),
       type3Ssr: 24.69,
       type3Cost: 18.84,
+      type3Ci: [9.88, 40.74],
+      type3Split: split(14, 6),
       src: PAPER_SRC,
     },
   },
@@ -104,10 +156,15 @@ export const AGENTS: LoopAgent[] = [
     note: "claude-opus-4-8 · 厂商默认思考",
     r: {
       type1Acc: 76.67,
+      type1Cost: 13.68,
       type2Ssr: 48.15,
       type2Cost: 5.87,
+      type2Ci: [30.86, 65.43],
+      type2Split: split(17, 22),
       type3Ssr: 20.99,
       type3Cost: 16.82,
+      type3Ci: [7.41, 35.8],
+      type3Split: split(14, 3),
       src: PAPER_SRC,
     },
   },
@@ -119,10 +176,15 @@ export const AGENTS: LoopAgent[] = [
     note: "temperature 0 · 20,480 输出 token",
     r: {
       type1Acc: 72.22,
+      type1Cost: 0.7,
       type2Ssr: 48.15,
       type2Cost: 4.3,
+      type2Ci: [30.86, 65.43],
+      type2Split: split(18, 21),
       type3Ssr: 23.46,
       type3Cost: 6.89,
+      type3Ci: [9.88, 38.27],
+      type3Split: split(14, 5),
       src: PAPER_SRC,
     },
   },
@@ -134,10 +196,15 @@ export const AGENTS: LoopAgent[] = [
     note: "temperature 0 · 20,480 输出 token",
     r: {
       type1Acc: 77.78,
+      type1Cost: 0.31,
       type2Ssr: 45.68,
       type2Cost: 2.1,
+      type2Ci: [28.4, 62.96],
+      type2Split: split(17, 20),
       type3Ssr: 19.75,
       type3Cost: 10.24,
+      type3Ci: [6.17, 34.57],
+      type3Split: split(13, 3),
       src: PAPER_SRC,
     },
   },
@@ -149,10 +216,15 @@ export const AGENTS: LoopAgent[] = [
     note: "temperature 0 · 20,480 输出 token",
     r: {
       type1Acc: 74.44,
+      type1Cost: 3.02,
       type2Ssr: 37.04,
       type2Cost: 1.63,
+      type2Ci: [20.99, 54.32],
+      type2Split: split(22, 8),
       type3Ssr: 16.05,
       type3Cost: 4.86,
+      type3Ci: [3.7, 29.63],
+      type3Split: split(13, 0),
       src: PAPER_SRC,
     },
   },
@@ -164,10 +236,15 @@ export const AGENTS: LoopAgent[] = [
     note: "不读取 Evidence Packet，重复重申任务目标",
     r: {
       type1Acc: null,
+      type1Cost: null,
       type2Ssr: 46.91,
       type2Cost: 1.08,
+      type2Ci: [29.63, 64.2],
+      type2Split: split(15, 23),
       type3Ssr: 18.52,
       type3Cost: 5.58,
+      type3Ci: [6.17, 33.33],
+      type3Split: split(12, 3),
       src: REF_SRC,
     },
   },
@@ -179,10 +256,15 @@ export const AGENTS: LoopAgent[] = [
     note: "无 Controller，Worker 直接自主执行",
     r: {
       type1Acc: null,
+      type1Cost: null,
       type2Ssr: 39.51,
       type2Cost: 1.04,
+      type2Ci: [23.46, 55.56],
+      type2Split: split(12, 20),
       type3Ssr: 18.52,
       type3Cost: 2.01,
+      type3Ci: [4.94, 33.33],
+      type3Split: split(10, 5),
       src: REF_SRC,
     },
   },
@@ -216,65 +298,6 @@ export const CLI_DIMS: { key: keyof CliDims; label: string; weight: number }[] =
   { key: "trust", label: "可信与安全", weight: 0.15 },
 ];
 
-const cliSrc = (runner: string): Src => ({
-  label: "内置评测套件 v0（CLI 真实跑分）",
-  val: "对话 + 研究与操作两类场景 · 内部自动化口径",
-  by: `AgentBench CLI 评测 · 2026-09-04 · 被测=${runner} · 裁判=claude · trials=1 · 每场景有效样本 3`,
-});
-
-const cliAgent = (
-  name: string,
-  vendor: string,
-  note: string,
-  runner: string,
-  conv: CliDims,
-  os: CliDims,
-): LoopAgent => ({
-  name,
-  vendor,
-  kind: "product",
-  demo: false,
-  note,
-  r: empty(),
-  cli: { conv, os, src: cliSrc(runner) },
-});
-
-/** 已完成 CLI 实测的编程智能体（真实跑分，参与 CLI 榜排名） */
-export const CLI_AGENTS: LoopAgent[] = [
-  cliAgent(
-    "Hermes",
-    "Nous Research",
-    "CLI 编码代理（hermes -z 一次性提示模式）",
-    "hermes",
-    { success: 100, tool: 95, progress: 100, efficiency: 15, trust: 98.3 },
-    { success: 100, tool: 100, progress: 100, efficiency: 23.7, trust: 100 },
-  ),
-  cliAgent(
-    "Claude Code",
-    "Anthropic",
-    "CLI 编码代理（claude -p 无交互打印模式）",
-    "claude",
-    { success: 66.7, tool: 75, progress: 93.3, efficiency: 8.3, trust: 96.7 },
-    { success: 100, tool: 90, progress: 96.7, efficiency: 0, trust: 95 },
-  ),
-  cliAgent(
-    "Codex",
-    "OpenAI",
-    "CLI / IDE 编码代理（codex exec 非交互模式）",
-    "codex",
-    { success: 66.7, tool: 35, progress: 86.7, efficiency: 0, trust: 80 },
-    { success: 100, tool: 85, progress: 91.7, efficiency: 24.7, trust: 93.3 },
-  ),
-  cliAgent(
-    "OpenCode",
-    "opencode",
-    "开源 CLI 编码代理（opencode run --pure 纯运行模式）",
-    "opencode",
-    { success: 66.7, tool: 20, progress: 66.7, efficiency: 0, trust: 83.3 },
-    { success: 100, tool: 75, progress: 93.3, efficiency: 33.3, trust: 86.7 },
-  ),
-];
-
 /** 单场景加权综合分 */
 export const cliScenarioScore = (d: CliDims) =>
   CLI_DIMS.reduce((sum, dim) => sum + d[dim.key] * dim.weight, 0);
@@ -282,10 +305,6 @@ export const cliScenarioScore = (d: CliDims) =>
 /** 两场景平均的综合分（CLI 榜排序依据） */
 export const cliOverall = (a: LoopAgent) =>
   a.cli ? (cliScenarioScore(a.cli.conv) + cliScenarioScore(a.cli.os)) / 2 : -1;
-
-/** 某维度的两场景平均值 */
-export const cliDimAvg = (a: LoopAgent, key: keyof CliDims) =>
-  a.cli ? (a.cli.conv[key] + a.cli.os[key]) / 2 : 0;
 
 /* ============================================================ */
 /* 额外补充：尚未跑分的编程智能体产品（待评测）                     */
@@ -318,12 +337,6 @@ export const CONTROLLERS: LoopAgent[] = AGENTS.filter((a) => a.kind === "control
 
 /** 参考策略（不参与 Controller 排名，仅作对照） */
 export const REFERENCES: LoopAgent[] = AGENTS.filter((a) => a.kind === "reference");
-
-/** 完整榜单顺序：Controller（按 Type III SSR 降序）→ 参考策略 → 待评测产品 */
-export function rankedAgents(): LoopAgent[] {
-  const byType3 = (a: LoopAgent, b: LoopAgent) => (b.r.type3Ssr ?? -1) - (a.r.type3Ssr ?? -1);
-  return [...CONTROLLERS].sort(byType3).concat(REFERENCES, CLI_AGENTS, PRODUCTS);
-}
 
 export const kindLabel: Record<LoopAgentKind, string> = {
   controller: "被评测模型",

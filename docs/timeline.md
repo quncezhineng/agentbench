@@ -45,6 +45,32 @@
 - **待评测产品**：目前 9 个主流产品均为占位；接入真实 LoopArena 分数后并入主榜即可。
 - **内容维护**：机制文案集中在 `StaticSections.tsx` 与 `LoopArenaExplainer.tsx`，后续如做 i18n 可先抽为文案模块。
 
+## M3.1 变更记录（2026-09-09）· 详情页补齐 LoopArena 扩展元数据
+
+### 背景与目标
+
+M3 后详情页只展示核心分数（Type I 准确率、Type II/III 的 SSR 与成本），缺少官网 `results.json` 里的扩展元数据：Type I 成本、95% 置信区间、BeyondSWE / SCBench 来源拆分，以及全局 findings（Spearman ρ、成本下降幅度等）。本次把这些元数据补齐到详情页，数据口径对齐 `https://amap-ml.github.io/LoopArena/data/results.json`。
+
+### 主要改动
+
+1. **数据模型（`src/lib/agentbench-data.ts`）**
+   - `LoopResult` 新增 `type1Cost` / `type2Ci` / `type2Split` / `type3Ci` / `type3Split`；新增 `SourceSplit` / `SourceSplitRow` 类型与 `split()` 构造 helper。
+   - 导出全局 `FINDINGS`（`spearmanRho=0.9747`、`type2CostReductionPct=64.4`、`bestType3Ssr=24.69`、`headlinePolicy="Core checks"`、`release/validatedOn`）。
+   - `AGENTS` 种子补全全部元数据（供 `/eval` 说明页使用）。
+2. **数据库（`eval_runs` 表，19 行 UPDATE）**：为 looparena 行在 `metrics` 追加 `cost`（type1）、`ci_lo/ci_hi/bs_success/sc_success`（type2/type3），数值对齐官网。
+3. **派生逻辑（`src/lib/eval-queries.ts`）**：`deriveAgents` 新增 `ciOf()` / `splitOf()` 解析（样本数固定 BeyondSWE 48 / SCBench 33），`ensure()` 补全新字段默认 `null`。
+4. **详情页（`src/components/agentbench/AgentDetail.tsx`）**：`TierCard` 增强展示「95% CI」与「来源拆分」，Type I 增「90 题响应成本」；三级结果下方新增「关键发现」卡片（Spearman ρ / 成本下降 / Core checks）。
+
+### 验证结果
+
+- TypeScript 诊断 0 错误；详情页 `HTTP 200`。
+- Puppeteer 实测 `/agents/GPT-5.5`：Type I 显示 90 题成本 $9.43；Type II 显示 95% CI 34.57%–70.37% 与 BeyondSWE 18/48、SCBench 24/33；Type III 显示 95% CI 9.88%–40.74% 与 BeyondSWE 14/48、SCBench 6/33；「关键发现」卡片三项齐全，数值与官网一致。
+
+### 反思与改进空间
+
+- **数据双写**：榜单数据同时存在于数据库 `eval_runs` 与静态常量 `AGENTS` 两处；前者服务 `/board`、`/agents/$name`，后者服务 `/eval` 说明页，二者需手工同步。后续建议统一为「数据库为唯一数据源，`/eval` 也从库读」。
+- **样本数硬编码**：BeyondSWE 48 / SCBench 33 为 v0.1.0 固定配置，目前硬编码在 `splitOf()`；若未来版本题目数变化需改为随数据存储。
+
 ## M1 变更记录（2026-09-03）
 
 ### 背景与目标

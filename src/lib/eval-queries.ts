@@ -7,7 +7,7 @@
 
 import { queryOptions } from "@tanstack/react-query";
 import { listEvalRuns, listEvalSchedule } from "./eval-runs.functions";
-import type { CliDims, LoopAgent } from "./agentbench-data";
+import type { CliDims, LoopAgent, SourceSplit } from "./agentbench-data";
 
 export interface EvalRunRow {
   id: string;
@@ -65,6 +65,24 @@ const dims = (m: Record<string, number> | null): CliDims => ({
   trust: m?.["trust"] ?? 0,
 });
 
+/** 从 metrics 提取 95% 置信区间（ci_lo / ci_hi），缺失则返回 null */
+const ciOf = (m: Record<string, number> | null): [number, number] | null => {
+  const lo = m?.["ci_lo"];
+  const hi = m?.["ci_hi"];
+  return lo != null && hi != null ? [lo, hi] : null;
+};
+
+/** 从 metrics 提取来源拆分（BeyondSWE / SCBench 成功次数；样本数固定 48 / 33） */
+const splitOf = (m: Record<string, number> | null): SourceSplit | null => {
+  const bs = m?.["bs_success"];
+  const sc = m?.["sc_success"];
+  if (bs == null || sc == null) return null;
+  return {
+    beyondswe: { runs: 48, successes: bs },
+    scbench: { runs: 33, successes: sc },
+  };
+};
+
 /** 把评测记录聚合成榜单条目 */
 export function deriveAgents(rows: EvalRunRow[]): LoopAgent[] {
   const map = new Map<string, LoopAgent>();
@@ -81,10 +99,15 @@ export function deriveAgents(rows: EvalRunRow[]): LoopAgent[] {
         ...(r.note ? { note: r.note } : {}),
         r: {
           type1Acc: null,
+          type1Cost: null,
           type2Ssr: null,
           type2Cost: null,
+          type2Ci: null,
+          type2Split: null,
           type3Ssr: null,
           type3Cost: null,
+          type3Ci: null,
+          type3Split: null,
           src: null,
         },
       };
@@ -104,14 +127,21 @@ export function deriveAgents(rows: EvalRunRow[]): LoopAgent[] {
     const a = ensure(r);
     const src = { label: r.source_label, val: r.method, by: r.source_by };
     if (r.suite === "looparena") {
-      if (r.task_type === "type1") a.r.type1Acc = r.metrics?.["acc"] ?? null;
+      if (r.task_type === "type1") {
+        a.r.type1Acc = r.metrics?.["acc"] ?? null;
+        a.r.type1Cost = r.metrics?.["cost"] ?? null;
+      }
       if (r.task_type === "type2") {
         a.r.type2Ssr = r.metrics?.["ssr"] ?? null;
         a.r.type2Cost = r.metrics?.["cost"] ?? null;
+        a.r.type2Ci = ciOf(r.metrics);
+        a.r.type2Split = splitOf(r.metrics);
       }
       if (r.task_type === "type3") {
         a.r.type3Ssr = r.metrics?.["ssr"] ?? null;
         a.r.type3Cost = r.metrics?.["cost"] ?? null;
+        a.r.type3Ci = ciOf(r.metrics);
+        a.r.type3Split = splitOf(r.metrics);
       }
       a.r.src = src;
     } else if (r.suite === "cli") {

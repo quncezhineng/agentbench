@@ -57,7 +57,8 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航：区块锚点在前，站点入口居后 ---------- */}
-      <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} siteAfterNav />
+      {/* <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} siteAfterNav /> */}
+      <SiteHeader navs={NAV} />
 
       {/* ---------- 首屏：LoopArena 机制概览 ---------- */}
       <section className="ab-container ab-section pt-8 sm:pt-10">
@@ -89,9 +90,9 @@ function Index() {
                 <a href="/board" className="ab-button ab-button-primary">
                   查看排行榜
                 </a>
-                <a href="/eval" className="ab-button ab-button-secondary">
+                {/* <a href="/eval" className="ab-button ab-button-secondary">
                   LoopArena 机制
-                </a>
+                </a> */}
                 <a href="/compare/swe-bench" className="ab-button ab-button-secondary">
                   对比 SWE-bench
                 </a>

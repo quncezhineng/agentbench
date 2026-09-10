@@ -97,7 +97,8 @@ const TIERS = [
 function CompareSweBench() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} />
+      {/* <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} /> */}
+      <SiteHeader navs={NAV} />
 
       <main>
         {/* ---------- 首屏：定位 ---------- */}
@@ -125,9 +126,9 @@ function CompareSweBench() {
               <a href="/board" className="ab-button ab-button-primary">
                 查看 LoopArena 排行榜
               </a>
-              <a href="/eval" className="ab-button ab-button-secondary">
+              {/* <a href="/eval" className="ab-button ab-button-secondary">
                 LoopArena 机制详解
-              </a>
+              </a> */}
               <a href="#table" className="ab-button ab-button-ghost">
                 看逐项对比
               </a>
