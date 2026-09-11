@@ -1,64 +1,148 @@
-# Agent Benchmarks
+# AgentBench 智衡
 
-AI Agent 的评分与评估（Evaluation）是一个将“结果导向”与“过程追踪”相结合的复杂系统，核心不再仅看单次输出是否准确，而是评估其在多步交互和工具调用下的任务达成度、稳定性与效率。 \[1, 2]
+> 编程智能体 LoopArena 评测与排行网站 —— 把「控制」和「执行」拆开，Agent 行不行用数据说话。
 
-## 1. 核心评估指标
+## 这是什么
 
-- 成功率（Success Rate）：任务最终达成目标的比例（0 或 1），是衡量终态的基础指标。
-- 进度率（Progress Rate）：衡量多步骤任务中的中间进展（0\~1 分布），能更精细地区分不同系统的执行能力。
-- 工具调用准确率（Tool/Grounding Accuracy）：评估智能体调用 API、选择参数以及避免冗余或错误调用的比例。
-- 可靠性指标（$\text{pass}^k$ 与 $\text{pass}@k$）：$\text{pass}@k$ 衡量多次尝试中至少一次成功的概率，而 $\text{pass}^k$ 衡量连续 k 次尝试全部成功的稳定性，面向用户的 Agent 尤其看重后者。 \[3, 4]
+AgentBench 智衡是一个 **只对目前主流的编程智能体排序打分** 的评测榜单网站。它采用 **LoopArena 评测机制**：把「控制」与「执行」拆成两个 Agent —— Controller 只决策、Worker 只动手 —— 从而隔离出被评测模型（Controller）的**纯控制能力**，让分数差异只反映「会不会指挥」，而不是「会不会写代码」。
 
-## 2. 三类主流评分器（Grader）
+## LoopArena 机制（一句话）
 
-- 基于代码的评分器（Code-based Grader）：通过单元测试、字符串匹配或检查环境/数据库状态变化来评分。优点是快速、低成本且完全客观；缺点是较死板，容易卡死在未预料但有效的创新解法上。 \[5, 6]
-- 基于模型的评分器（Model-based Grader）：采用大模型即裁判（LLM-as-Judge），依据结构化评分量规（Rubrics）对推理逻辑、幻觉及语义质量打分。优点是理解语义能力强；缺点是存在非确定性且成本较高。 \[5, 6, 7]
-- 人工评分器（Human Evaluation）：由领域专家（SME）进行抽样审查，作为黄金标准来校准模型与代码评分器的偏离和漂移。 \[5, 6]
+| 角色 | 职责 |
+| ---- | ---- |
+| **Controller** | 被评测模型：只读 Evidence Packet（结构化摘要），输出 Loop Contract（`advance` / `verify` / `stop`），不碰代码 |
+| **Worker** | 固定编码 Agent：唯一能读写代码、跑命令的角色，全榜单统一用 Qwen3.7-Plus |
+| **Reporter** | 复用 Worker 同款模型配置，产出四段式报告，作为下一轮 Evidence Packet 的原料 |
 
-## 3. 不同类型 Agent 的评测侧重点
+三级评测由浅入深：
 
-- 编码智能体（Coding Agents）：看代码能否通过测试、是否破坏现有功能（如 [SWE-bench Verified](https://www.swebench.com/SWE-bench/) 基准）。 \[5]
-- 对话智能体（Conversational Agents）：通过模拟用户（如 τ-Bench）测试多轮对话中的意图提取、交互轮数和解决率。 \[3, 5, 6]
-- 研究与操作智能体（Research/OS Agents）：评估信息源头依据、全流程浏览器或操作系统环境的实际状态变更（如 WebArena、OSWorld）。 \[4, 5, 6]
+- **Type I · 合同选择**：Controller 在零 Worker 执行下做决策，测「判断对错」；
+- **Type II · 任务切片**：给定中间进度做局部决策，测「过程纠偏」；
+- **Type III · 完整任务**：从零开始把完整编码任务「真正做完」，是最终排名标准。
 
-如果你想为特定的业务搭建 Agent 评分，请告诉我：
+## 核心指标
 
-- 你的 Agent 应用场景是什么（如客服、代码辅助、自动化办公等）？
-- 目前最头疼的 Bad Case（失败表现）是什么？
+- **Type I 合同准确率（Contract Accuracy）**：Controller 决策正确率；
+- **Type II / III 严格成功率（SSR，Strict Success Rate）**：既通过任务 evaluator、又符合 LoopArena 协议才算成功；
+- **平均估算推理成本（$/run）**：无缓存口径，衡量「花多少钱干成一件事」；
+- **排名一致性（Spearman ρ）**：验证三级评测口径是否指向同一结论。
 
-我能为你量身设计一套 评估指标和评分组合策略。
+## 页面结构
 
-\[1] [https://tech.meituan.com](https://tech.meituan.com/2026/08/07/Agent-Evaluation.html)
-\[2] [https://ac.fzhiy.net](https://ac.fzhiy.net/agent-post-training-playbook/cheatsheet-agent-evaluation.html)
-\[3] [https://aws.amazon.com](https://aws.amazon.com/cn/blogs/china/agent-quality-evaluation/)
-\[4] [https://zhuanlan.zhihu.com](https://zhuanlan.zhihu.com/p/1994349942207161524)
-\[5] [https://github.com](https://github.com/adongwanai/AgentGuide/blob/main/docs/02-tech-stack/agent-evaluation-complete-guide.md)
-\[6] [https://yeasy.gitbook.io](https://yeasy.gitbook.io/agentic_ai_guide/di-er-bu-fen-qun-ti-zhi-neng-yu-jin-hua/07_evolution/7.2_evaluation)
-\[7] [https://learn.microsoft.com](https://learn.microsoft.com/zh-cn/azure/foundry/observability/how-to/evaluate-agent)
+| 路由 | 说明 |
+| ---- | ---- |
+| `/` | 首页：LoopArena 机制概览、三级评测、指标口径、数据来源 |
+| `/board` | 排行榜：主榜（Type I / II / III 可排序）+ CLI 实测榜 + 参考策略 |
+| `/agents/:name` | 单智能体详情：三级结果、95% 置信区间、来源拆分、关键发现 |
+| `/eval` | LoopArena 机制说明页（角色 / 三级评测 / 参考策略 / 复现入口） |
+| `/compare/swe-bench` | 与 SWE-bench 的对比说明 |
+| `/runs` | 评测结果库（结果列表 + 单条详情） |
+| `/calendar` | 评测日历（排期） |
+| `/sources` | 数据来源 |
+| `/auth` | 登录 |
+| `/api/public/eval-ingest` | 评测数据接入 API |
+| `/_authenticated/admin.review` | 管理员审核页（需登录） |
 
-<br />
+## 数据来源与数据流
 
----
+榜单数据来自 **Supabase 数据库 `eval_runs` 表**（`status = 'approved'`），按 `suite` 分为两类：
 
-This project was built with [Lovable](https://lovable.dev).
+- `suite = 'looparena'`：LoopArena 主榜 —— 论文 Table 2（arXiv 2608.28281）的 5 个 Controller + 2 个参考策略；
+- `suite = 'cli'`：CLI 实测榜 —— 内置评测套件 v0（`scripts/run-cli-eval.mjs` 真实跑分，对话 + 研究操作两场景，五维指标）。
 
-**Live app**: <https://getagentbench.lovable.app>
+数据流：
 
-## Build with Lovable
+```
+页面（/board、/agents/:name）
+  └─ useLeaderboardSnapshot()          src/lib/leaderboard-store.ts
+       └─ runsQuery                   src/lib/eval-queries.ts
+            └─ listEvalRuns()          src/lib/eval-runs.functions.ts（Server Function）
+                 └─ Supabase eval_runs 表
+                      └─ deriveAgents() 聚合派生 LoopAgent
+```
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/8b28a9a9-859f-4c47-b7a5-bbcc786adeb5).
+CLI 实测的五维指标：成功率（Success）、工具调用（Tool）、进度（Progress）、效率（Efficiency）、可信度（Trust）。
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## 技术栈
 
-## Development
+- **框架**：React 19 + TypeScript，TanStack Start（文件路由 + SSR，基于 Nitro）+ TanStack Router + TanStack Query
+- **样式**：Tailwind CSS v4 + shadcn/ui（Radix UI）
+- **图表**：recharts
+- **表单**：react-hook-form + zod
+- **后端 / 数据**：Supabase（PostgreSQL + Auth + RLS），`@supabase/supabase-js`
+- **构建**：Vite 8
+- **包管理 / 运行**：Bun
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## 目录结构
+
+```
+src/
+├── routes/                  # TanStack Start 文件路由（页面与 API）
+│   ├── index.tsx            # 首页
+│   ├── board.tsx            # 排行榜
+│   ├── eval.tsx             # LoopArena 机制
+│   ├── agents/$name.tsx     # 详情页
+│   ├── runs.tsx / runs.*    # 评测结果库
+│   ├── calendar.tsx         # 评测日历
+│   ├── sources.tsx          # 数据来源
+│   ├── auth.tsx             # 登录
+│   ├── api/public/          # 数据接入 API
+│   └── _authenticated/      # 管理员审核（受保护）
+├── components/
+│   ├── agentbench/          # 业务组件（BenchApp / AgentDetail / SiteShell / ...）
+│   └── ui/                  # shadcn/ui 基础组件
+├── lib/
+│   ├── agentbench-data.ts   # 数据模型 + 论文种子数据 + 排序/格式化纯函数
+│   ├── eval-queries.ts      # 查询派生（deriveAgents / ciOf / splitOf）
+│   ├── eval-runs.functions.ts # Supabase Server Function
+│   └── leaderboard-store.ts # useLeaderboardSnapshot 榜单快照
+├── integrations/supabase/   # Supabase 客户端 / 鉴权 / 类型
+└── styles.css               # 设计 token 与组件样式
+supabase/migrations/         # 数据库迁移（eval_runs、eval_schedule 等）
+scripts/                     # CLI 实测脚本与评测任务
+docs/                        # 项目文档（概述 / 需求 / 技术规格 / 结构 / 时间线）
+```
+
+## 本地开发
+
+需要 Node.js（或 Bun）。推荐使用 Bun：
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
+
+常用命令：
+
+```sh
+bun run dev        # 本地开发服务器
+bun run build      # 生产构建
+bun run preview    # 预览构建产物
+bun run lint       # ESLint
+bunx tsc --noEmit  # TypeScript 类型检查
+```
+
+本地运行时需要在 `.env` 配置 Supabase 连接（`SUPABASE_URL` 与 `SUPABASE_PUBLISHABLE_KEY`，云环境由 Lovable 注入）。
+
+## 部署
+
+本项目通过 [Lovable](https://lovable.dev) 构建与托管：
+
+- **线上地址**：<https://getagentbench.lovable.app>
+- **源码仓库**：<https://github.com/quncezhineng/agentbench>
+- **Lovable 编辑器**：<https://lovable.dev/projects/8b28a9a9-859f-4c47-b7a5-bbcc786adeb5>
+
+> 提示：本项目连接 Lovable，请勿改写已推送的 git 历史（force push / rebase / amend / squash），否则会重写 Lovable 侧历史、可能丢失项目历史。
+
+## 相关文档
+
+- `docs/overview.md` — 项目概述
+- `docs/requirements.md` — 功能需求与页面结构
+- `docs/tech-specs.md` — 技术规格与代码组织
+- `docs/user-structure.md` — 用户流程与文件结构
+- `docs/timeline.md` — 里程碑与变更记录
+- `docs/wiki/LoopArena.pdf` — LoopArena 论文（评测机制依据）
+
+## 数据口径声明
+
+榜单中已标注来源的分数来自 LoopArena 论文（arXiv 2608.28281）Table 2 的公开发布快照，仅代表论文口径与当时复现环境；其余主流编程智能体产品暂为「待评测」占位，尚未在 LoopArena 统一口径下跑分。本站为第三方评测榜单，与论文作者及各家模型/产品厂商无隶属关系。
