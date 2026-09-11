@@ -98,7 +98,10 @@ function CompareSweBench() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} /> */}
-      <SiteHeader navs={NAV} />
+      <SiteHeader
+        navs={NAV}
+        cta={{ href: "https://github.com/quncezhineng/agentbench", label: "GitHub" }}
+      />
 
       <main>
         {/* ---------- 首屏：定位 ---------- */}

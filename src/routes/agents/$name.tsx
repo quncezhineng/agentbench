@@ -32,7 +32,10 @@ function AgentPage() {
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航 ---------- */}
       {/* <SiteHeader navs={[]} cta={{ href: "/board", label: "查看排行榜" }} /> */}
-      <SiteHeader navs={[]} />
+      <SiteHeader
+        navs={[]}
+        cta={{ href: "https://github.com/quncezhineng/agentbench", label: "GitHub" }}
+      />
 
       {/* ---------- 智能体详情 ---------- */}
       <main>

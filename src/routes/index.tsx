@@ -58,7 +58,10 @@ function Index() {
     <div className="min-h-screen bg-background text-foreground">
       {/* ---------- 顶部导航：区块锚点在前，站点入口居后 ---------- */}
       {/* <SiteHeader navs={NAV} cta={{ href: "/board", label: "查看排行榜" }} siteAfterNav /> */}
-      <SiteHeader navs={NAV} />
+      <SiteHeader
+        navs={NAV}
+        cta={{ href: "https://github.com/quncezhineng/agentbench", label: "GitHub" }}
+      />
 
       {/* ---------- 首屏：LoopArena 机制概览 ---------- */}
       <section className="ab-container ab-section pt-8 sm:pt-10">
